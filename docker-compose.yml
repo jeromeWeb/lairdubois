@@ -1,0 +1,51 @@
+version: '2'
+
+volumes:
+    elasticsearch-data: {}
+    api-cache:
+        driver_opts:
+            type: tmpfs
+            device: tmpfs
+    data-volume:
+
+services:
+    db:
+        image: 'mysql:5.7'
+        volumes:
+            - './docker/db/my.cnf:/etc/my.cnf'
+            - 'data-volume:/var/lib/mysql'
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - &env_mysql_hostname MYSQL_HOSTNAME
+            - &env_mysql_database MYSQL_DATABASE
+            - &env_mysql_user MYSQL_USER
+            - &env_mysql_password MYSQL_PASSWORD
+            - &env_mysql_port MYSQL_PORT
+        ports:
+            - '3307:3306'
+
+    php:
+        build:
+          context: ./
+          dockerfile: ./docker/php/Dockerfile
+        depends_on:
+            - db
+        volumes:
+            - ./:/var/www/symfony:rw
+            - api-cache:/var/www/symfony/var/cache:rw
+            - /var/www/symfony/var/logs
+        environment:
+            - DATABASE_URL=mysql://dev:dev@db:3306/lairdubois?charset=utf8mb4&serverVersion=5.7
+        networks:
+            - default
+
+    nginx:
+        build: 'docker/nginx'
+        depends_on:
+            - 'php'
+        ports:
+            - '8000:80'
+        links:
+            - 'php:fpm'
+        volumes:
+            - './:/var/www/symfony/'
