@@ -40,272 +40,294 @@ use Ladb\CoreBundle\Entity\AbstractAuthoredPublication;
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Qa\QuestionRepository")
  * @LadbAssert\BodyBlocks()
  */
-class Question extends AbstractDraftableAuthoredPublication implements TitledInterface, PicturedInterface, BlockBodiedInterface, IndexableInterface, SitemapableInterface, TaggableInterface, ViewableInterface, ScrapableInterface, LikableInterface, WatchableInterface, CommentableInterface, VotableParentInterface, ReportableInterface, ExplorableInterface {
+class Question extends AbstractDraftableAuthoredPublication implements TitledInterface, PicturedInterface, BlockBodiedInterface, IndexableInterface, SitemapableInterface, TaggableInterface, ViewableInterface, ScrapableInterface, LikableInterface, WatchableInterface, CommentableInterface, VotableParentInterface, ReportableInterface, ExplorableInterface
+{
 
-	use TitledTrait, PicturedTrait, BlockBodiedTrait;
-	use IndexableTrait, SitemapableTrait, TaggableTrait, ViewableTrait, ScrapableTrait, LikableTrait, WatchableTrait, CommentableTrait, VotableParentTrait;
+    use TitledTrait, PicturedTrait, BlockBodiedTrait;
+    use IndexableTrait, SitemapableTrait, TaggableTrait, ViewableTrait, ScrapableTrait, LikableTrait, WatchableTrait, CommentableTrait, VotableParentTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Qa\Question';
-	const TYPE = 113;
+    const CLASS_NAME = 'LadbCoreBundle:Qa\Question';
+    const TYPE = 113;
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=4)
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
-	 */
-	private $title;
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4)
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
+     */
+    private $title;
 
-	/**
-	 * @Gedmo\Slug(fields={"title"}, separator="-")
-	 * @ORM\Column(type="string", length=100, unique=true)
-	 */
-	private $slug;
+    /**
+     * @Gedmo\Slug(fields={"title"}, separator="-")
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $slug;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true, name="main_picture_id")
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
-	 */
-	private $mainPicture;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, name="main_picture_id")
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
+     */
+    private $mainPicture;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 */
-	private $body;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    private $body;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 */
-	private $bodyExtract;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    private $bodyExtract;
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Block\AbstractBlock", cascade={"persist", "remove"})
-	 * @ORM\JoinTable(name="tbl_qa_question_body_block", inverseJoinColumns={@ORM\JoinColumn(name="block_id", referencedColumnName="id", unique=true, onDelete="cascade")})
-	 * @ORM\OrderBy({"sortIndex" = "ASC"})
-	 * @Assert\Count(min=1)
-	 */
-	private $bodyBlocks;
+    /**
+     * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Block\AbstractBlock", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="tbl_qa_question_body_block", inverseJoinColumns={@ORM\JoinColumn(name="block_id", referencedColumnName="id", unique=true, onDelete="cascade")})
+     * @ORM\OrderBy({"sortIndex" = "ASC"})
+     * @Assert\Count(min=1)
+     */
+    private $bodyBlocks;
 
-	/**
-	 * @ORM\Column(type="integer", name="body_block_picture_count")
-	 */
-	private $bodyBlockPictureCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="body_block_picture_count")
+     */
+    private $bodyBlockPictureCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="body_block_video_count")
-	 */
-	private $bodyBlockVideoCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="body_block_video_count")
+     */
+    private $bodyBlockVideoCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="answer_count")
-	 */
-	private $answerCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="answer_count")
+     */
+    private $answerCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="positive_answer_count")
-	 */
-	private $positiveAnswerCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="positive_answer_count")
+     */
+    private $positiveAnswerCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="null_answer_count")
-	 */
-	private $nullAnswerCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="null_answer_count")
+     */
+    private $nullAnswerCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="undetermined_answer_count")
-	 */
-	private $undeterminedAnswerCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="undetermined_answer_count")
+     */
+    private $undeterminedAnswerCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="negative_answer_count")
-	 */
-	private $negativeAnswerCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="negative_answer_count")
+     */
+    private $negativeAnswerCount = 0;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Qa\Answer")
-	 * @ORM\JoinColumn(nullable=true, name="best_answer_id")
-	 */
-	private $bestAnswer;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Qa\Answer")
+     * @ORM\JoinColumn(nullable=true, name="best_answer_id")
+     */
+    private $bestAnswer;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="Ladb\CoreBundle\Entity\Qa\Answer", mappedBy="question", cascade={"all"})
-	 * @ORM\OrderBy({"isBestAnswer" = "DESC", "voteScore" = "DESC", "createdAt" = "DESC"})
-	 */
-	private $answers;
+    /**
+     * @ORM\OneToMany(targetEntity="Ladb\CoreBundle\Entity\Qa\Answer", mappedBy="question", cascade={"all"})
+     * @ORM\OrderBy({"isBestAnswer" = "DESC", "voteScore" = "DESC", "createdAt" = "DESC"})
+     */
+    private $answers;
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Tag", cascade={"persist"})
-	 * @ORM\JoinTable(name="tbl_qa_question_tag")
-	 * @Assert\Count(min=2)
-	 */
-	private $tags;
+    /**
+     * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Tag", cascade={"persist"})
+     * @ORM\JoinTable(name="tbl_qa_question_tag")
+     * @Assert\Count(min=2)
+     */
+    private $tags;
 
-	/**
-	 * @ORM\Column(type="integer", name="positive_vote_count")
-	 */
-	private $positiveVoteCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="positive_vote_count")
+     */
+    private $positiveVoteCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="negative_vote_count")
-	 */
-	private $negativeVoteCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="negative_vote_count")
+     */
+    private $negativeVoteCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="vote_count")
-	 */
-	private $voteCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="vote_count")
+     */
+    private $voteCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="like_count")
-	 */
-	private $likeCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="like_count")
+     */
+    private $likeCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="watch_count")
-	 */
-	private $watchCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="watch_count")
+     */
+    private $watchCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="comment_count")
-	 */
-	private $commentCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="comment_count")
+     */
+    private $commentCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="view_count")
-	 */
-	private $viewCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="view_count")
+     */
+    private $viewCount = 0;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->bodyBlocks = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->answers = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->tags = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->bodyBlocks = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	// NotificationStrategy /////
+    // NotificationStrategy /////
 
-	public function getNotificationStrategy() {
-		return self::NOTIFICATION_STRATEGY_FOLLOWER;
-	}
+    public function getNotificationStrategy()
+    {
+        return self::NOTIFICATION_STRATEGY_FOLLOWER;
+    }
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return Question::TYPE;
-	}
+    public function getType()
+    {
+        return Question::TYPE;
+    }
 
-	// Slug /////
+    // Slug /////
 
-	public function getSlug() {
-		return $this->slug;
-	}
+    public function getSlug()
+    {
+        return $this->slug;
+    }
 
-	public function setSlug($slug) {
-		$this->slug = $slug;
-		return $this;
-	}
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
+    }
 
-	public function getSluggedId() {
-		return $this->id.'-'.$this->slug;
-	}
+    public function getSluggedId()
+    {
+        return $this->id . '-' . $this->slug;
+    }
 
-	// AnswerCount /////
+    // AnswerCount /////
 
-	public function incrementAnswerCount($by = 1) {
-		return $this->answerCount += intval($by);
-	}
+    public function incrementAnswerCount($by = 1)
+    {
+        return $this->answerCount += intval($by);
+    }
 
-	public function getAnswerCount() {
-		return $this->answerCount;
-	}
+    public function getAnswerCount()
+    {
+        return $this->answerCount;
+    }
 
-	// PositiveAnswerCount /////
+    // PositiveAnswerCount /////
 
-	public function getPositiveAnswerCount() {
-		return $this->positiveAnswerCount;
-	}
+    public function getPositiveAnswerCount()
+    {
+        return $this->positiveAnswerCount;
+    }
 
-	public function setPositiveAnswerCount($positiveAnswerCount) {
-		$this->positiveAnswerCount = $positiveAnswerCount;
-		return $this;
-	}
+    public function setPositiveAnswerCount($positiveAnswerCount)
+    {
+        $this->positiveAnswerCount = $positiveAnswerCount;
+        return $this;
+    }
 
-	// NullAnswerCount /////
+    // NullAnswerCount /////
 
-	public function getNullAnswerCount() {
-		return $this->nullAnswerCount;
-	}
+    public function getNullAnswerCount()
+    {
+        return $this->nullAnswerCount;
+    }
 
-	public function setNullAnswerCount($nullAnswerCount) {
-		$this->nullAnswerCount = $nullAnswerCount;
-		return $this;
-	}
+    public function setNullAnswerCount($nullAnswerCount)
+    {
+        $this->nullAnswerCount = $nullAnswerCount;
+        return $this;
+    }
 
-	// UndeterminedAnswerCount /////
+    // UndeterminedAnswerCount /////
 
-	public function getUndeterminedAnswerCount() {
-		return $this->undeterminedAnswerCount;
-	}
+    public function getUndeterminedAnswerCount()
+    {
+        return $this->undeterminedAnswerCount;
+    }
 
-	public function setUndeterminedAnswerCount($undeterminedAnswerCount) {
-		$this->undeterminedAnswerCount = $undeterminedAnswerCount;
-		return $this;
-	}
+    public function setUndeterminedAnswerCount($undeterminedAnswerCount)
+    {
+        $this->undeterminedAnswerCount = $undeterminedAnswerCount;
+        return $this;
+    }
 
-	// NegativeAnswerCount /////
+    // NegativeAnswerCount /////
 
-	public function getNegativeAnswerCount() {
-		return $this->negativeAnswerCount;
-	}
+    public function getNegativeAnswerCount()
+    {
+        return $this->negativeAnswerCount;
+    }
 
-	public function setNegativeAnswerCount($negativeAnswerCount) {
-		$this->negativeAnswerCount = $negativeAnswerCount;
-		return $this;
-	}
+    public function setNegativeAnswerCount($negativeAnswerCount)
+    {
+        $this->negativeAnswerCount = $negativeAnswerCount;
+        return $this;
+    }
 
-	// BestAnswer /////
+    // BestAnswer /////
 
-	public function getBestAnswer() {
-		return $this->bestAnswer;
-	}
+    public function getBestAnswer()
+    {
+        return $this->bestAnswer;
+    }
 
-	public function setBestAnswer(\Ladb\CoreBundle\Entity\Qa\Answer $bestAnswer = null) {
-		if (!is_null($this->getBestAnswer())) {
-			$this->getBestAnswer()->setIsBestAnswer(false);
-		}
-		$this->bestAnswer = $bestAnswer;
-		if (!is_null($this->getBestAnswer())) {
-			$this->getBestAnswer()->setIsBestAnswer(true);
-		}
-		return $this;
-	}
+    public function setBestAnswer(\Ladb\CoreBundle\Entity\Qa\Answer $bestAnswer = null)
+    {
+        if (!is_null($this->getBestAnswer())) {
+            $this->getBestAnswer()->setIsBestAnswer(false);
+        }
+        $this->bestAnswer = $bestAnswer;
+        if (!is_null($this->getBestAnswer())) {
+            $this->getBestAnswer()->setIsBestAnswer(true);
+        }
+        return $this;
+    }
 
-	// Answers /////
+    // Answers /////
 
-	public function addAnswer(\Ladb\CoreBundle\Entity\Qa\Answer $answer) {
-		if (!$this->answers->contains($answer)) {
-			$this->answers[] = $answer;
-			$answer->setQuestion($this);
-		}
-		return $this;
-	}
+    public function addAnswer(\Ladb\CoreBundle\Entity\Qa\Answer $answer)
+    {
+        if (!$this->answers->contains($answer)) {
+            $this->answers[] = $answer;
+            $answer->setQuestion($this);
+        }
+        return $this;
+    }
 
-	public function removeAnswer(\Ladb\CoreBundle\Entity\Qa\Answer $answer) {
-		if ($this->answers->removeElement($answer)) {
-			$answer->setQuestion(null);
-		}
-	}
+    public function removeAnswer(\Ladb\CoreBundle\Entity\Qa\Answer $answer)
+    {
+        if ($this->answers->removeElement($answer)) {
+            $answer->setQuestion(null);
+        }
+    }
 
-	public function getAnswers() {
-		return $this->answers;
-	}
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
 
-	// License /////
+    // License /////
 
-	public function getLicense() {
-		return new \Ladb\CoreBundle\Entity\Core\License(true, true, true);
-	}
-
+    public function getLicense()
+    {
+        return new \Ladb\CoreBundle\Entity\Core\License(true, true, true);
+    }
 }

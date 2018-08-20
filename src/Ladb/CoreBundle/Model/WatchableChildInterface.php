@@ -2,14 +2,14 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface WatchableChildInterface extends TypableInterface  {
+interface WatchableChildInterface extends TypableInterface
+{
 
-	// ParentEntityType /////
+    // ParentEntityType /////
 
-	public function getParentEntityType();
+    public function getParentEntityType();
 
-	// ParentEntityId /////
+    // ParentEntityId /////
 
-	public function getParentEntityId();
-
+    public function getParentEntityId();
 }

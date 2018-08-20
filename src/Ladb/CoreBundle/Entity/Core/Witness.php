@@ -11,108 +11,119 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * })
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Core\WitnessRepository")
  */
-class Witness {
+class Witness
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Core\Witness';
+    const CLASS_NAME = 'LadbCoreBundle:Core\Witness';
 
-	const KIND_NONE = 0;
-	const KIND_UNPUBLISHED = 1;
-	const KIND_CONVERTED = 2;
-	const KIND_DELETED = 3;
+    const KIND_NONE = 0;
+    const KIND_UNPUBLISHED = 1;
+    const KIND_CONVERTED = 2;
+    const KIND_DELETED = 3;
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\Column(name="entity_type", type="smallint", nullable=false)
-	 */
-	private $entityType;
+    /**
+     * @ORM\Column(name="entity_type", type="smallint", nullable=false)
+     */
+    private $entityType;
 
-	/**
-	 * @ORM\Column(name="entity_id", type="integer", nullable=false)
-	 */
-	private $entityId;
+    /**
+     * @ORM\Column(name="entity_id", type="integer", nullable=false)
+     */
+    private $entityId;
 
-	/**
-	 * @ORM\Column(type="smallint", nullable=false)
-	 */
-	private $kind = self::KIND_NONE;
+    /**
+     * @ORM\Column(type="smallint", nullable=false)
+     */
+    private $kind = self::KIND_NONE;
 
-	/**
-	 * @ORM\Column(type="simple_array", nullable=true)
-	 */
-	protected $meta = null;
+    /**
+     * @ORM\Column(type="simple_array", nullable=true)
+     */
+    protected $meta = null;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	// EntityType /////
+    // EntityType /////
 
-	public function setEntityType($entityType) {
-		$this->entityType = $entityType;
-	}
+    public function setEntityType($entityType)
+    {
+        $this->entityType = $entityType;
+    }
 
-	public function getEntityType() {
-		return $this->entityType;
-	}
+    public function getEntityType()
+    {
+        return $this->entityType;
+    }
 
-	// EntityId /////
+    // EntityId /////
 
-	public function setEntityId($entityId) {
-		$this->entityId = $entityId;
-		return $this;
-	}
+    public function setEntityId($entityId)
+    {
+        $this->entityId = $entityId;
+        return $this;
+    }
 
-	public function getEntityId() {
-		return $this->entityId;
-	}
+    public function getEntityId()
+    {
+        return $this->entityId;
+    }
 
-	// Kind /////
+    // Kind /////
 
-	public function setKind($kind) {
-		$this->kind = $kind;
-		return $this;
-	}
+    public function setKind($kind)
+    {
+        $this->kind = $kind;
+        return $this;
+    }
 
-	public function getKind() {
-		return $this->kind;
-	}
+    public function getKind()
+    {
+        return $this->kind;
+    }
 
-	// Meta /////
+    // Meta /////
 
-	public function setMeta($meta) {
-		$this->meta = $meta;
-		return $this;
-	}
+    public function setMeta($meta)
+    {
+        $this->meta = $meta;
+        return $this;
+    }
 
-	public function getMeta() {
-		return $this->meta;
-	}
-
+    public function getMeta()
+    {
+        return $this->meta;
+    }
 }

@@ -12,20 +12,20 @@ use Ladb\CoreBundle\Model\HiddableTrait;
 /**
  * @ORM\MappedSuperclass
  */
-abstract class AbstractAuthoredPublication extends AbstractPublication implements AuthoredInterface, HiddableInterface {
+abstract class AbstractAuthoredPublication extends AbstractPublication implements AuthoredInterface, HiddableInterface
+{
 
-	use AuthoredTrait;
-	use HiddableTrait;
+    use AuthoredTrait;
+    use HiddableTrait;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	protected $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    protected $user;
 
-	/**
-	 * @ORM\Column(name="visibility", type="integer")
-	 */
-	protected $visibility = self::VISIBILITY_PRIVATE;
-
+    /**
+     * @ORM\Column(name="visibility", type="integer")
+     */
+    protected $visibility = self::VISIBILITY_PRIVATE;
 }

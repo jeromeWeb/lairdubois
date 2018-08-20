@@ -2,22 +2,22 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface HiddableInterface {
+interface HiddableInterface
+{
 
-	const VISIBILITY_PRIVATE = 0;
-	const VISIBILITY_PROTECTED = 1;
-	const VISIBILITY_PUBLIC = 2;
+    const VISIBILITY_PRIVATE = 0;
+    const VISIBILITY_PROTECTED = 1;
+    const VISIBILITY_PUBLIC = 2;
 
-	// Visibility /////
+    // Visibility /////
 
-	public function setVisibility($visibility);
+    public function setVisibility($visibility);
 
-	public function getVisibility();
+    public function getVisibility();
 
-	public function getIsPrivate();
+    public function getIsPrivate();
 
-	public function getIsProtected();
+    public function getIsProtected();
 
-	public function getIsPublic();
-
+    public function getIsPublic();
 }

@@ -7,72 +7,75 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ladb\CoreBundle\Model\TaggableInterface;
 use Ladb\CoreBundle\Entity\Core\TagUsage;
 
-class TagUtils {
+class TagUtils
+{
 
-	const NAME = 'ladb_core.tag_utils';
+    const NAME = 'ladb_core.tag_utils';
 
-	protected $om;
+    protected $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	/////
+    /////
 
-	public function useTaggableTags(TaggableInterface $taggable, $previouslyUsedTags = null) {
+    public function useTaggableTags(TaggableInterface $taggable, $previouslyUsedTags = null)
+    {
 
-		$tags = $taggable->getTags();
-		if (is_null($previouslyUsedTags)) {
-			$newUsedTags = $tags;
-		} else {
-			$newUsedTags = array();
-			foreach ($tags as $tag) {
-				$new = true;
-				foreach ($previouslyUsedTags as $previouslyUsedTag) {
-					if ($previouslyUsedTag->getId() == $tag->getId()) {
-						$new = false;
-						break;
-					}
-				}
-				if ($new) {
-					$newUsedTags[] = $tag;
-				}
-			}
-		}
-		$entityType = $taggable->getType();
+        $tags = $taggable->getTags();
+        if (is_null($previouslyUsedTags)) {
+            $newUsedTags = $tags;
+        } else {
+            $newUsedTags = array();
+            foreach ($tags as $tag) {
+                $new = true;
+                foreach ($previouslyUsedTags as $previouslyUsedTag) {
+                    if ($previouslyUsedTag->getId() == $tag->getId()) {
+                        $new = false;
+                        break;
+                    }
+                }
+                if ($new) {
+                    $newUsedTags[] = $tag;
+                }
+            }
+        }
+        $entityType = $taggable->getType();
 
-		$tagUsageRepository = $this->om->getRepository(TagUsage::CLASS_NAME);
-		foreach ($newUsedTags as $tag) {
+        $tagUsageRepository = $this->om->getRepository(TagUsage::CLASS_NAME);
+        foreach ($newUsedTags as $tag) {
 
-			$tagUsage = $tagUsageRepository->findOneByTagAndEntityType($tag, $entityType);
-			if (is_null($tagUsage)) {
+            $tagUsage = $tagUsageRepository->findOneByTagAndEntityType($tag, $entityType);
+            if (is_null($tagUsage)) {
 
-				$tagUsage = new TagUsage();
-				$tagUsage->setTag($tag);
-				$tagUsage->setEntityType($entityType);
+                $tagUsage = new TagUsage();
+                $tagUsage->setTag($tag);
+                $tagUsage->setEntityType($entityType);
 
-				$this->om->persist($tagUsage);
-			}
-			$tagUsage->incrementScore();
+                $this->om->persist($tagUsage);
+            }
+            $tagUsage->incrementScore();
 
-		}
+        }
 
-		$this->om->flush();
+        $this->om->flush();
 
-	}
+    }
 
-	public function getProposals(TaggableInterface $taggable, $maxResults = 30) {
-		$proposals = array();
+    public function getProposals(TaggableInterface $taggable, $maxResults = 30)
+    {
+        $proposals = array();
 
-		$tagUsageRepository = $this->om->getRepository(TagUsage::CLASS_NAME);
-		$tagUsages = $tagUsageRepository->findByEntityType($taggable->getType(), $maxResults);
-		if (!is_null($tagUsages)) {
-			foreach ($tagUsages as $tagUsage) {
-				$proposals[] = array( $tagUsage->getTag()->getLabel(), $tagUsage->getHighlighted() );
-			}
-		}
+        $tagUsageRepository = $this->om->getRepository(TagUsage::CLASS_NAME);
+        $tagUsages = $tagUsageRepository->findByEntityType($taggable->getType(), $maxResults);
+        if (!is_null($tagUsages)) {
+            foreach ($tagUsages as $tagUsage) {
+                $proposals[] = array( $tagUsage->getTag()->getLabel(), $tagUsage->getHighlighted() );
+            }
+        }
 
-		return $proposals;
-	}
-
+        return $proposals;
+    }
 }

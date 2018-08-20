@@ -20,188 +20,193 @@ use Ladb\CoreBundle\Event\PublicationListener;
 /**
  * @Route("/ecoles")
  */
-class TestimonialController extends Controller {
+class TestimonialController extends Controller
+{
 
-	/**
-	 * @Route("/{id}/temoignages/new", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_new")
-	 * @Template("LadbCoreBundle:Knowledge/School/Testimonial:new-xhr.html.twig")
-	 */
-	public function newAction($id) {
-		$om = $this->getDoctrine()->getManager();
-		$schoolRepository = $om->getRepository(School::CLASS_NAME);
+    /**
+     * @Route("/{id}/temoignages/new", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_new")
+     * @Template("LadbCoreBundle:Knowledge/School/Testimonial:new-xhr.html.twig")
+     */
+    public function newAction($id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $schoolRepository = $om->getRepository(School::CLASS_NAME);
 
-		$school = $schoolRepository->findOneById($id);
-		if (is_null($school)) {
-			throw $this->createNotFoundException('Unable to find School entity (id='.$id.').');
-		}
+        $school = $schoolRepository->findOneById($id);
+        if (is_null($school)) {
+            throw $this->createNotFoundException('Unable to find School entity (id=' . $id . ').');
+        }
 
-		$testimonial = new School\Testimonial();
-		$form = $this->createForm(TestimonialType::class, $testimonial);
+        $testimonial = new School\Testimonial();
+        $form = $this->createForm(TestimonialType::class, $testimonial);
 
-		return array(
-			'school' => $school,
-			'form'   => $form->createView(),
-		);
-	}
+        return array(
+            'school' => $school,
+            'form'   => $form->createView(),
+        );
+    }
 
-	/**
-	 * @Route("/{id}/temoignages/create", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_create")
-	 * @Method("POST")
-	 * @Template("LadbCoreBundle:Knowledge/School/Testimonial:new-xhr.html.twig")
-	 */
-	public function createAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$schoolRepository = $om->getRepository(School::CLASS_NAME);
+    /**
+     * @Route("/{id}/temoignages/create", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_create")
+     * @Method("POST")
+     * @Template("LadbCoreBundle:Knowledge/School/Testimonial:new-xhr.html.twig")
+     */
+    public function createAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $schoolRepository = $om->getRepository(School::CLASS_NAME);
 
-		$school = $schoolRepository->findOneById($id);
-		if (is_null($school)) {
-			throw $this->createNotFoundException('Unable to find School entity (id='.$id.').');
-		}
+        $school = $schoolRepository->findOneById($id);
+        if (is_null($school)) {
+            throw $this->createNotFoundException('Unable to find School entity (id=' . $id . ').');
+        }
 
-		$testimonial = new School\Testimonial();
-		$testimonial->setSchool($school);				// Used by validator
-		$testimonial->setUser($this->getUser());		// Used by validator
-		$form = $this->createForm(TestimonialType::class, $testimonial);
-		$form->handleRequest($request);
+        $testimonial = new School\Testimonial();
+        $testimonial->setSchool($school);               // Used by validator
+        $testimonial->setUser($this->getUser());        // Used by validator
+        $form = $this->createForm(TestimonialType::class, $testimonial);
+        $form->handleRequest($request);
 
-		if ($form->isValid()) {
+        if ($form->isValid()) {
 
-			$fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
-			$fieldPreprocessorUtils->preprocessFields($testimonial);
+            $fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
+            $fieldPreprocessorUtils->preprocessFields($testimonial);
 
-			$testimonial->setUser($this->getUser());
+            $testimonial->setUser($this->getUser());
 
-			$school->addTestimonial($testimonial);
+            $school->addTestimonial($testimonial);
 
-			$school->incrementTestimonialCount();
-			$this->getUser()->getMeta()->incrementTestimonialCount();
+            $school->incrementTestimonialCount();
+            $this->getUser()->getMeta()->incrementTestimonialCount();
 
-			$om->persist($testimonial);
+            $om->persist($testimonial);
 
-			// Create activity
-			$activityUtils = $this->get(ActivityUtils::NAME);
-			$activityUtils->createTestifyActivity($testimonial, false);
+            // Create activity
+            $activityUtils = $this->get(ActivityUtils::NAME);
+            $activityUtils->createTestifyActivity($testimonial, false);
 
-			// Dispatch publication event (on School)
-			$dispatcher = $this->get('event_dispatcher');
-			$dispatcher->dispatch(PublicationListener::PUBLICATION_CHANGED, new PublicationEvent($school));
+            // Dispatch publication event (on School)
+            $dispatcher = $this->get('event_dispatcher');
+            $dispatcher->dispatch(PublicationListener::PUBLICATION_CHANGED, new PublicationEvent($school));
 
-			// Auto watch
-			$watchableUtils = $this->container->get(WatchableUtils::NAME);
-			$watchableUtils->autoCreateWatch($school, $this->getUser());
+            // Auto watch
+            $watchableUtils = $this->container->get(WatchableUtils::NAME);
+            $watchableUtils->autoCreateWatch($school, $this->getUser());
 
-			$om->flush();
+            $om->flush();
 
-			return $this->render('LadbCoreBundle:Knowledge/School/Testimonial:create-xhr.html.twig', array(
-				'school'      => $school,
-				'testimonial' => $testimonial,
-			));
-		}
+            return $this->render('LadbCoreBundle:Knowledge/School/Testimonial:create-xhr.html.twig', array(
+                'school'      => $school,
+                'testimonial' => $testimonial,
+            ));
+        }
 
-		return array(
-			'school' => $school,
-			'form'   => $form->createView(),
-		);
-	}
+        return array(
+            'school' => $school,
+            'form'   => $form->createView(),
+        );
+    }
 
-	/**
-	 * @Route("/temoignages/{id}/edit", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_edit")
-	 * @Template("LadbCoreBundle:Knowledge/School/Testimonial:edit-xhr.html.twig")
-	 */
-	public function editAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$testimonialRepository = $om->getRepository(School\Testimonial::CLASS_NAME);
+    /**
+     * @Route("/temoignages/{id}/edit", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_edit")
+     * @Template("LadbCoreBundle:Knowledge/School/Testimonial:edit-xhr.html.twig")
+     */
+    public function editAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $testimonialRepository = $om->getRepository(School\Testimonial::CLASS_NAME);
 
-		$testimonial = $testimonialRepository->findOneById($id);
-		if (is_null($testimonial)) {
-			throw $this->createNotFoundException('Unable to find Testimonial entity (id='.$id.').');
-		}
-		if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $testimonial->getUser()->getId() != $this->getUser()->getId()) {
-			throw $this->createNotFoundException('Not allowed (core_knowledge_school_testimonial_edit)');
-		}
+        $testimonial = $testimonialRepository->findOneById($id);
+        if (is_null($testimonial)) {
+            throw $this->createNotFoundException('Unable to find Testimonial entity (id=' . $id . ').');
+        }
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $testimonial->getUser()->getId() != $this->getUser()->getId()) {
+            throw $this->createNotFoundException('Not allowed (core_knowledge_school_testimonial_edit)');
+        }
 
-		$form = $this->createForm(TestimonialType::class, $testimonial);
+        $form = $this->createForm(TestimonialType::class, $testimonial);
 
-		return array(
-			'testimonial' => $testimonial,
-			'form'        => $form->createView(),
-		);
-	}
+        return array(
+            'testimonial' => $testimonial,
+            'form'        => $form->createView(),
+        );
+    }
 
-	/**
-	 * @Route("/temoignages/{id}/update", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_update")
-	 * @Method("POST")
-	 * @Template("LadbCoreBundle:Knowledge/School/Testimonial:edit-xhr.html.twig")
-	 */
-	public function updateAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$testimonialRepository = $om->getRepository(School\Testimonial::CLASS_NAME);
+    /**
+     * @Route("/temoignages/{id}/update", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_update")
+     * @Method("POST")
+     * @Template("LadbCoreBundle:Knowledge/School/Testimonial:edit-xhr.html.twig")
+     */
+    public function updateAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $testimonialRepository = $om->getRepository(School\Testimonial::CLASS_NAME);
 
-		$testimonial = $testimonialRepository->findOneById($id);
-		if (is_null($testimonial)) {
-			throw $this->createNotFoundException('Unable to find Testimonial entity (id='.$id.').');
-		}
-		if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $testimonial->getUser()->getId() != $this->getUser()->getId()) {
-			throw $this->createNotFoundException('Not allowed (core_knowledge_school_testimonial_update)');
-		}
+        $testimonial = $testimonialRepository->findOneById($id);
+        if (is_null($testimonial)) {
+            throw $this->createNotFoundException('Unable to find Testimonial entity (id=' . $id . ').');
+        }
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $testimonial->getUser()->getId() != $this->getUser()->getId()) {
+            throw $this->createNotFoundException('Not allowed (core_knowledge_school_testimonial_update)');
+        }
 
-		$form = $this->createForm(TestimonialType::class, $testimonial);
-		$form->handleRequest($request);
+        $form = $this->createForm(TestimonialType::class, $testimonial);
+        $form->handleRequest($request);
 
-		if ($form->isValid()) {
+        if ($form->isValid()) {
 
-			$fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
-			$fieldPreprocessorUtils->preprocessFields($testimonial);
+            $fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
+            $fieldPreprocessorUtils->preprocessFields($testimonial);
 
-			if ($testimonial->getUser()->getId() == $this->getUser()->getId()) {
-				$testimonial->setUpdatedAt(new \DateTime());
-			}
+            if ($testimonial->getUser()->getId() == $this->getUser()->getId()) {
+                $testimonial->setUpdatedAt(new \DateTime());
+            }
 
-			$om->flush();
+            $om->flush();
 
-			return $this->render('LadbCoreBundle:Knowledge/School/Testimonial:update-xhr.html.twig', array(
-				'school'      => $testimonial->getSchool(),
-				'testimonial' => $testimonial,
-			));
-		}
+            return $this->render('LadbCoreBundle:Knowledge/School/Testimonial:update-xhr.html.twig', array(
+                'school'      => $testimonial->getSchool(),
+                'testimonial' => $testimonial,
+            ));
+        }
 
-		return array(
-			'testimonial' => $testimonial,
-			'form'        => $form->createView(),
-		);
-	}
+        return array(
+            'testimonial' => $testimonial,
+            'form'        => $form->createView(),
+        );
+    }
 
-	/**
-	 * @Route("/temoignages/{id}/delete", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_delete")
-	 */
-	public function deleteAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$testimonialRepository = $om->getRepository(School\Testimonial::CLASS_NAME);
+    /**
+     * @Route("/temoignages/{id}/delete", requirements={"id" = "\d+"}, name="core_knowledge_school_testimonial_delete")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $testimonialRepository = $om->getRepository(School\Testimonial::CLASS_NAME);
 
-		$testimonial = $testimonialRepository->findOneById($id);
-		if (is_null($testimonial)) {
-			throw $this->createNotFoundException('Unable to find Testimonial entity (id='.$id.').');
-		}
-		if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $testimonial->getUser()->getId() != $this->getUser()->getId()) {
-			throw $this->createNotFoundException('Not allowed (core_knowledge_school_testimonial_delete)');
-		}
+        $testimonial = $testimonialRepository->findOneById($id);
+        if (is_null($testimonial)) {
+            throw $this->createNotFoundException('Unable to find Testimonial entity (id=' . $id . ').');
+        }
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $testimonial->getUser()->getId() != $this->getUser()->getId()) {
+            throw $this->createNotFoundException('Not allowed (core_knowledge_school_testimonial_delete)');
+        }
 
-		$school = $testimonial->getSchool();
+        $school = $testimonial->getSchool();
 
-		// Delete
-		$testimonialManager = $this->get(TestimonialManager::NAME);
-		$testimonialManager->delete($testimonial);
+        // Delete
+        $testimonialManager = $this->get(TestimonialManager::NAME);
+        $testimonialManager->delete($testimonial);
 
-		// Search index update
-		$searchUtils = $this->get(SearchUtils::NAME);
-		$searchUtils->replaceEntityInIndex($school);
+        // Search index update
+        $searchUtils = $this->get(SearchUtils::NAME);
+        $searchUtils->replaceEntityInIndex($school);
 
-		$om->flush();
+        $om->flush();
 
-		// Flashbag
-		$this->get('session')->getFlashBag()->add('success', $this->get('translator')->trans('knowledge.school.testimonial.form.alert.delete_success'));
+        // Flashbag
+        $this->get('session')->getFlashBag()->add('success', $this->get('translator')->trans('knowledge.school.testimonial.form.alert.delete_success'));
 
-		return $this->redirect($this->generateUrl('core_school_show', array( 'id' => $school->getSluggedId() )));
-	}
-
+        return $this->redirect($this->generateUrl('core_school_show', array( 'id' => $school->getSluggedId() )));
+    }
 }

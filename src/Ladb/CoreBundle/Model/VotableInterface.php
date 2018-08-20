@@ -2,48 +2,48 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface VotableInterface extends IdentifiableInterface, TypableInterface {
+interface VotableInterface extends IdentifiableInterface, TypableInterface
+{
 
-	// ParentEntity /////
+    // ParentEntity /////
 
-	public function setParentEntity(VotableParentInterface $parentEntity);
+    public function setParentEntity(VotableParentInterface $parentEntity);
 
-	// ParentEntityType /////
+    // ParentEntityType /////
 
-	public function getParentEntityType();
+    public function getParentEntityType();
 
-	// ParentEntityId /////
+    // ParentEntityId /////
 
-	public function getParentEntityId();
+    public function getParentEntityId();
 
-	// ParentEntityField /////
+    // ParentEntityField /////
 
-	public function setParentEntityField($parentEntityField);
+    public function setParentEntityField($parentEntityField);
 
-	public function getParentEntityField();
+    public function getParentEntityField();
 
-	// PositiveVoteScore /////
+    // PositiveVoteScore /////
 
-	public function incrementPositiveVoteScore($by = 1);
+    public function incrementPositiveVoteScore($by = 1);
 
-	public function getPositiveVoteScore();
+    public function getPositiveVoteScore();
 
-	// NegativeVoteScore /////
+    // NegativeVoteScore /////
 
-	public function incrementNegativeVoteScore($by = 1);
+    public function incrementNegativeVoteScore($by = 1);
 
-	public function getNegativeVoteScore();
+    public function getNegativeVoteScore();
 
-	// voteScore /////
+    // voteScore /////
 
-	public function incrementVoteScore($by = 1);
+    public function incrementVoteScore($by = 1);
 
-	public function getVoteScore();
+    public function getVoteScore();
 
-	// voteCount /////
+    // voteCount /////
 
-	public function incrementVoteCount($by = 1);
+    public function incrementVoteCount($by = 1);
 
-	public function getVoteCount();
-
+    public function getVoteCount();
 }

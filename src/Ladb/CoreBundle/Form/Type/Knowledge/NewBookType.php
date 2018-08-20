@@ -10,37 +10,41 @@ use Ladb\CoreBundle\Validator\Constraints\OneThing;
 use Ladb\CoreBundle\Form\Type\Knowledge\Value\PictureValueType;
 use Ladb\CoreBundle\Form\Type\Knowledge\Value\TextValueType;
 
-class NewBookType extends AbstractType {
+class NewBookType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('titleValue', TextValueType::class, array(
-				'choices' => null,
-				'dataConstraints' => null,
-				'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid(), new \Ladb\CoreBundle\Validator\Constraints\UniqueBook() )
-			))
-			->add('coverValue', PictureValueType::class, array(
-				'choices' => null,
-				'dataConstraints' => null,
-				'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid() )
-			))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('titleValue', TextValueType::class, array(
+                'choices' => null,
+                'dataConstraints' => null,
+                'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid(), new \Ladb\CoreBundle\Validator\Constraints\UniqueBook() )
+            ))
+            ->add('coverValue', PictureValueType::class, array(
+                'choices' => null,
+                'dataConstraints' => null,
+                'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid() )
+            ))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Form\Model\NewBook',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Form\Model\NewBook',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_knowledge_newbook';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_knowledge_newbook';
+    }
 }

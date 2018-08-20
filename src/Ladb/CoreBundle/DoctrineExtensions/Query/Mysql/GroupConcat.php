@@ -27,11 +27,7 @@ class GroupConcat extends FunctionNode
 
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        return 'GROUP_CONCAT('.
-            ($this->isDistinct ? 'DISTINCT ' : '').
-            $this->expression->dispatch($sqlWalker).
-			(null !== $this->orderByExpression ? ' ORDER BY '.$this->orderByExpression->dispatch($sqlWalker).(null !== $this->orderByOrder ? ' '.$this->orderByOrder : '') : '').
-        ')';
+        return 'GROUP_CONCAT(' . ($this->isDistinct ? 'DISTINCT ' : '') . $this->expression->dispatch($sqlWalker) . (null !== $this->orderByExpression ? ' ORDER BY ' . $this->orderByExpression->dispatch($sqlWalker) . (null !== $this->orderByOrder ? ' ' . $this->orderByOrder : '') : '') . ')';
     }
 
     public function parse(\Doctrine\ORM\Query\Parser $parser)
@@ -48,22 +44,21 @@ class GroupConcat extends FunctionNode
 
         $this->expression = $parser->SingleValuedPathExpression();
 
-		if ($lexer->isNextToken(Lexer::T_ORDER)) {
-			$parser->match(Lexer::T_ORDER);
-			if ($lexer->isNextToken(Lexer::T_BY)) {
-				$parser->match(Lexer::T_BY);
-				$this->orderByExpression = $parser->SingleValuedPathExpression();
-				if ($lexer->isNextToken(Lexer::T_ASC)) {
-					$parser->match(Lexer::T_ASC);
-					$this->orderByOrder = 'ASC';
-				} else if ($lexer->isNextToken(Lexer::T_DESC)) {
-					$parser->match(Lexer::T_DESC);
-					$this->orderByOrder = 'DESC';
-				}
-			}
-		}
+        if ($lexer->isNextToken(Lexer::T_ORDER)) {
+            $parser->match(Lexer::T_ORDER);
+            if ($lexer->isNextToken(Lexer::T_BY)) {
+                $parser->match(Lexer::T_BY);
+                $this->orderByExpression = $parser->SingleValuedPathExpression();
+                if ($lexer->isNextToken(Lexer::T_ASC)) {
+                    $parser->match(Lexer::T_ASC);
+                    $this->orderByOrder = 'ASC';
+                } elseif ($lexer->isNextToken(Lexer::T_DESC)) {
+                    $parser->match(Lexer::T_DESC);
+                    $this->orderByOrder = 'DESC';
+                }
+            }
+        }
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
-
 }

@@ -2,6 +2,7 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface ReportableInterface extends IdentifiableInterface, TypableInterface {
+interface ReportableInterface extends IdentifiableInterface, TypableInterface
+{
 
 }

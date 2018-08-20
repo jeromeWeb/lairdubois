@@ -9,183 +9,204 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table("tbl_core_referer_referral")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Core\Referer\ReferralRepository")
  */
-class Referral {
+class Referral
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Core\Referer\Referral';
+    const CLASS_NAME = 'LadbCoreBundle:Core\Referer\Referral';
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(name="entity_type", type="smallint", nullable=true)
-	 */
-	private $entityType;
+    /**
+     * @ORM\Column(name="entity_type", type="smallint", nullable=true)
+     */
+    private $entityType;
 
-	/**
-	 * @ORM\Column(name="entity_id", type="integer", nullable=true)
-	 */
-	private $entityId;
+    /**
+     * @ORM\Column(name="entity_id", type="integer", nullable=true)
+     */
+    private $entityId;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-	 * @Gedmo\Timestampable(on="update")
-	 */
-	private $updatedAt;
+    /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updatedAt;
 
-	/**
-	 * @ORM\Column(type="string", length=255)
-	 */
-	private $title;
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $title;
 
-	/**
-	 * @ORM\Column(type="string", length=255)
-	 */
-	private $url;
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $url;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Referer\Referer")
-	 * @ORM\JoinColumn(name="referer_id", nullable=false)
-	 */
-	private $referer;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Referer\Referer")
+     * @ORM\JoinColumn(name="referer_id", nullable=false)
+     */
+    private $referer;
 
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $enabled = false;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled = false;
 
-	/**
-	 * @ORM\Column(name="access_count", type="integer")
-	 */
-	private $accessCount = 0;
+    /**
+     * @ORM\Column(name="access_count", type="integer")
+     */
+    private $accessCount = 0;
 
-	/////
+    /////
 
-	private $displayRedirectionWarning = true;
+    private $displayRedirectionWarning = true;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// EntityType /////
+    // EntityType /////
 
-	public function getEntityType() {
-		return $this->entityType;
-	}
+    public function getEntityType()
+    {
+        return $this->entityType;
+    }
 
-	public function setEntityType($entityType) {
-		$this->entityType = $entityType;
-	}
+    public function setEntityType($entityType)
+    {
+        $this->entityType = $entityType;
+    }
 
-	// EntityId /////
+    // EntityId /////
 
-	public function getEntityId() {
-		return $this->entityId;
-	}
+    public function getEntityId()
+    {
+        return $this->entityId;
+    }
 
-	public function setEntityId($entityId) {
-		$this->entityId = $entityId;
-		return $this;
-	}
+    public function setEntityId($entityId)
+    {
+        $this->entityId = $entityId;
+        return $this;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	// UpdatedAt /////
+    // UpdatedAt /////
 
-	public function getUpdatedAt() {
-		return $this->updatedAt;
-	}
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-	public function setUpdatedAt($updatedAt) {
-		$this->updatedAt = $updatedAt;
-		return $this;
-	}
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-	// Label /////
+    // Label /////
 
-	public function getTitle() {
-		return $this->title;
-	}
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-	public function setTitle($label) {
-		$this->title = $label;
-		return $this;
-	}
+    public function setTitle($label)
+    {
+        $this->title = $label;
+        return $this;
+    }
 
-	// Url /////
+    // Url /////
 
-	public function getUrl() {
-		return $this->url;
-	}
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
-	public function setUrl($url) {
-		$this->url = $url;
-		return $this;
-	}
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
 
-	// Referer /////
+    // Referer /////
 
-	public function getReferer() {
-		return $this->referer;
-	}
+    public function getReferer()
+    {
+        return $this->referer;
+    }
 
-	public function setReferer($referrer) {
-		$this->referer = $referrer;
-		return $this;
-	}
+    public function setReferer($referrer)
+    {
+        $this->referer = $referrer;
+        return $this;
+    }
 
-	// Enabled /////
+    // Enabled /////
 
-	public function getEnabled() {
-		return $this->enabled;
-	}
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
 
-	public function setEnabled($enabled) {
-		$this->enabled = $enabled;
-		return $this;
-	}
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
 
-	// AccessCount /////
+    // AccessCount /////
 
-	public function incrementAccessCount($by = 1) {
-		$this->accessCount += intval($by);
-	}
+    public function incrementAccessCount($by = 1)
+    {
+        $this->accessCount += intval($by);
+    }
 
-	public function getAccessCount() {
-		return $this->accessCount;
-	}
+    public function getAccessCount()
+    {
+        return $this->accessCount;
+    }
 
-	// displayRedirectionWarning /////
+    // displayRedirectionWarning /////
 
-	public function getDisplayRedirectionWarning() {
-		return $this->displayRedirectionWarning;
-	}
+    public function getDisplayRedirectionWarning()
+    {
+        return $this->displayRedirectionWarning;
+    }
 
-	public function setDisplayRedirectionWarning($displayRedirectionWarning) {
-		$this->displayRedirectionWarning = $displayRedirectionWarning;
-		return $this;
-	}
-
+    public function setDisplayRedirectionWarning($displayRedirectionWarning)
+    {
+        $this->displayRedirectionWarning = $displayRedirectionWarning;
+        return $this;
+    }
 }

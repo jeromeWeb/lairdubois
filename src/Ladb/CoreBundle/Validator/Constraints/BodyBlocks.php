@@ -7,14 +7,16 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class BodyBlocks extends Constraint {
+class BodyBlocks extends Constraint
+{
 
-	public function validatedBy() {
-		return 'ladb_core.body_blocks_validator';
-	}
+    public function validatedBy()
+    {
+        return 'ladb_core.body_blocks_validator';
+    }
 
-	public function getTargets() {
-		return self::CLASS_CONSTRAINT;
-	}
-
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

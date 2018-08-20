@@ -2,28 +2,28 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface InspirableInterface {
+interface InspirableInterface
+{
 
-	// ReboundCount /////
+    // ReboundCount /////
 
-	public function incrementReboundCount($by = 1);
+    public function incrementReboundCount($by = 1);
 
-	public function getReboundCount();
+    public function getReboundCount();
 
-	// Rebounds /////
+    // Rebounds /////
 
-	public function getRebounds();
+    public function getRebounds();
 
-	// InspirationCount /////
+    // InspirationCount /////
 
-	public function getInspirationCount();
+    public function getInspirationCount();
 
-	// Inspirations /////
+    // Inspirations /////
 
-	public function addInspiration(InspirableInterface $inspiration);
+    public function addInspiration(InspirableInterface $inspiration);
 
-	public function removeInspiration(InspirableInterface $inspiration);
+    public function removeInspiration(InspirableInterface $inspiration);
 
-	public function getInspirations();
-
+    public function getInspirations();
 }

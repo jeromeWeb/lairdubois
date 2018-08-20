@@ -131,7 +131,7 @@ class PolyCollectionResizeFormListener extends ResizeFormListener
         foreach ($data as $name => $value) {
             $type = $this->getTypeForObject($value);
             $form->add($name, get_class($type), array_replace(array(
-                'property_path' => '['.$name.']',
+                'property_path' => '[' . $name . ']',
             ), $this->options));
         }
     }
@@ -169,7 +169,7 @@ class PolyCollectionResizeFormListener extends ResizeFormListener
                 if (!$form->has($name)) {
                     $type = $this->getTypeForData($value);
                     $form->add($name, get_class($type), array_replace(array(
-                        'property_path' => '['.$name.']',
+                        'property_path' => '[' . $name . ']',
                     ), $this->options));
                 }
             }

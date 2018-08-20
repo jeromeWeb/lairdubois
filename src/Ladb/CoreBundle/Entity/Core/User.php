@@ -22,252 +22,276 @@ use Ladb\CoreBundle\Model\SitemapableTrait;
  * @UniqueEntity("displayname")
  * @LadbAssert\ValidUsername()
  */
-class User extends \FOS\UserBundle\Model\User implements IndexableInterface, SitemapableInterface, LocalisableInterface {
+class User extends \FOS\UserBundle\Model\User implements IndexableInterface, SitemapableInterface, LocalisableInterface
+{
 
-	use IndexableTrait, SitemapableTrait, LocalisableTrait;
+    use IndexableTrait, SitemapableTrait, LocalisableTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Core\User';
+    const CLASS_NAME = 'LadbCoreBundle:Core\User';
 
-	const ACCOUNT_TYPE_NONE = 0;
-	const ACCOUNT_TYPE_ASSO = 1;
-	const ACCOUNT_TYPE_PRO = 2;
-	const ACCOUNT_TYPE_HOBBYIST = 3;
+    const ACCOUNT_TYPE_NONE = 0;
+    const ACCOUNT_TYPE_ASSO = 1;
+    const ACCOUNT_TYPE_PRO = 2;
+    const ACCOUNT_TYPE_HOBBYIST = 3;
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	protected $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\Column(name="updated_at", type="datetime")
-	 * @Gedmo\Timestampable(on="update")
-	 */
-	private $updatedAt;
+    /**
+     * @ORM\Column(name="updated_at", type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updatedAt;
 
-	/**
-	 * @ORM\Column(type="boolean", nullable=true, name="email_confirmed")
-	 */
-	private $emailConfirmed = false;
+    /**
+     * @ORM\Column(type="boolean", nullable=true, name="email_confirmed")
+     */
+    private $emailConfirmed = false;
 
-	/**
-	 * @Assert\Length(min=3, max=25)
-	 */
-	protected $username;
+    /**
+     * @Assert\Length(min=3, max=25)
+     */
+    protected $username;
 
-	/**
-	 * @Assert\NotBlank()
-	 * @Assert\Email(strict=true)
-	 */
-	protected $email;
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Email(strict=true)
+     */
+    protected $email;
 
-	/**
-	 * @ORM\Column(type="string", length=25, unique=true)
-	 * @Assert\Length(min=3, max=25)
-	 * @Assert\NotBlank(groups={"settings"})
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’°-]+$/")
-	 */
-	private $displayname;
+    /**
+     * @ORM\Column(type="string", length=25, unique=true)
+     * @Assert\Length(min=3, max=25)
+     * @Assert\NotBlank(groups={"settings"})
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’°-]+$/")
+     */
+    private $displayname;
 
-	/**
-	 * @ORM\Column(type="string", length=100, nullable=true)
-	 * @Assert\Length(min=3, max=100)
-	 * @Assert\Regex("/^[A-Za-z][ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’-]+$/")
-	 */
-	private $fullname;
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     * @Assert\Length(min=3, max=100)
+     * @Assert\Regex("/^[A-Za-z][ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’-]+$/")
+     */
+    private $fullname;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(name="avatar_id", nullable=true)
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
-	 */
-	private $avatar;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(name="avatar_id", nullable=true)
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
+     */
+    private $avatar;
 
-	/**
-	 * @ORM\Column(type="string", length=100, nullable=true)
-	 */
-	private $location;
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $location;
 
-	/**
-	 * @ORM\Column(type="float", nullable=true)
-	 */
-	private $latitude;
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $latitude;
 
-	/**
-	 * @ORM\Column(type="float", nullable=true)
-	 */
-	private $longitude;
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $longitude;
 
-	/**
-	 * @ORM\Column(type="smallint", name="account_type")
-	 */
-	private $accountType = User::ACCOUNT_TYPE_NONE;
+    /**
+     * @ORM\Column(type="smallint", name="account_type")
+     */
+    private $accountType = User::ACCOUNT_TYPE_NONE;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Follower", mappedBy="followingUser")
-	 */
-	private $followers;
+    /**
+     * @ORM\OneToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Follower", mappedBy="followingUser")
+     */
+    private $followers;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\UserMeta", cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(name="meta_id", nullable=true)
-	 */
-	private $meta = null;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\UserMeta", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="meta_id", nullable=true)
+     */
+    private $meta = null;
 
-	/////
+    /////
 
-	/**
-	 * @ORM\PrePersist()
-	 */
-	public function prePersist() {
-		if (is_null($this->displayname)) {
-			$this->displayname = $this->username;
-		}
-	}
+    /**
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+        if (is_null($this->displayname)) {
+            $this->displayname = $this->username;
+        }
+    }
 
-	/////
+    /////
 
-	public function __construct() {
-		parent::__construct();
-		$this->skills = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        parent::__construct();
+        $this->skills = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	// ID /////
+    // ID /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	public function setEmail($email) {
-		if ($email != $this->email) {
-			$this->setEmailConfirmed(false);
-		}
-		return parent::setEmail($email);
-	}
+    public function setEmail($email)
+    {
+        if ($email != $this->email) {
+            $this->setEmailConfirmed(false);
+        }
+        return parent::setEmail($email);
+    }
 
-	// IsIndexable /////
+    // IsIndexable /////
 
-	public function isIndexable() {
-		return $this->isEnabled();
-	}
+    public function isIndexable()
+    {
+        return $this->isEnabled();
+    }
 
-	// EmailConfirmed /////
+    // EmailConfirmed /////
 
-	public function setEmailConfirmed($emailConfirmed) {
-		$this->emailConfirmed = $emailConfirmed;
-		return $this;
-	}
+    public function setEmailConfirmed($emailConfirmed)
+    {
+        $this->emailConfirmed = $emailConfirmed;
+        return $this;
+    }
 
-	public function getEmailConfirmed() {
-		return $this->emailConfirmed;
-	}
+    public function getEmailConfirmed()
+    {
+        return $this->emailConfirmed;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	// UpdatedAt /////
+    // UpdatedAt /////
 
-	public function setUpdatedAt($updatedAt) {
-		$this->updatedAt = $updatedAt;
-		return $this;
-	}
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-	public function getUpdatedAt() {
-		return $this->updatedAt;
-	}
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-	// Displayname /////
+    // Displayname /////
 
-	public function setDisplayname($displayname) {
-		$this->displayname = $displayname;
-		return $this;
-	}
+    public function setDisplayname($displayname)
+    {
+        $this->displayname = $displayname;
+        return $this;
+    }
 
-	public function getDisplayname() {
-		return $this->displayname;
-	}
+    public function getDisplayname()
+    {
+        return $this->displayname;
+    }
 
-	public function getTitle() {
-		return $this->getDisplayname();
-	}
+    public function getTitle()
+    {
+        return $this->getDisplayname();
+    }
 
-	// Fullname /////
+    // Fullname /////
 
-	public function setFullname($fullname) {
-		$this->fullname = $fullname;
-		return $this;
-	}
+    public function setFullname($fullname)
+    {
+        $this->fullname = $fullname;
+        return $this;
+    }
 
-	public function getFullname() {
-		return $this->fullname;
-	}
+    public function getFullname()
+    {
+        return $this->fullname;
+    }
 
-	public function isFullnameDisplayble() {
-		return !is_null($this->fullname) && strlen($this->fullname) > 0 && $this->fullname != $this->displayname;
-	}
+    public function isFullnameDisplayble()
+    {
+        return !is_null($this->fullname) && strlen($this->fullname) > 0 && $this->fullname != $this->displayname;
+    }
 
-	// Avatar /////
+    // Avatar /////
 
-	public function setAvatar(\Ladb\CoreBundle\Entity\Core\Picture $avatar = null) {
-		$this->avatar = $avatar;
-		return $this;
-	}
+    public function setAvatar(\Ladb\CoreBundle\Entity\Core\Picture $avatar = null)
+    {
+        $this->avatar = $avatar;
+        return $this;
+    }
 
-	public function getAvatar() {
-		return $this->avatar;
-	}
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
 
-	public function getMainPicture() {
-		return $this->getAvatar();
-	}
+    public function getMainPicture()
+    {
+        return $this->getAvatar();
+    }
 
-	// AccountType /////
+    // AccountType /////
 
-	public function setAccountType($accountType) {
-		$this->accountType = $accountType;
-		return $this;
-	}
+    public function setAccountType($accountType)
+    {
+        $this->accountType = $accountType;
+        return $this;
+    }
 
-	public function getAccountType() {
-		return $this->accountType;
-	}
+    public function getAccountType()
+    {
+        return $this->accountType;
+    }
 
-	// MarkerIcon /////
+    // MarkerIcon /////
 
-	public function getMarkerIcon() {
-		switch ($this->accountType) {
-			case User::ACCOUNT_TYPE_ASSO:
-				return 'asso';
-			case User::ACCOUNT_TYPE_PRO:
-				return 'pro';
-			case User::ACCOUNT_TYPE_HOBBYIST:
-				return 'hobbyist';
-		}
-		return 'none';
-	}
+    public function getMarkerIcon()
+    {
+        switch ($this->accountType) {
+            case User::ACCOUNT_TYPE_ASSO:
+                return 'asso';
+            case User::ACCOUNT_TYPE_PRO:
+                return 'pro';
+            case User::ACCOUNT_TYPE_HOBBYIST:
+                return 'hobbyist';
+        }
+        return 'none';
+    }
 
-	// Meta /////
+    // Meta /////
 
-	public function getMeta() {
-		if (is_null($this->meta)) {
-			$this->meta = new UserMeta();
-		}
-		return $this->meta;
-	}
-
+    public function getMeta()
+    {
+        if (is_null($this->meta)) {
+            $this->meta = new UserMeta();
+        }
+        return $this->meta;
+    }
 }

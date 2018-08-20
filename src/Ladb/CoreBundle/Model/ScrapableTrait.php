@@ -2,12 +2,13 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait ScrapableTrait {
+trait ScrapableTrait
+{
 
-	// IsScrapable /////
+    // IsScrapable /////
 
-	public function getIsScrapable() {
-		return $this instanceof HiddableInterface ? $this->getIsPublic() : true;
-	}
-
+    public function getIsScrapable()
+    {
+        return $this instanceof HiddableInterface ? $this->getIsPublic() : true;
+    }
 }

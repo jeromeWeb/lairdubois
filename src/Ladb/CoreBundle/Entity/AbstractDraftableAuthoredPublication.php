@@ -12,13 +12,13 @@ use Ladb\CoreBundle\Model\DraftableTrait;
 /**
  * @ORM\MappedSuperclass
  */
-abstract class AbstractDraftableAuthoredPublication extends AbstractAuthoredPublication implements DraftableInterface {
+abstract class AbstractDraftableAuthoredPublication extends AbstractAuthoredPublication implements DraftableInterface
+{
 
-	use DraftableTrait;
+    use DraftableTrait;
 
-	/**
-	 * @ORM\Column(name="is_draft", type="boolean")
-	 */
-	protected $isDraft = true;
-
+    /**
+     * @ORM\Column(name="is_draft", type="boolean")
+     */
+    protected $isDraft = true;
 }

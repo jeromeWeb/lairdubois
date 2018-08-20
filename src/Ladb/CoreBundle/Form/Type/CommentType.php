@@ -10,33 +10,37 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\Common\Persistence\ObjectManager;
 use Ladb\CoreBundle\Form\DataTransformer\PicturesToIdsTransformer;
 
-class CommentType extends AbstractType {
+class CommentType extends AbstractType
+{
 
-	const DEFAULT_BLOCK_PREFIX = 'ladb_comment';
+    const DEFAULT_BLOCK_PREFIX = 'ladb_comment';
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('body', TextareaType::class)
-			->add($builder
-					->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-					->addModelTransformer(new PicturesToIdsTransformer($this->om)))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('body', TextareaType::class)
+            ->add($builder
+                    ->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                    ->addModelTransformer(new PicturesToIdsTransformer($this->om)))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Core\Comment',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Core\Comment',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return self::DEFAULT_BLOCK_PREFIX;
-	}
-
+    public function getBlockPrefix()
+    {
+        return self::DEFAULT_BLOCK_PREFIX;
+    }
 }

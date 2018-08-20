@@ -23,179 +23,197 @@ use Ladb\CoreBundle\Model\TypableInterface;
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Youtook\TookRepository")
  * @LadbAssert\ValidTook()
  */
-class Took extends AbstractAuthoredPublication implements TitledInterface, PicturedInterface, BodiedInterface, ScrapableInterface {
+class Took extends AbstractAuthoredPublication implements TitledInterface, PicturedInterface, BodiedInterface, ScrapableInterface
+{
 
-	use TitledTrait, PicturedTrait, BodiedTrait;
-	use ScrapableTrait;
+    use TitledTrait, PicturedTrait, BodiedTrait;
+    use ScrapableTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Youtook\Took';
-	const TYPE = 112;
+    const CLASS_NAME = 'LadbCoreBundle:Youtook\Took';
+    const TYPE = 112;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 * @Assert\NotBlank()
-	 * @Assert\Url()
-	 */
-	private $url;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Url()
+     */
+    private $url;
 
-	/**
-	 * @ORM\Column(type="smallint")
-	 */
-	private $kind = VideoHostingUtils::KIND_UNKNOW;
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $kind = VideoHostingUtils::KIND_UNKNOW;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 */
-	private $embedIdentifier;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    private $embedIdentifier;
 
-	/**
-	 * @ORM\Column(type="string", length=255)
-	 * @Assert\NotBlank()
-	 */
-	private $title;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     */
+    private $title;
 
-	/**
-	 * @Gedmo\Slug(fields={"title"}, separator="-")
-	 * @ORM\Column(type="string", length=100, unique=true)
-	 */
-	private $slug;
+    /**
+     * @Gedmo\Slug(fields={"title"}, separator="-")
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $slug;
 
-	/**
-	 * @ORM\Column(type="text")
-	 */
-	private $body;
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $body;
 
-	/**
-	 * @ORM\Column(type="text")
-	 */
-	private $htmlBody;
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $htmlBody;
 
-	/**
-	 * @ORM\Column(type="string", length=255, name="thumbnail_loc")
-	 */
-	private $thumbnailUrl;
+    /**
+     * @ORM\Column(type="string", length=255, name="thumbnail_loc")
+     */
+    private $thumbnailUrl;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(name="main_picture_id", nullable=true)
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
-	 * @Assert\NotBlank()
-	 */
-	private $mainPicture;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(name="main_picture_id", nullable=true)
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
+     * @Assert\NotBlank()
+     */
+    private $mainPicture;
 
-	/**
-	 * @ORM\Column(type="string", length=255, name="channel_id")
-	 */
-	private $channelId;
+    /**
+     * @ORM\Column(type="string", length=255, name="channel_id")
+     */
+    private $channelId;
 
-	/**
-	 * @ORM\Column(type="string", length=255, name="channel_thumbnail_url")
-	 */
-	private $channelThumbnailUrl;
+    /**
+     * @ORM\Column(type="string", length=255, name="channel_thumbnail_url")
+     */
+    private $channelThumbnailUrl;
 
-	/**
-	 * @ORM\Column(type="string", length=255, name="channel_title")
-	 */
-	private $channelTitle;
+    /**
+     * @ORM\Column(type="string", length=255, name="channel_title")
+     */
+    private $channelTitle;
 
-	/////
+    /////
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return Took::TYPE;
-	}
+    public function getType()
+    {
+        return Took::TYPE;
+    }
 
-	// Url /////
+    // Url /////
 
-	public function getUrl() {
-		return $this->url;
-	}
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
-	public function setUrl($url) {
-		$this->url = $url;
-		return $this;
-	}
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
 
-	// Kind /////
+    // Kind /////
 
-	public function getKind() {
-		return $this->kind;
-	}
+    public function getKind()
+    {
+        return $this->kind;
+    }
 
-	public function setKind($kind) {
-		$this->kind = $kind;
-		return $this;
-	}
+    public function setKind($kind)
+    {
+        $this->kind = $kind;
+        return $this;
+    }
 
-	// EmbedIdentifier /////
+    // EmbedIdentifier /////
 
-	public function getEmbedIdentifier() {
-		return $this->embedIdentifier;
-	}
+    public function getEmbedIdentifier()
+    {
+        return $this->embedIdentifier;
+    }
 
-	public function setEmbedIdentifier($embedIdentifier) {
-		$this->embedIdentifier = $embedIdentifier;
-		return $this;
-	}
+    public function setEmbedIdentifier($embedIdentifier)
+    {
+        $this->embedIdentifier = $embedIdentifier;
+        return $this;
+    }
 
-	// Slug /////
+    // Slug /////
 
-	public function getSlug() {
-		return $this->slug;
-	}
+    public function getSlug()
+    {
+        return $this->slug;
+    }
 
-	public function setSlug($slug) {
-		$this->slug = $slug;
-		return $this;
-	}
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
+    }
 
-	public function getSluggedId() {
-		return $this->id.'-'.$this->slug;
-	}
+    public function getSluggedId()
+    {
+        return $this->id . '-' . $this->slug;
+    }
 
-	// ThumbnailUrl /////
+    // ThumbnailUrl /////
 
-	public function getThumbnailUrl() {
-		return $this->thumbnailUrl;
-	}
+    public function getThumbnailUrl()
+    {
+        return $this->thumbnailUrl;
+    }
 
-	public function setThumbnailUrl($thumbnailUrl) {
-		$this->thumbnailUrl = $thumbnailUrl;
-		return $this;
-	}
+    public function setThumbnailUrl($thumbnailUrl)
+    {
+        $this->thumbnailUrl = $thumbnailUrl;
+        return $this;
+    }
 
-	// ChannelId /////
+    // ChannelId /////
 
-	public function getChannelId() {
-		return $this->channelId;
-	}
+    public function getChannelId()
+    {
+        return $this->channelId;
+    }
 
-	public function setChannelId($channelId) {
-		$this->channelId = $channelId;
-		return $this;
-	}
+    public function setChannelId($channelId)
+    {
+        $this->channelId = $channelId;
+        return $this;
+    }
 
-	// ChannelThumbnailUrl /////
+    // ChannelThumbnailUrl /////
 
-	public function getChannelThumbnailUrl() {
-		return $this->channelThumbnailUrl;
-	}
+    public function getChannelThumbnailUrl()
+    {
+        return $this->channelThumbnailUrl;
+    }
 
-	public function setChannelThumbnailUrl($channelThumbnailUrl) {
-		$this->channelThumbnailUrl = $channelThumbnailUrl;
-		return $this;
-	}
+    public function setChannelThumbnailUrl($channelThumbnailUrl)
+    {
+        $this->channelThumbnailUrl = $channelThumbnailUrl;
+        return $this;
+    }
 
-	// ChannelTitle /////
+    // ChannelTitle /////
 
-	public function getChannelTitle() {
-		return $this->channelTitle;
-	}
+    public function getChannelTitle()
+    {
+        return $this->channelTitle;
+    }
 
-	public function setChannelTitle($channelTitle) {
-		$this->channelTitle = $channelTitle;
-		return $this;
-	}
-
+    public function setChannelTitle($channelTitle)
+    {
+        $this->channelTitle = $channelTitle;
+        return $this;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Ladb\CoreBundle\Repository\Knowledge\Value;
 
-class PictureRepository extends BaseValueRepository {
+class PictureRepository extends BaseValueRepository
+{
 
 }

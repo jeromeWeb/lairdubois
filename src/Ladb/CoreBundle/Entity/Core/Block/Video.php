@@ -12,62 +12,69 @@ use Ladb\CoreBundle\Utils\VideoHostingUtils;
  * @ORM\Entity
  * @LadbAssert\SupportedVideoHosting()
  */
-class Video extends AbstractBlock {
+class Video extends AbstractBlock
+{
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 * @Assert\NotBlank()
-	 * @Assert\Url
-	 */
-	private $url;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Url
+     */
+    private $url;
 
-	/**
-	 * @ORM\Column(type="smallint")
-	 */
-	private $kind = VideoHostingUtils::KIND_UNKNOW;
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $kind = VideoHostingUtils::KIND_UNKNOW;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=true)
-	 */
-	private $embedIdentifier;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $embedIdentifier;
 
-	// StrippedName /////
+    // StrippedName /////
 
-	public function getStrippedName() {
-		return 'video';
-	}
+    public function getStrippedName()
+    {
+        return 'video';
+    }
 
-	// Url /////
+    // Url /////
 
-	public function getUrl() {
-		return $this->url;
-	}
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
-	public function setUrl($url) {
-		$this->url = $url;
-		return $this;
-	}
+    public function setUrl($url)
+    {
+        $this->url = $url;
+        return $this;
+    }
 
-	// Kind /////
+    // Kind /////
 
-	public function getKind() {
-		return $this->kind;
-	}
+    public function getKind()
+    {
+        return $this->kind;
+    }
 
-	public function setKind($kind) {
-		$this->kind = $kind;
-		return $this;
-	}
+    public function setKind($kind)
+    {
+        $this->kind = $kind;
+        return $this;
+    }
 
-	// EmbedIdentifier /////
+    // EmbedIdentifier /////
 
-	public function getEmbedIdentifier() {
-		return $this->embedIdentifier;
-	}
+    public function getEmbedIdentifier()
+    {
+        return $this->embedIdentifier;
+    }
 
-	public function setEmbedIdentifier($embedIdentifier) {
-		$this->embedIdentifier = $embedIdentifier;
-		return $this;
-	}
-
+    public function setEmbedIdentifier($embedIdentifier)
+    {
+        $this->embedIdentifier = $embedIdentifier;
+        return $this;
+    }
 }

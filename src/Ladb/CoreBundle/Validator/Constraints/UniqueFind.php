@@ -7,16 +7,18 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class UniqueFind extends Constraint {
+class UniqueFind extends Constraint
+{
 
-	public $message = 'Cette trouvaille existe déjà.';
+    public $message = 'Cette trouvaille existe déjà.';
 
-	public function validatedBy() {
-		return 'ladb_core.unique_find_validator';
-	}
+    public function validatedBy()
+    {
+        return 'ladb_core.unique_find_validator';
+    }
 
-	public function getTargets() {
-		return self::CLASS_CONSTRAINT;
-	}
-
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

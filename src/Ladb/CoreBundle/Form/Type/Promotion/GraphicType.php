@@ -12,38 +12,40 @@ use Ladb\CoreBundle\Form\DataTransformer\TagsToLabelsTransformer;
 use Ladb\CoreBundle\Form\DataTransformer\ResourceToIdTransformer;
 use Ladb\CoreBundle\Form\Type\LicenseType;
 
-class GraphicType extends AbstractType {
+class GraphicType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('title')
-			->add($builder
-				->create('resource', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new ResourceToIdTransformer($this->om))
-			)
-			->add('body', TextareaType::class)
-			->add($builder
-				->create('tags', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new TagsToLabelsTransformer($this->om))
-			)
-			->add('license', LicenseType::class)
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title')
+            ->add($builder
+                ->create('resource', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new ResourceToIdTransformer($this->om)))
+            ->add('body', TextareaType::class)
+            ->add($builder
+                ->create('tags', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new TagsToLabelsTransformer($this->om)))
+            ->add('license', LicenseType::class)
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Promotion\Graphic'
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Promotion\Graphic'
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_promotion_graphic';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_promotion_graphic';
+    }
 }

@@ -30,324 +30,320 @@ use Ladb\CoreBundle\Event\KnowledgeListener;
 /**
  * @Route("/livres")
  */
-class BookController extends Controller {
-
-	/**
-	 * @Route("/new", name="core_book_new")
-	 * @Template("LadbCoreBundle:Knowledge/Book:new.html.twig")
-	 */
-	public function newAction() {
-		$knowledgeUtils = $this->get(KnowledgeUtils::NAME);
-
-		$newBook = new NewBook();
-		$form = $this->createForm(NewBookType::class, $newBook);
-
-		return array(
-			'form'           => $form->createView(),
-			'sourcesHistory' => $knowledgeUtils->getValueSourcesHistory(),
-		);
-	}
-
-	/**
-	 * @Route("/create", name="core_book_create")
-	 * @Method("POST")
-	 * @Template("LadbCoreBundle:Knowledge/Book:new.html.twig")
-	 */
-	public function createAction(Request $request) {
-		$om = $this->getDoctrine()->getManager();
-		$dispatcher = $this->get('event_dispatcher');
-
-		$newBook = new NewBook();
-		$form = $this->createForm(NewBookType::class, $newBook);
-		$form->handleRequest($request);
-
-		if ($form->isValid()) {
-
-			$titleValue = $newBook->getTitleValue();
-			$coverValue = $newBook->getCoverValue();
-			$user = $this->getUser();
-
-			// Sanitize Name values
-			if ($titleValue instanceof Text) {
-				$titleValue->setData(trim(ucfirst($titleValue->getData())));
-			}
-
-			$book = new Book();
-			$book->setTitle($titleValue->getData());
-			$book->incrementContributorCount();
-
-			$om->persist($book);
-			$om->flush();	// Need to save book to be sure ID is generated
-
-			$book->addTitleValue($titleValue);
-			$book->addCoverValue($coverValue);
+class BookController extends Controller
+{
+
+    /**
+     * @Route("/new", name="core_book_new")
+     * @Template("LadbCoreBundle:Knowledge/Book:new.html.twig")
+     */
+    public function newAction()
+    {
+        $knowledgeUtils = $this->get(KnowledgeUtils::NAME);
+
+        $newBook = new NewBook();
+        $form = $this->createForm(NewBookType::class, $newBook);
+
+        return array(
+            'form'           => $form->createView(),
+            'sourcesHistory' => $knowledgeUtils->getValueSourcesHistory(),
+        );
+    }
+
+    /**
+     * @Route("/create", name="core_book_create")
+     * @Method("POST")
+     * @Template("LadbCoreBundle:Knowledge/Book:new.html.twig")
+     */
+    public function createAction(Request $request)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $dispatcher = $this->get('event_dispatcher');
+
+        $newBook = new NewBook();
+        $form = $this->createForm(NewBookType::class, $newBook);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $titleValue = $newBook->getTitleValue();
+            $coverValue = $newBook->getCoverValue();
+            $user = $this->getUser();
+
+            // Sanitize Name values
+            if ($titleValue instanceof Text) {
+                $titleValue->setData(trim(ucfirst($titleValue->getData())));
+            }
+
+            $book = new Book();
+            $book->setTitle($titleValue->getData());
+            $book->incrementContributorCount();
+
+            $om->persist($book);
+            $om->flush();   // Need to save book to be sure ID is generated
+
+            $book->addTitleValue($titleValue);
+            $book->addCoverValue($coverValue);
+
+            // Dispatch knowledge events
+            $dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($book, array( 'field' => Book::FIELD_TITLE, 'value' => $titleValue )));
+            $dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($book, array( 'field' => Book::FIELD_COVER, 'value' => $coverValue )));
+
+            $titleValue->setParentEntity($book);
+            $titleValue->setParentEntityField(Book::FIELD_TITLE);
+            $titleValue->setUser($user);
+
+            $coverValue->setParentEntity($book);
+            $coverValue->setParentEntityField(Book::FIELD_COVER);
+            $coverValue->setUser($user);
+
+            $user->getMeta()->incrementProposalCount(2);    // Name and Grain of this new book
+
+            // Create activity
+            $activityUtils = $this->get(ActivityUtils::NAME);
+            $activityUtils->createContributeActivity($titleValue, false);
+            $activityUtils->createContributeActivity($coverValue, false);
+
+            // Dispatch publication event
+            $dispatcher->dispatch(PublicationListener::PUBLICATION_CREATED, new PublicationEvent($book));
+
+            $om->flush();
+
+            // Dispatch publication event
+            $dispatcher->dispatch(PublicationListener::PUBLICATION_PUBLISHED, new PublicationEvent($book));
+
+            return $this->redirect($this->generateUrl('core_book_show', array('id' => $book->getSluggedId())));
+        }
+
+        // Flashbag
+        $this->get('session')->getFlashBag()->add('error', $this->get('translator')->trans('default.form.alert.error'));
+
+        return array(
+            'newBook'     => $newBook,
+            'form'        => $form->createView(),
+            'hideWarning' => true,
+        );
+    }
+
+    /**
+     * @Route("/{id}/delete", requirements={"id" = "\d+"}, name="core_book_delete")
+     * @Security("has_role('ROLE_ADMIN')", statusCode=404, message="Not allowed (core_book_delete)")
+     */
+    public function deleteAction($id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $bookRepository = $om->getRepository(Book::CLASS_NAME);
 
-			// Dispatch knowledge events
-			$dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($book, array( 'field' => Book::FIELD_TITLE, 'value' => $titleValue )));
-			$dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($book, array( 'field' => Book::FIELD_COVER, 'value' => $coverValue )));
+        $book = $bookRepository->findOneById($id);
+        if (is_null($book)) {
+            throw $this->createNotFoundException('Unable to find Book entity (id=' . $id . ').');
+        }
 
-			$titleValue->setParentEntity($book);
-			$titleValue->setParentEntityField(Book::FIELD_TITLE);
-			$titleValue->setUser($user);
+        // Delete
+        $bookMananger = $this->get(BookManager::NAME);
+        $bookMananger->delete($book);
 
-			$coverValue->setParentEntity($book);
-			$coverValue->setParentEntityField(Book::FIELD_COVER);
-			$coverValue->setUser($user);
+        // Flashbag
+        $this->get('session')->getFlashBag()->add('success', $this->get('translator')->trans('knowledge.book.form.alert.delete_success', array( '%title%' => $book->getTitle() )));
 
-			$user->getMeta()->incrementProposalCount(2);	// Name and Grain of this new book
+        return $this->redirect($this->generateUrl('core_book_list'));
+    }
 
-			// Create activity
-			$activityUtils = $this->get(ActivityUtils::NAME);
-			$activityUtils->createContributeActivity($titleValue, false);
-			$activityUtils->createContributeActivity($coverValue, false);
+    /**
+     * @Route("/", name="core_book_list")
+     * @Route("/{page}", requirements={"page" = "\d+"}, name="core_book_list_page")
+     * @Template("LadbCoreBundle:Knowledge/Book:list.html.twig")
+     */
+    public function listAction(Request $request, $page = 0)
+    {
+        $searchUtils = $this->get(SearchUtils::NAME);
 
-			// Dispatch publication event
-			$dispatcher->dispatch(PublicationListener::PUBLICATION_CREATED, new PublicationEvent($book));
+        // Elasticsearch paginiation limit
+        if ($page > 624) {
+            throw $this->createNotFoundException('Page limit reached (core_book_list_page)');
+        }
 
-			$om->flush();
+        $searchParameters = $searchUtils->searchPaginedEntities(
+            $request,
+            $page,
+            function ($facet, &$filters, &$sort, &$noGlobalFilters, &$couldUseDefaultSort) {
+                switch ($facet->name) {
 
-			// Dispatch publication event
-			$dispatcher->dispatch(PublicationListener::PUBLICATION_PUBLISHED, new PublicationEvent($book));
+                    // Filters /////
 
-			return $this->redirect($this->generateUrl('core_book_show', array('id' => $book->getSluggedId())));
-		}
+                    case 'title':
+                        $elasticaQueryUtils = $this->get(ElasticaQueryUtils::NAME);
+                        $filters[] = $elasticaQueryUtils->createShouldMatchQuery('title', $facet->value);
 
-		// Flashbag
-		$this->get('session')->getFlashBag()->add('error', $this->get('translator')->trans('default.form.alert.error'));
+                        break;
 
-		return array(
-			'newBook'     => $newBook,
-			'form'        => $form->createView(),
-			'hideWarning' => true,
-		);
-	}
+                    case 'authors':
+                        $filter = new \Elastica\Query\QueryString('"' . $facet->value . '"');
+                        $filter->setFields(array( 'authors' ));
+                        $filters[] = $filter;
 
-	/**
-	 * @Route("/{id}/delete", requirements={"id" = "\d+"}, name="core_book_delete")
-	 * @Security("has_role('ROLE_ADMIN')", statusCode=404, message="Not allowed (core_book_delete)")
-	 */
-	public function deleteAction($id) {
-		$om = $this->getDoctrine()->getManager();
-		$bookRepository = $om->getRepository(Book::CLASS_NAME);
+                        break;
 
-		$book = $bookRepository->findOneById($id);
-		if (is_null($book)) {
-			throw $this->createNotFoundException('Unable to find Book entity (id='.$id.').');
-		}
+                    case 'editor':
+                        $filter = new \Elastica\Query\QueryString('"' . $facet->value . '"');
+                        $filter->setFields(array( 'editor' ));
+                        $filters[] = $filter;
 
-		// Delete
-		$bookMananger = $this->get(BookManager::NAME);
-		$bookMananger->delete($book);
+                        break;
 
-		// Flashbag
-		$this->get('session')->getFlashBag()->add('success', $this->get('translator')->trans('knowledge.book.form.alert.delete_success', array( '%title%' => $book->getTitle() )));
+                    case 'collection':
+                        $filter = new \Elastica\Query\QueryString($facet->value);
+                        $filter->setFields(array( 'collection' ));
+                        $filters[] = $filter;
 
-		return $this->redirect($this->generateUrl('core_book_list'));
-	}
+                        break;
 
-	/**
-	 * @Route("/", name="core_book_list")
-	 * @Route("/{page}", requirements={"page" = "\d+"}, name="core_book_list_page")
-	 * @Template("LadbCoreBundle:Knowledge/Book:list.html.twig")
-	 */
-	public function listAction(Request $request, $page = 0) {
-		$searchUtils = $this->get(SearchUtils::NAME);
+                    case 'subjects':
+                        $filter = new \Elastica\Query\QueryString($facet->value);
+                        $filter->setFields(array( 'subjects' ));
+                        $filters[] = $filter;
 
-		// Elasticsearch paginiation limit
-		if ($page > 624) {
-			throw $this->createNotFoundException('Page limit reached (core_book_list_page)');
-		}
+                        break;
 
-		$searchParameters = $searchUtils->searchPaginedEntities(
-			$request,
-			$page,
-			function($facet, &$filters, &$sort, &$noGlobalFilters, &$couldUseDefaultSort) {
-				switch ($facet->name) {
+                    case 'language':
+                        $elasticaQueryUtils = $this->get(ElasticaQueryUtils::NAME);
+                        $filters[] = $elasticaQueryUtils->createShouldMatchQuery('language', $facet->value);
 
-					// Filters /////
+                        break;
 
-					case 'title':
+                    case 'public-domain':
+                        $filter = new \Elastica\Query\Range('publicDomain', array( 'gt' => 0 ));
+                        $filters[] = $filter;
 
-						$elasticaQueryUtils = $this->get(ElasticaQueryUtils::NAME);
-						$filters[] = $elasticaQueryUtils->createShouldMatchQuery('title', $facet->value);
+                        break;
 
-						break;
+                    case 'with-review':
+                        $filter = new \Elastica\Query\Range('reviewCount', array( 'gt' => 0 ));
+                        $filters[] = $filter;
 
-					case 'authors':
+                        break;
 
-						$filter = new \Elastica\Query\QueryString('"'.$facet->value.'"');
-						$filter->setFields(array( 'authors' ));
-						$filters[] = $filter;
+                    case 'rejected':
+                        $filter = new \Elastica\Query\BoolQuery();
+                        $filter->addShould(new \Elastica\Query\Range('titleRejected', array( 'gte' => 1 )));
+                        $filter->addShould(new \Elastica\Query\Range('coverRejected', array( 'gte' => 1 )));
+                        $filters[] = $filter;
+
+                        break;
 
-						break;
-
-					case 'editor':
-
-						$filter = new \Elastica\Query\QueryString('"'.$facet->value.'"');
-						$filter->setFields(array( 'editor' ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'collection':
-
-						$filter = new \Elastica\Query\QueryString($facet->value);
-						$filter->setFields(array( 'collection' ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'subjects':
-
-						$filter = new \Elastica\Query\QueryString($facet->value);
-						$filter->setFields(array( 'subjects' ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'language':
-
-						$elasticaQueryUtils = $this->get(ElasticaQueryUtils::NAME);
-						$filters[] = $elasticaQueryUtils->createShouldMatchQuery('language', $facet->value);
-
-						break;
-
-					case 'public-domain':
-
-						$filter = new \Elastica\Query\Range('publicDomain', array( 'gt' => 0 ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'with-review':
-
-						$filter = new \Elastica\Query\Range('reviewCount', array( 'gt' => 0 ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'rejected':
-
-						$filter = new \Elastica\Query\BoolQuery();
-						$filter->addShould(new \Elastica\Query\Range('titleRejected', array( 'gte' => 1 )));
-						$filter->addShould(new \Elastica\Query\Range('coverRejected', array( 'gte' => 1 )));
-						$filters[] = $filter;
-
-						break;
-
-					// Sorters /////
-
-					case 'sort-recent':
-						$sort = array( 'changedAt' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-views':
-						$sort = array( 'viewCount' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-likes':
-						$sort = array( 'likeCount' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-comments':
-						$sort = array( 'commentCount' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-rating':
-						$sort = array( 'averageRating' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-random':
-						$sort = array( 'randomSeed' => isset($facet->value) ? $facet->value : '' );
-						break;
-
-					/////
-
-					default:
-						if (is_null($facet->name)) {
-
-							$filter = new \Elastica\Query\QueryString($facet->value);
-							$filter->setFields(array( 'title^100', 'authors', 'subjects', 'summary', 'toc' ));
-							$filters[] = $filter;
-
-						}
-
-				}
-			},
-			function(&$filters, &$sort) {
-
-				$filters[] = new \Elastica\Query\Range('titleRejected', array( 'lt' => 1 ));
-				$filters[] = new \Elastica\Query\Range('coverRejected', array( 'lt' => 1 ));
-
-				$sort = array( 'changedAt' => array( 'order' => 'desc' ) );
-
-			},
-			null,
-			'fos_elastica.index.ladb.knowledge_book',
-			\Ladb\CoreBundle\Entity\Knowledge\Book::CLASS_NAME,
-			'core_book_list_page'
-		);
-
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATIONS_LISTED, new PublicationsEvent($searchParameters['entities']));
-
-		$parameters = array_merge($searchParameters, array(
-			'books' => $searchParameters['entities'],
-		));
-
-		if ($request->isXmlHttpRequest()) {
-			return $this->render('LadbCoreBundle:Knowledge/Book:list-xhr.html.twig', $parameters);
-		}
-
-		return $parameters;
-	}
-
-	/**
-	 * @Route("/{id}.html", name="core_book_show")
-	 * @Template("LadbCoreBundle:Knowledge/Book:show.html.twig")
-	 */
-	public function showAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$bookRepository = $om->getRepository(Book::CLASS_NAME);
-		$witnessManager = $this->get(WitnessManager::NAME);
-
-		$id = intval($id);
-
-		$book = $bookRepository->findOneByIdJoinedOnOptimized($id);
-		if (is_null($book)) {
-			if ($response = $witnessManager->checkResponse(Book::TYPE, $id)) {
-				return $response;
-			}
-			throw $this->createNotFoundException('Unable to find Book entity.');
-		}
-
-		$user = $this->getUser();
-		$userReview = null;
-		if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-			foreach ($book->getReviews() as $review) {
-				if ($review->getUser()->getId() == $user->getId()) {
-					$userReview = $review;
-					break;
-				}
-			}
-		}
-
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_SHOWN, new PublicationEvent($book));
-
-		$likableUtils = $this->get(LikableUtils::NAME);
-		$watchableUtils = $this->get(WatchableUtils::NAME);
-		$commentableUtils = $this->get(CommentableUtils::NAME);
-
-		return array(
-			'book'             => $book,
-			'likeContext'      => $likableUtils->getLikeContext($book, $this->getUser()),
-			'watchContext'     => $watchableUtils->getWatchContext($book, $this->getUser()),
-			'commentContext'   => $commentableUtils->getCommentContext($book),
-			'userReview'       => $userReview,
-		);
-	}
-
+                    // Sorters /////
+
+                    case 'sort-recent':
+                        $sort = array( 'changedAt' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-views':
+                        $sort = array( 'viewCount' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-likes':
+                        $sort = array( 'likeCount' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-comments':
+                        $sort = array( 'commentCount' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-rating':
+                        $sort = array( 'averageRating' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-random':
+                        $sort = array( 'randomSeed' => isset($facet->value) ? $facet->value : '' );
+                        break;
+
+                    /////
+
+                    default:
+                        if (is_null($facet->name)) {
+
+                            $filter = new \Elastica\Query\QueryString($facet->value);
+                            $filter->setFields(array( 'title^100', 'authors', 'subjects', 'summary', 'toc' ));
+                            $filters[] = $filter;
+
+                        }
+
+                }
+            },
+            function (&$filters, &$sort) {
+
+                $filters[] = new \Elastica\Query\Range('titleRejected', array( 'lt' => 1 ));
+                $filters[] = new \Elastica\Query\Range('coverRejected', array( 'lt' => 1 ));
+
+                $sort = array( 'changedAt' => array( 'order' => 'desc' ) );
+
+            },
+            null,
+            'fos_elastica.index.ladb.knowledge_book',
+            \Ladb\CoreBundle\Entity\Knowledge\Book::CLASS_NAME,
+            'core_book_list_page'
+        );
+
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATIONS_LISTED, new PublicationsEvent($searchParameters['entities']));
+
+        $parameters = array_merge($searchParameters, array(
+            'books' => $searchParameters['entities'],
+        ));
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('LadbCoreBundle:Knowledge/Book:list-xhr.html.twig', $parameters);
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * @Route("/{id}.html", name="core_book_show")
+     * @Template("LadbCoreBundle:Knowledge/Book:show.html.twig")
+     */
+    public function showAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $bookRepository = $om->getRepository(Book::CLASS_NAME);
+        $witnessManager = $this->get(WitnessManager::NAME);
+
+        $id = intval($id);
+
+        $book = $bookRepository->findOneByIdJoinedOnOptimized($id);
+        if (is_null($book)) {
+            if ($response = $witnessManager->checkResponse(Book::TYPE, $id)) {
+                return $response;
+            }
+            throw $this->createNotFoundException('Unable to find Book entity.');
+        }
+
+        $user = $this->getUser();
+        $userReview = null;
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+            foreach ($book->getReviews() as $review) {
+                if ($review->getUser()->getId() == $user->getId()) {
+                    $userReview = $review;
+                    break;
+                }
+            }
+        }
+
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_SHOWN, new PublicationEvent($book));
+
+        $likableUtils = $this->get(LikableUtils::NAME);
+        $watchableUtils = $this->get(WatchableUtils::NAME);
+        $commentableUtils = $this->get(CommentableUtils::NAME);
+
+        return array(
+            'book'             => $book,
+            'likeContext'      => $likableUtils->getLikeContext($book, $this->getUser()),
+            'watchContext'     => $watchableUtils->getWatchContext($book, $this->getUser()),
+            'commentContext'   => $commentableUtils->getCommentContext($book),
+            'userReview'       => $userReview,
+        );
+    }
 }

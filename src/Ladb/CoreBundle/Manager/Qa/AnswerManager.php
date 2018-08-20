@@ -14,103 +14,105 @@ use Ladb\CoreBundle\Utils\FieldPreprocessorUtils;
 use Ladb\CoreBundle\Utils\SearchUtils;
 use Ladb\CoreBundle\Utils\VotableUtils;
 
-class AnswerManager extends AbstractManager {
+class AnswerManager extends AbstractManager
+{
 
-	const NAME = 'ladb_core.qa_answer_manager';
+    const NAME = 'ladb_core.qa_answer_manager';
 
-	/////
+    /////
 
-	public function delete(Answer $answer, $flush = true) {
+    public function delete(Answer $answer, $flush = true)
+    {
 
-		$question = $answer->getQuestion();
+        $question = $answer->getQuestion();
 
-		// Drecrement question answer count
-		$question->incrementAnswerCount(-1);
+        // Drecrement question answer count
+        $question->incrementAnswerCount(-1);
 
-		if (!$question->getIsDraft()) {
+        if (!$question->getIsDraft()) {
 
-			// Decrement user answer count
-			$answer->getUser()->getMeta()->incrementAnswerCount(-1);
+            // Decrement user answer count
+            $answer->getUser()->getMeta()->incrementAnswerCount(-1);
 
-		}
+        }
 
-		// Clear best answer
-		if ($answer->getIsBestAnswer()) {
-			$question->setBestAnswer(null);
-		}
+        // Clear best answer
+        if ($answer->getIsBestAnswer()) {
+            $question->setBestAnswer(null);
+        }
 
-		/////
+        /////
 
-		// Delete comments
-		$commentableUtils = $this->get(CommentableUtils::NAME);
-		$commentableUtils->deleteComments($answer, false);
+        // Delete comments
+        $commentableUtils = $this->get(CommentableUtils::NAME);
+        $commentableUtils->deleteComments($answer, false);
 
-		// Delete votes
-		$votableUtils = $this->get(VotableUtils::NAME);
-		$votableUtils->deleteVotes($answer, $question, false);
+        // Delete votes
+        $votableUtils = $this->get(VotableUtils::NAME);
+        $votableUtils->deleteVotes($answer, $question, false);
 
-		// Delete activities
-		$activityUtils = $this->get(ActivityUtils::NAME);
-		$activityUtils->deleteActivitiesByAnswer($answer, false);
+        // Delete activities
+        $activityUtils = $this->get(ActivityUtils::NAME);
+        $activityUtils->deleteActivitiesByAnswer($answer, false);
 
-		// Compute answer counters
-		$questionManager = $this->container->get(QuestionManager::NAME);
-		$questionManager->computeAnswerCounters($question);
+        // Compute answer counters
+        $questionManager = $this->container->get(QuestionManager::NAME);
+        $questionManager->computeAnswerCounters($question);
 
-		parent::deleteEntity($answer, $flush);
-	}
+        parent::deleteEntity($answer, $flush);
+    }
 
-	/////
+    /////
 
-	public function converttocomment(Answer $answer, Question $question) {
-		$om = $this->getDoctrine()->getManager();
+    public function converttocomment(Answer $answer, Question $question)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-		// Create a new comment on the question
+        // Create a new comment on the question
 
-		$comment = new Comment();
-		$comment->setEntityId($question->getId());
-		$comment->setEntityType($question->getType());
-		$comment->setUser($answer->getUser());
-		$comment->setCreatedAt($answer->getCreatedAt());
-		$comment->setUpdatedAt($answer->getUpdatedAt());
-		$comment->setBody($answer->getBody());
+        $comment = new Comment();
+        $comment->setEntityId($question->getId());
+        $comment->setEntityType($question->getType());
+        $comment->setUser($answer->getUser());
+        $comment->setCreatedAt($answer->getCreatedAt());
+        $comment->setUpdatedAt($answer->getUpdatedAt());
+        $comment->setBody($answer->getBody());
 
-		foreach ($answer->getBodyBlocks() as $block) {
-			if ($block instanceof Gallery) {
-				$count = 0;
-				foreach ($block->getPictures() as $picture) {
-					$comment->addPicture($picture);
-					if ($count++ >= 4) {
-						break;
-					}
-				}
-			}
-		}
+        foreach ($answer->getBodyBlocks() as $block) {
+            if ($block instanceof Gallery) {
+                $count = 0;
+                foreach ($block->getPictures() as $picture) {
+                    $comment->addPicture($picture);
+                    if ($count++ >= 4) {
+                        break;
+                    }
+                }
+            }
+        }
 
-		$fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
-		$fieldPreprocessorUtils->preprocessBodyField($comment);
+        $fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
+        $fieldPreprocessorUtils->preprocessBodyField($comment);
 
-		// Comment counters
+        // Comment counters
 
-		$question->incrementCommentCount();
-		$answer->getUser()->getMeta()->incrementCommentCount();
+        $question->incrementCommentCount();
+        $answer->getUser()->getMeta()->incrementCommentCount();
 
-		$om->persist($comment);
+        $om->persist($comment);
 
-		// Create activity
-		$activityUtils = $this->get(ActivityUtils::NAME);
-		$activityUtils->createCommentActivity($comment, false);
+        // Create activity
+        $activityUtils = $this->get(ActivityUtils::NAME);
+        $activityUtils->createCommentActivity($comment, false);
 
-		// Remove answer
+        // Remove answer
 
-		$this->delete($answer, true);
+        $this->delete($answer, true);
 
-		// Update index
-		if ($question instanceof IndexableInterface) {
-			$searchUtils = $this->get(SearchUtils::NAME);
-			$searchUtils->replaceEntityInIndex($question);
-		}
+        // Update index
+        if ($question instanceof IndexableInterface) {
+            $searchUtils = $this->get(SearchUtils::NAME);
+            $searchUtils->replaceEntityInIndex($question);
+        }
 
-	}
-
+    }
 }

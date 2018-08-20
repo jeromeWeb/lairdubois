@@ -2,35 +2,40 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait ViewableTrait {
+trait ViewableTrait
+{
 
-	private $isShown = true;
+    private $isShown = true;
 
-	/////
+    /////
 
-	// ViewCount /////
+    // ViewCount /////
 
-	public function incrementViewCount($by = 1) {
-		return $this->viewCount += intval($by);
-	}
+    public function incrementViewCount($by = 1)
+    {
+        return $this->viewCount += intval($by);
+    }
 
-	public function setViewCount($viewCount) {
-		$this->viewCount = $viewCount;
-		return $this;
-	}
+    public function setViewCount($viewCount)
+    {
+        $this->viewCount = $viewCount;
+        return $this;
+    }
 
-	public function getViewCount() {
-		return $this->viewCount;
-	}
+    public function getViewCount()
+    {
+        return $this->viewCount;
+    }
 
-	// IsShown /////
+    // IsShown /////
 
-	public function setIsShown($isShown) {
-		$this->isShown = $isShown;
-	}
+    public function setIsShown($isShown)
+    {
+        $this->isShown = $isShown;
+    }
 
-	public function getIsShown() {
-		return $this->isShown;
-	}
-
+    public function getIsShown()
+    {
+        return $this->isShown;
+    }
 }

@@ -2,12 +2,12 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface DraftableInterface {
+interface DraftableInterface
+{
 
-	// IsDraft /////
+    // IsDraft /////
 
-	public function setIsDraft($isDraft);
+    public function setIsDraft($isDraft);
 
-	public function getIsDraft();
-
+    public function getIsDraft();
 }

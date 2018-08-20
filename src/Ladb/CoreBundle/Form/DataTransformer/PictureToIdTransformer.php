@@ -8,43 +8,46 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Doctrine\Common\Persistence\ObjectManager;
 use Ladb\CoreBundle\Entity\Core\Picture;
 
-class PictureToIdTransformer implements DataTransformerInterface {
+class PictureToIdTransformer implements DataTransformerInterface
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function transform($picture) {
-		if (null === $picture) {
-			return '';
-		}
+    public function transform($picture)
+    {
+        if (null === $picture) {
+            return '';
+        }
 
-		if (!$picture instanceof \Ladb\CoreBundle\Entity\Core\Picture) {
-			throw new UnexpectedTypeException($picture, '\Ladb\CoreBundle\Entity\Core\Picture');
-		}
+        if (!$picture instanceof \Ladb\CoreBundle\Entity\Core\Picture) {
+            throw new UnexpectedTypeException($picture, '\Ladb\CoreBundle\Entity\Core\Picture');
+        }
 
-		return $picture->getId();
-	}
+        return $picture->getId();
+    }
 
-	public function reverseTransform($idString) {
-		if (!$idString) {
-			return null;
-		}
+    public function reverseTransform($idString)
+    {
+        if (!$idString) {
+            return null;
+        }
 
-		$id = intval($idString);
-		if ($id == 0) {
-			throw new TransformationFailedException();
-		}
-		$picture = $this->om
-			->getRepository(Picture::CLASS_NAME)
-			->find($id);
-		if (is_null($picture)) {
-			throw new TransformationFailedException();
-		}
+        $id = intval($idString);
+        if ($id == 0) {
+            throw new TransformationFailedException();
+        }
+        $picture = $this->om
+            ->getRepository(Picture::CLASS_NAME)
+            ->find($id);
+        if (is_null($picture)) {
+            throw new TransformationFailedException();
+        }
 
-		return $picture;
-	}
-
+        return $picture;
+    }
 }

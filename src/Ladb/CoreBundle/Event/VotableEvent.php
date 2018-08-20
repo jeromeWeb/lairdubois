@@ -6,34 +6,38 @@ use Symfony\Component\EventDispatcher\Event;
 use Ladb\CoreBundle\Model\VotableInterface;
 use Ladb\CoreBundle\Model\VotableParentInterface;
 
-class VotableEvent extends Event {
+class VotableEvent extends Event
+{
 
-	private $votable;
-	private $votableParent;
-	private $data;
+    private $votable;
+    private $votableParent;
+    private $data;
 
-	public function __construct(VotableInterface $votable, VotableParentInterface $votableParent, $data = array()) {
-		$this->votable = $votable;
-		$this->votableParent = $votableParent;
-		$this->data = $data;
-	}
+    public function __construct(VotableInterface $votable, VotableParentInterface $votableParent, $data = array())
+    {
+        $this->votable = $votable;
+        $this->votableParent = $votableParent;
+        $this->data = $data;
+    }
 
-	// Votable /////
+    // Votable /////
 
-	public function getVotable() {
-		return $this->votable;
-	}
+    public function getVotable()
+    {
+        return $this->votable;
+    }
 
-	// VotableParent /////
+    // VotableParent /////
 
-	public function getVotableParent() {
-		return $this->votableParent;
-	}
+    public function getVotableParent()
+    {
+        return $this->votableParent;
+    }
 
-	// Data /////
+    // Data /////
 
-	public function getData() {
-		return $this->data;
-	}
-
+    public function getData()
+    {
+        return $this->data;
+    }
 }

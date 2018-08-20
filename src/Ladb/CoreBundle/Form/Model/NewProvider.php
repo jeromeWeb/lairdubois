@@ -2,36 +2,40 @@
 
 namespace Ladb\CoreBundle\Form\Model;
 
-class NewProvider {
+class NewProvider
+{
 
-	/**
-	 */
-	private $signValue;
+    /**
+     */
+    private $signValue;
 
-	/**
-	 */
-	private $logoValue;
+    /**
+     */
+    private $logoValue;
 
-	// SignValue /////
+    // SignValue /////
 
-	public function setSignValue($signValue) {
-		$this->signValue = $signValue;
-		return $this;
-	}
+    public function setSignValue($signValue)
+    {
+        $this->signValue = $signValue;
+        return $this;
+    }
 
-	public function getSignValue() {
-		return $this->signValue;
-	}
+    public function getSignValue()
+    {
+        return $this->signValue;
+    }
 
-	// LogoValue /////
+    // LogoValue /////
 
-	public function setLogoValue($logoValue) {
-		$this->logoValue = $logoValue;
-		return $this;
-	}
+    public function setLogoValue($logoValue)
+    {
+        $this->logoValue = $logoValue;
+        return $this;
+    }
 
-	public function getLogoValue() {
-		return $this->logoValue;
-	}
-
+    public function getLogoValue()
+    {
+        return $this->logoValue;
+    }
 }

@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface ChildInterface {
+interface ChildInterface
+{
 
-	// ParentEntity /////
+    // ParentEntity /////
 
-	public function getParentEntity();
-
+    public function getParentEntity();
 }

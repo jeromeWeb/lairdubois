@@ -2,12 +2,12 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface StripableInterface extends TypableInterface, IdentifiableInterface {
+interface StripableInterface extends TypableInterface, IdentifiableInterface
+{
 
-	// Strip /////
+    // Strip /////
 
-	public function setStrip(\Ladb\CoreBundle\Entity\Core\Picture $strip);
+    public function setStrip(\Ladb\CoreBundle\Entity\Core\Picture $strip);
 
-	public function getStrip();
-
+    public function getStrip();
 }

@@ -12,27 +12,28 @@ use Ladb\CoreBundle\Validator\Constraints as LadbAssert;
  * @ORM\Table("tbl_core_block_text")
  * @ORM\Entity
  */
-class Text extends AbstractBlock implements BodiedInterface {
+class Text extends AbstractBlock implements BodiedInterface
+{
 
-	use BodiedTrait;
+    use BodiedTrait;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=5, max=10000)
-	 * @LadbAssert\NoMediaLink()
-	 */
-	private $body;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=5, max=10000)
+     * @LadbAssert\NoMediaLink()
+     */
+    private $body;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 */
-	private $htmlBody;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    private $htmlBody;
 
-	// StrippedName /////
+    // StrippedName /////
 
-	public function getStrippedName() {
-		return 'text';
-	}
-
+    public function getStrippedName()
+    {
+        return 'text';
+    }
 }

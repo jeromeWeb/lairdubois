@@ -7,51 +7,54 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class LabelsToIdsTransformer implements DataTransformerInterface {
+class LabelsToIdsTransformer implements DataTransformerInterface
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function transform($labels) {
-		if (null === $labels) {
-			return '';
-		}
+    public function transform($labels)
+    {
+        if (null === $labels) {
+            return '';
+        }
 
-		if (!$labels instanceof \Doctrine\Common\Collections\Collection) {
-			throw new UnexpectedTypeException($labels, '\Doctrine\Common\Collections\Collection');
-		}
+        if (!$labels instanceof \Doctrine\Common\Collections\Collection) {
+            throw new UnexpectedTypeException($labels, '\Doctrine\Common\Collections\Collection');
+        }
 
-		$idsArray = array();
-		foreach ($labels as $label) {
-			$idsArray[] = $label->getId();
-		}
-		return implode(',', $idsArray);
-	}
+        $idsArray = array();
+        foreach ($labels as $label) {
+            $idsArray[] = $label->getId();
+        }
+        return implode(',', $idsArray);
+    }
 
-	public function reverseTransform($idsString) {
-		if (!$idsString) {
-			return array();
-		}
+    public function reverseTransform($idsString)
+    {
+        if (!$idsString) {
+            return array();
+        }
 
-		$labels = array();
-		$idsStrings = preg_split("/[,]+/", $idsString);
-		$repository = $this->om->getRepository('LadbCoreBundle:Workflow\Label');
-		foreach ($idsStrings as $idString) {
-			$id = intval($idString);
-			if ($id == 0) {
-				continue;
-			}
-			$label = $repository->find($id);
-			if (is_null($label)) {
-				throw new TransformationFailedException();
-			}
-			$labels[] = $label;
-		}
+        $labels = array();
+        $idsStrings = preg_split("/[,]+/", $idsString);
+        $repository = $this->om->getRepository('LadbCoreBundle:Workflow\Label');
+        foreach ($idsStrings as $idString) {
+            $id = intval($idString);
+            if ($id == 0) {
+                continue;
+            }
+            $label = $repository->find($id);
+            if (is_null($label)) {
+                throw new TransformationFailedException();
+            }
+            $labels[] = $label;
+        }
 
-		return $labels;
-	}
-
+        return $labels;
+    }
 }

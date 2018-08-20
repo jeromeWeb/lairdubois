@@ -4,9 +4,10 @@ namespace Ladb\CoreBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MessageControllerTest extends WebTestCase {
+class MessageControllerTest extends WebTestCase
+{
 
-	/*
+    /*
 	public function testCompleteScenario()
 	{
 		// Create a new client to browse the application

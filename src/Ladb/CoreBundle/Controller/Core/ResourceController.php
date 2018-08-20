@@ -12,15 +12,16 @@ use Ladb\CoreBundle\Handler\ResourceUploadHandler;
 /**
  * @Route("/resources")
  */
-class ResourceController extends Controller {
+class ResourceController extends Controller
+{
 
-	/**
-	 * @Route("/upload", name="core_resource_upload")
-	 */
-	public function uploadAction() {
-		$uploadHandler = $this->get(ResourceUploadHandler::NAME);
-		$uploadHandler->handle();
-		exit(0);
-	}
-
+    /**
+     * @Route("/upload", name="core_resource_upload")
+     */
+    public function uploadAction()
+    {
+        $uploadHandler = $this->get(ResourceUploadHandler::NAME);
+        $uploadHandler->handle();
+        exit(0);
+    }
 }

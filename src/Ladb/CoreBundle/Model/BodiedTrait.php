@@ -2,34 +2,39 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait BodiedTrait {
+trait BodiedTrait
+{
 
-	// Body /////
+    // Body /////
 
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
-	}
+    public function setBody($body)
+    {
+        $this->body = $body;
+        return $this;
+    }
 
-	public function getBody() {
-		return $this->body;
-	}
+    public function getBody()
+    {
+        return $this->body;
+    }
 
-	// HtmlBody /////
+    // HtmlBody /////
 
-	public function setHtmlBody($htmlBody) {
-		$this->htmlBody = $htmlBody;
-		return $this;
-	}
+    public function setHtmlBody($htmlBody)
+    {
+        $this->htmlBody = $htmlBody;
+        return $this;
+    }
 
-	public function getHtmlBody() {
-		return $this->htmlBody;
-	}
+    public function getHtmlBody()
+    {
+        return $this->htmlBody;
+    }
 
-	// BodyExtract /////
+    // BodyExtract /////
 
-	public function getBodyExtract() {
-		return strip_tags(mb_strimwidth($this->getHtmlBody(), 0, 250, '[...]'));
-	}
-
+    public function getBodyExtract()
+    {
+        return strip_tags(mb_strimwidth($this->getHtmlBody(), 0, 250, '[...]'));
+    }
 }

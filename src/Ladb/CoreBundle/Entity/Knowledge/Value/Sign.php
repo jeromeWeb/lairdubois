@@ -12,83 +12,91 @@ use Ladb\CoreBundle\Validator\Constraints as LadbAssert;
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Knowledge\Value\SignRepository")
  * @ladbAssert\ValidSignValue()
  */
-class Sign extends BaseValue {
+class Sign extends BaseValue
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Sign';
-	const TYPE = 16;
+    const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Sign';
+    const TYPE = 16;
 
-	const TYPE_STRIPPED_NAME = 'sign';
+    const TYPE_STRIPPED_NAME = 'sign';
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 */
-	protected $data;
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    protected $data;
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 * @Assert\NotBlank
-	 * @Assert\Length(max=100)
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ\-.'&]+$/")
-	 */
-	private $brand;
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank
+     * @Assert\Length(max=100)
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ\-.'&]+$/")
+     */
+    private $brand;
 
-	/**
-	 * @ORM\Column(type="boolean", name="is_affiliate")
-	 */
-	private $isAffiliate = false;
+    /**
+     * @ORM\Column(type="boolean", name="is_affiliate")
+     */
+    private $isAffiliate = false;
 
-	/**
-	 * @ORM\Column(type="string", length=100, nullable=true)
-	 * @Assert\Length(max=100)
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ\-.'&]+$/")
-	 */
-	private $store;
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     * @Assert\Length(max=100)
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ\-.'&]+$/")
+     */
+    private $store;
 
-	/////
+    /////
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return self::TYPE;
-	}
+    public function getType()
+    {
+        return self::TYPE;
+    }
 
-	// Title /////
+    // Title /////
 
-	public function getTitle() {
-		return $this->getData();
-	}
+    public function getTitle()
+    {
+        return $this->getData();
+    }
 
-	// Brand /////
+    // Brand /////
 
-	public function setBrand($brand) {
-		$this->brand = $brand;
-		return $this;
-	}
+    public function setBrand($brand)
+    {
+        $this->brand = $brand;
+        return $this;
+    }
 
-	public function getBrand() {
-		return $this->brand;
-	}
+    public function getBrand()
+    {
+        return $this->brand;
+    }
 
-	// IsAffiliate /////
+    // IsAffiliate /////
 
-	public function setIsAffiliate($isAffiliate) {
-		$this->isAffiliate = $isAffiliate;
-		return $this;
-	}
+    public function setIsAffiliate($isAffiliate)
+    {
+        $this->isAffiliate = $isAffiliate;
+        return $this;
+    }
 
-	public function getIsAffiliate() {
-		return $this->isAffiliate;
-	}
+    public function getIsAffiliate()
+    {
+        return $this->isAffiliate;
+    }
 
-	// Store /////
+    // Store /////
 
-	public function setStore($store) {
-		$this->store = $store;
-		return $this;
-	}
+    public function setStore($store)
+    {
+        $this->store = $store;
+        return $this;
+    }
 
-	public function getStore() {
-		return $this->store;
-	}
-
+    public function getStore()
+    {
+        return $this->store;
+    }
 }

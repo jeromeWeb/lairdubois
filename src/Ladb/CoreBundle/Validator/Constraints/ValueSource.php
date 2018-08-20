@@ -7,14 +7,16 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class ValueSource extends Constraint {
+class ValueSource extends Constraint
+{
 
-	public function validatedBy() {
-		return 'ladb_core.value_source_validator';
-	}
+    public function validatedBy()
+    {
+        return 'ladb_core.value_source_validator';
+    }
 
-	public function getTargets() {
-		return self::CLASS_CONSTRAINT;
-	}
-
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

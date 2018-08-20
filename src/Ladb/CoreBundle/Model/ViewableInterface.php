@@ -2,20 +2,20 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface ViewableInterface extends IdentifiableInterface, TypableInterface {
+interface ViewableInterface extends IdentifiableInterface, TypableInterface
+{
 
-	// ViewCount /////
+    // ViewCount /////
 
-	public function incrementViewCount($by = 1);
+    public function incrementViewCount($by = 1);
 
-	public function setViewCount($viewCount);
+    public function setViewCount($viewCount);
 
-	public function getViewCount();
+    public function getViewCount();
 
-	// IsShown /////
+    // IsShown /////
 
-	public function setIsShown($isShown);
+    public function setIsShown($isShown);
 
-	public function getIsShown();
-
+    public function getIsShown();
 }

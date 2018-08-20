@@ -2,12 +2,12 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface LicensedInterface {
+interface LicensedInterface
+{
 
-	// License /////
+    // License /////
 
-	public function setLicense($license);
+    public function setLicense($license);
 
-	public function getLicense();
-
+    public function getLicense();
 }

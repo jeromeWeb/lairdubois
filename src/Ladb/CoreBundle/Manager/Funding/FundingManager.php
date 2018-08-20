@@ -9,125 +9,127 @@ use Ladb\CoreBundle\Manager\AbstractManager;
 use Ladb\CoreBundle\Manager\AbstractPublicationManager;
 use Ladb\CoreBundle\Utils\JoinableUtils;
 
-class FundingManager extends AbstractManager {
+class FundingManager extends AbstractManager
+{
 
-	const NAME = 'ladb_core.funding_manager';
+    const NAME = 'ladb_core.funding_manager';
 
-	/////
+    /////
 
-	public function getOrCreateCurrent() {
-		$om = $this->getDoctrine()->getManager();
-		$fundingRepository = $om->getRepository(Funding::CLASS_NAME);
+    public function getOrCreateCurrent()
+    {
+        $om = $this->getDoctrine()->getManager();
+        $fundingRepository = $om->getRepository(Funding::CLASS_NAME);
 
-		$now = new \DateTime();
-		$nowMonth = $now->format('m');
-		$nowYear = $now->format('Y');
+        $now = new \DateTime();
+        $nowMonth = $now->format('m');
+        $nowYear = $now->format('Y');
 
-		$funding = $fundingRepository->findOneByYearAndMonth($nowYear, $nowMonth);
-		if (is_null($funding)) {
+        $funding = $fundingRepository->findOneByYearAndMonth($nowYear, $nowMonth);
+        if (is_null($funding)) {
 
-			// Retrieve last funding
-			$lastFunding = $fundingRepository->findOneLast();
-			if (!is_null($lastFunding)) {
+            // Retrieve last funding
+            $lastFunding = $fundingRepository->findOneLast();
+            if (!is_null($lastFunding)) {
 
-				$diffMonth = ($nowYear - $lastFunding->getYear()) * 12 + $nowMonth - $lastFunding->getMonth();
+                $diffMonth = ($nowYear - $lastFunding->getYear()) * 12 + $nowMonth - $lastFunding->getMonth();
 
-				$previousFunding = $lastFunding;
-				$year = $lastFunding->getYear();
-				$month = $lastFunding->getMonth();
+                $previousFunding = $lastFunding;
+                $year = $lastFunding->getYear();
+                $month = $lastFunding->getMonth();
 
-				// Create a funding every month between last and now
-				for ($i = 0; $i < $diffMonth; $i++) {
+                // Create a funding every month between last and now
+                for ($i = 0; $i < $diffMonth; $i++) {
 
-					$month += 1;
-					if ($month > 12) {
-						$month = 1;
-						$year++;
-					}
+                    $month += 1;
+                    if ($month > 12) {
+                        $month = 1;
+                        $year++;
+                    }
 
-					// Create a new funding
-					$funding = new Funding();
-					$funding->setYear($year);
-					$funding->setMonth($month);
+                    // Create a new funding
+                    $funding = new Funding();
+                    $funding->setYear($year);
+                    $funding->setMonth($month);
 
-					foreach ($previousFunding->getCharges() as $previousCharge) {
+                    foreach ($previousFunding->getCharges() as $previousCharge) {
 
-						if (!$previousCharge->getIsRecurrent()) {
-							continue;
-						}
+                        if (!$previousCharge->getIsRecurrent()) {
+                            continue;
+                        }
 
-						// Duplicate charge
-						$charge = new Charge();
-						$charge->setDutyFreeAmount($previousCharge->getDutyFreeAmount());
-						$charge->setAmount($previousCharge->getAmount());
-						$charge->setLabel($previousCharge->getLabel());
-						$charge->setIsRecurrent($previousCharge->getIsRecurrent());
+                        // Duplicate charge
+                        $charge = new Charge();
+                        $charge->setDutyFreeAmount($previousCharge->getDutyFreeAmount());
+                        $charge->setAmount($previousCharge->getAmount());
+                        $charge->setLabel($previousCharge->getLabel());
+                        $charge->setIsRecurrent($previousCharge->getIsRecurrent());
 
-						$funding->addCharge($charge);
-						$funding->incrementChargeBalance($charge->getAmount());
+                        $funding->addCharge($charge);
+                        $funding->incrementChargeBalance($charge->getAmount());
 
-					}
+                    }
 
-					// Compute the carried forward balance
-					$carriedForwardBalance = $previousFunding->getEarningsBalance() - $previousFunding->getOutgoingsBalance();
-					if ($carriedForwardBalance > 0) {
-						$funding->setCarriedForwardBalance($carriedForwardBalance);
-					}
+                    // Compute the carried forward balance
+                    $carriedForwardBalance = $previousFunding->getEarningsBalance() - $previousFunding->getOutgoingsBalance();
+                    if ($carriedForwardBalance > 0) {
+                        $funding->setCarriedForwardBalance($carriedForwardBalance);
+                    }
 
-					$om->persist($funding);
+                    $om->persist($funding);
 
-					$previousFunding = $funding;
+                    $previousFunding = $funding;
 
-				}
+                }
 
-			}
+            }
 
-			$om->flush();
+            $om->flush();
 
-		}
+        }
 
-		return $funding;
-	}
+        return $funding;
+    }
 
-	public function updateCarriedForwardBalancesFrom($startFunding, $flush = false) {
-		$om = $this->getDoctrine()->getManager();
-		$fundingRepository = $om->getRepository(Funding::CLASS_NAME);
+    public function updateCarriedForwardBalancesFrom($startFunding, $flush = false)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $fundingRepository = $om->getRepository(Funding::CLASS_NAME);
 
-		$now = new \DateTime();
-		$nowMonth = $now->format('m');
-		$nowYear = $now->format('Y');
-		$diffMonth = ($nowYear - $startFunding->getYear()) * 12 + $nowMonth - $startFunding->getMonth();
+        $now = new \DateTime();
+        $nowMonth = $now->format('m');
+        $nowYear = $now->format('Y');
+        $diffMonth = ($nowYear - $startFunding->getYear()) * 12 + $nowMonth - $startFunding->getMonth();
 
-		$previousFunding = $startFunding;
-		$year = $startFunding->getYear();
-		$month = $startFunding->getMonth();
+        $previousFunding = $startFunding;
+        $year = $startFunding->getYear();
+        $month = $startFunding->getMonth();
 
-		for ($i = 0; $i < $diffMonth; $i++) {
+        for ($i = 0; $i < $diffMonth; $i++) {
 
-			$month += 1;
-			if ($month > 12) {
-				$month = 1;
-				$year++;
-			}
+            $month += 1;
+            if ($month > 12) {
+                $month = 1;
+                $year++;
+            }
 
-			// Fetch funding
-			$funding = $fundingRepository->findOneByYearAndMonth($year, $month);
-			if (is_null($funding)) {
-				return;
-			}
+            // Fetch funding
+            $funding = $fundingRepository->findOneByYearAndMonth($year, $month);
+            if (is_null($funding)) {
+                return;
+            }
 
-			// Compute the carried forward balance
-			$carriedForwardBalance = $previousFunding->getEarningsBalance() - $previousFunding->getOutgoingsBalance();
-			$funding->setCarriedForwardBalance(max(0, $carriedForwardBalance));
+            // Compute the carried forward balance
+            $carriedForwardBalance = $previousFunding->getEarningsBalance() - $previousFunding->getOutgoingsBalance();
+            $funding->setCarriedForwardBalance(max(0, $carriedForwardBalance));
 
-			$previousFunding = $funding;
+            $previousFunding = $funding;
 
-		}
+        }
 
-		if ($flush) {
-			$om->flush();
-		}
+        if ($flush) {
+            $om->flush();
+        }
 
-	}
-
+    }
 }

@@ -14,665 +14,681 @@ use Ladb\CoreBundle\Form\Type\Workflow\TaskType;
 /**
  * @Route("/processus")
  */
-class TaskController extends AbstractWorkflowBasedController {
-
-	private function _assertValidWorkflow(Task $task, Workflow $workflow, $wrongWorkflowException = true) {
-		if ($task->getWorkflow() != $workflow) {
-			if ($wrongWorkflowException) {
-				throw $this->createNotFoundException('Wrong Workflow (id='.$workflow->getId().').');
-			} else {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	private function _retrieveTaskFromTaskIdParam(Request $request, $param = 'taskId', $notFoundException = true) {
-		$om = $this->getDoctrine()->getManager();
-		$taskRepository = $om->getRepository(Task::CLASS_NAME);
-
-		$taskId = intval($request->get($param, 0));
-
-		$task = $taskRepository->findOneById($taskId);
-		if (is_null($task) && $notFoundException) {
-			throw $this->createNotFoundException('Unable to find Task entity (id='.$taskId.').');
-		}
-
-		return $task;
-	}
-
-	private function _updateTasksStatus($tasks = array()) {
-		if (!is_array($tasks)) {
-			$tasks = array( $tasks );
-		}
-		$updatedTask = array();
-		foreach ($tasks as $task) {
-
-			if ($task->getStatus() == Task::STATUS_DONE) {
-				continue;
-			}
-
-			$isWorkable = true;
-			foreach ($task->getSourceTasks() as $sourceTask) {
-				if ($sourceTask->getStatus() != Task::STATUS_DONE) {
-					$isWorkable = false;
-					break;
-				}
-			}
-
-			$newStatus = $isWorkable ? Task::STATUS_WORKABLE : Task::STATUS_PENDING;
-			if ($task->getStatus() != $newStatus) {
-				if ($task->getStatus() == Task::STATUS_RUNNING) {
-					$this->_finishTaskCurrentRun($task, $task->getWorkflow(), new \DateTime());
-				}
-				$task->setStatus($newStatus);
-				$updatedTask[] = $task;
-			}
-
-		}
-		return $updatedTask;
-	}
-
-	private function _computeLabelChoices(Workflow $workflow) {
-		$labelChoices = array();
-		foreach ($workflow->getLabels() as $label) {
-			$labelChoices[$label->getName()] = $label->getId();
-		}
-		return $labelChoices;
-	}
-
-	private function _computePartCount(Task $task) {
-		$partCount = 0;
-		foreach ($task->getParts() as $tmpPart) {
-			$partCount += $tmpPart->getCount();
-		}
-		$task->setPartCount($partCount);
-	}
-
-	private function _finishTaskCurrentRun(Task $task, Workflow $workflow, $now) {
-
-		$currentRun = $task->getRuns()->last();
-		if (!is_null($currentRun)) {
-
-			// Finish the run
-			$currentRun->setFinishedAt($now);
-
-			// Compute run duration in minutes
-			$currentRunDuration = $now->getTimestamp() - $currentRun->getStartedAt()->getTimestamp();
-			$currentRunDuration = floor($currentRunDuration / 60) * 60; // Sample to minutes
-
-			if ($currentRunDuration > 0) { // only if it is more than a minute
-
-				// Increment duration
-				$task->incrementDuration($currentRunDuration);
-				$workflow->incrementDuration($currentRunDuration);
-
-			}
-
-		}
-
-	}
-
-	/////
+class TaskController extends AbstractWorkflowBasedController
+{
+
+    private function _assertValidWorkflow(Task $task, Workflow $workflow, $wrongWorkflowException = true)
+    {
+        if ($task->getWorkflow() != $workflow) {
+            if ($wrongWorkflowException) {
+                throw $this->createNotFoundException('Wrong Workflow (id=' . $workflow->getId() . ').');
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function _retrieveTaskFromTaskIdParam(Request $request, $param = 'taskId', $notFoundException = true)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $taskRepository = $om->getRepository(Task::CLASS_NAME);
+
+        $taskId = intval($request->get($param, 0));
+
+        $task = $taskRepository->findOneById($taskId);
+        if (is_null($task) && $notFoundException) {
+            throw $this->createNotFoundException('Unable to find Task entity (id=' . $taskId . ').');
+        }
+
+        return $task;
+    }
+
+    private function _updateTasksStatus($tasks = array())
+    {
+        if (!is_array($tasks)) {
+            $tasks = array( $tasks );
+        }
+        $updatedTask = array();
+        foreach ($tasks as $task) {
+
+            if ($task->getStatus() == Task::STATUS_DONE) {
+                continue;
+            }
+
+            $isWorkable = true;
+            foreach ($task->getSourceTasks() as $sourceTask) {
+                if ($sourceTask->getStatus() != Task::STATUS_DONE) {
+                    $isWorkable = false;
+                    break;
+                }
+            }
+
+            $newStatus = $isWorkable ? Task::STATUS_WORKABLE : Task::STATUS_PENDING;
+            if ($task->getStatus() != $newStatus) {
+                if ($task->getStatus() == Task::STATUS_RUNNING) {
+                    $this->_finishTaskCurrentRun($task, $task->getWorkflow(), new \DateTime());
+                }
+                $task->setStatus($newStatus);
+                $updatedTask[] = $task;
+            }
+
+        }
+        return $updatedTask;
+    }
+
+    private function _computeLabelChoices(Workflow $workflow)
+    {
+        $labelChoices = array();
+        foreach ($workflow->getLabels() as $label) {
+            $labelChoices[$label->getName()] = $label->getId();
+        }
+        return $labelChoices;
+    }
+
+    private function _computePartCount(Task $task)
+    {
+        $partCount = 0;
+        foreach ($task->getParts() as $tmpPart) {
+            $partCount += $tmpPart->getCount();
+        }
+        $task->setPartCount($partCount);
+    }
+
+    private function _finishTaskCurrentRun(Task $task, Workflow $workflow, $now)
+    {
+
+        $currentRun = $task->getRuns()->last();
+        if (!is_null($currentRun)) {
+
+            // Finish the run
+            $currentRun->setFinishedAt($now);
+
+            // Compute run duration in minutes
+            $currentRunDuration = $now->getTimestamp() - $currentRun->getStartedAt()->getTimestamp();
+            $currentRunDuration = floor($currentRunDuration / 60) * 60; // Sample to minutes
+
+            if ($currentRunDuration > 0) { // only if it is more than a minute
+
+                // Increment duration
+                $task->incrementDuration($currentRunDuration);
+                $workflow->incrementDuration($currentRunDuration);
+
+            }
 
-	/**
-	 * @Route("/{id}/task/new", requirements={"id" = "\d+"}, name="core_workflow_task_new")
-	 * @Template("LadbCoreBundle:Workflow:Task/new-xhr.html.twig")
-	 */
-	public function newAction(Request $request, $id) {
+        }
 
-		// Retrieve workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+    }
 
-		$task = new Task();
-		$task->setPositionLeft(intval($request->get('positionLeft', 0)));
-		$task->setPositionTop(intval($request->get('positionTop', 0)));
-		$form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
+    /////
 
-		return array(
-			'workflow'     => $workflow,
-			'form'         => $form->createView(),
-			'sourceTaskId' => $request->get('sourceTaskId', 0),
-		);
-	}
-
-	/**
-	 * @Route("/{id}/task/create", requirements={"id" = "\d+"}, name="core_workflow_task_create")
-	 * @Template("LadbCoreBundle:Workflow:Task/new-xhr.html.twig")
-	 */
-	public function createAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-
-		// Retrieve workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+    /**
+     * @Route("/{id}/task/new", requirements={"id" = "\d+"}, name="core_workflow_task_new")
+     * @Template("LadbCoreBundle:Workflow:Task/new-xhr.html.twig")
+     */
+    public function newAction(Request $request, $id)
+    {
 
-		$task = new Task();
-		$task->setWorkflow($workflow);
-		$form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
-		$form->handleRequest($request);
-
-		if ($form->isValid()) {
-
-			$task->setStatus(Task::STATUS_WORKABLE);
-			$workflow->addTask($task);
-			$workflow->incrementTaskCount();
-
-			// Flag workflow as updated
-			$workflow->setUpdatedAt(new \DateTime());
-
-			// Link to source task if defined
-			$sourceTask = $this->_retrieveTaskFromTaskIdParam($request, 'sourceTaskId', false);
-			if (!is_null($sourceTask) && !$this->_assertValidWorkflow($sourceTask, $workflow, false)) {
-				$sourceTask = null;
-			}
-			if (!is_null($sourceTask)) {
-				$sourceTask->addTargetTask($task);
-				if ($sourceTask->getStatus() != Task::STATUS_DONE) {
-					$task->setStatus(Task::STATUS_PENDING);
-				}
-			}
-
-			if ($task->getEstimatedDuration() > 0) {
-
-				// Update workflow estimated duration
-				$workflow->incrementEstimatedDuration($task->getEstimatedDuration());
-
-			}
+        // Retrieve workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
 
-			if ($task->getDuration() > 0) {
+        $task = new Task();
+        $task->setPositionLeft(intval($request->get('positionLeft', 0)));
+        $task->setPositionTop(intval($request->get('positionTop', 0)));
+        $form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
 
-				// Update workflow duration
-				$workflow->incrementDuration($task->getDuration());
+        return array(
+            'workflow'     => $workflow,
+            'form'         => $form->createView(),
+            'sourceTaskId' => $request->get('sourceTaskId', 0),
+        );
+    }
 
-			}
+    /**
+     * @Route("/{id}/task/create", requirements={"id" = "\d+"}, name="core_workflow_task_create")
+     * @Template("LadbCoreBundle:Workflow:Task/new-xhr.html.twig")
+     */
+    public function createAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-			// Compute parts count
-			$this->_computePartCount($task);
+        // Retrieve workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
 
-			$om->persist($task);
-			$om->flush();
+        $task = new Task();
+        $task->setWorkflow($workflow);
+        $form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
+        $form->handleRequest($request);
 
-			$parameters = array();
+        if ($form->isValid()) {
 
-			if ($task->getEstimatedDuration() > 0 || $task->getDuration() > 0) {
+            $task->setStatus(Task::STATUS_WORKABLE);
+            $workflow->addTask($task);
+            $workflow->incrementTaskCount();
 
-				$parameters = array_merge($parameters, array(
-					'workflowInfos' => $this->_generateWorkflowInfos($workflow),
-				));
+            // Flag workflow as updated
+            $workflow->setUpdatedAt(new \DateTime());
+
+            // Link to source task if defined
+            $sourceTask = $this->_retrieveTaskFromTaskIdParam($request, 'sourceTaskId', false);
+            if (!is_null($sourceTask) && !$this->_assertValidWorkflow($sourceTask, $workflow, false)) {
+                $sourceTask = null;
+            }
+            if (!is_null($sourceTask)) {
+                $sourceTask->addTargetTask($task);
+                if ($sourceTask->getStatus() != Task::STATUS_DONE) {
+                    $task->setStatus(Task::STATUS_PENDING);
+                }
+            }
+
+            if ($task->getEstimatedDuration() > 0) {
 
-			}
+                // Update workflow estimated duration
+                $workflow->incrementEstimatedDuration($task->getEstimatedDuration());
 
-			if (!is_null($sourceTask)) {
+            }
 
-				$parameters = array_merge($parameters, array(
-					'createdConnections' => array(array(
-						'from' => $sourceTask->getId(),
-						'to'   => $task->getId(),
-					)),
-				));
+            if ($task->getDuration() > 0) {
 
-			}
+                // Update workflow duration
+                $workflow->incrementDuration($task->getDuration());
 
-			$this->_push($workflow, array_merge($parameters, array(
-				'createdTaskInfos' => $this->_generateTaskInfos($task, self::TASKINFO_STATUS | self::TASKINFO_ROW | self::TASKINFO_WIDGET),
-			)));
+            }
 
-			return new JsonResponse(array(
-				'success' => true,
-			));
-		}
+            // Compute parts count
+            $this->_computePartCount($task);
 
-		return array(
-			'workflow'     => $workflow,
-			'form'         => $form->createView(),
-			'sourceTaskId' => $request->get('sourceTaskId', 0),
-		);
-	}
+            $om->persist($task);
+            $om->flush();
 
-	/**
-	 * @Route("/{id}/task/edit", requirements={"id" = "\d+"}, name="core_workflow_task_edit")
-	 * @Template("LadbCoreBundle:Workflow:Task/edit-xhr.html.twig")
-	 */
-	public function editAction(Request $request, $id) {
+            $parameters = array();
 
-		// Retrieve workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+            if ($task->getEstimatedDuration() > 0 || $task->getDuration() > 0) {
 
-		// Retieve Task
-		$task = $this->_retrieveTaskFromTaskIdParam($request);
-		$this->_assertValidWorkflow($task, $workflow);
+                $parameters = array_merge($parameters, array(
+                    'workflowInfos' => $this->_generateWorkflowInfos($workflow),
+                ));
 
-		$form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
+            }
 
-		return array(
-			'workflow' => $workflow,
-			'task'     => $task,
-			'form'     => $form->createView(),
-		);
-	}
+            if (!is_null($sourceTask)) {
 
-	/**
-	 * @Route("/{id}/task/update", requirements={"id" = "\d+"}, name="core_workflow_task_update")
-	 * @Template("LadbCoreBundle:Workflow:Task/edit-xhr.html.twig")
-	 */
-	public function updateAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
+                $parameters = array_merge($parameters, array(
+                    'createdConnections' => array(array(
+                        'from' => $sourceTask->getId(),
+                        'to'   => $task->getId(),
+                    )),
+                ));
 
-		// Retrieve workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+            }
 
-		// Retieve Task
-		$task = $this->_retrieveTaskFromTaskIdParam($request);
-		$this->_assertValidWorkflow($task, $workflow);
+            $this->_push($workflow, array_merge($parameters, array(
+                'createdTaskInfos' => $this->_generateTaskInfos($task, self::TASKINFO_STATUS | self::TASKINFO_ROW | self::TASKINFO_WIDGET),
+            )));
 
-		$previousEstimatedDuration = $task->getEstimatedDuration();
-		$previousDuration = $task->getDuration();
+            return new JsonResponse(array(
+                'success' => true,
+            ));
+        }
 
-		$form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
-		$form->handleRequest($request);
+        return array(
+            'workflow'     => $workflow,
+            'form'         => $form->createView(),
+            'sourceTaskId' => $request->get('sourceTaskId', 0),
+        );
+    }
 
-		if ($form->isValid()) {
+    /**
+     * @Route("/{id}/task/edit", requirements={"id" = "\d+"}, name="core_workflow_task_edit")
+     * @Template("LadbCoreBundle:Workflow:Task/edit-xhr.html.twig")
+     */
+    public function editAction(Request $request, $id)
+    {
 
-			// Flag workflow as updated
-			$workflow->setUpdatedAt(new \DateTime());
+        // Retrieve workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
 
-			$parameters = array();
+        // Retieve Task
+        $task = $this->_retrieveTaskFromTaskIdParam($request);
+        $this->_assertValidWorkflow($task, $workflow);
 
-			$newEstimatedDuration = $task->getEstimatedDuration();
-			if ($newEstimatedDuration != $previousEstimatedDuration) {
+        $form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
 
-				// Update workflow estimated duration
-				$workflow->incrementEstimatedDuration($task->getEstimatedDuration() - $previousEstimatedDuration);
+        return array(
+            'workflow' => $workflow,
+            'task'     => $task,
+            'form'     => $form->createView(),
+        );
+    }
 
-			}
+    /**
+     * @Route("/{id}/task/update", requirements={"id" = "\d+"}, name="core_workflow_task_update")
+     * @Template("LadbCoreBundle:Workflow:Task/edit-xhr.html.twig")
+     */
+    public function updateAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-			$newDuration = $task->getDuration();
-			if ($newDuration != $previousDuration) {
+        // Retrieve workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
 
-				// Update workflow duration
-				$workflow->incrementDuration($task->getDuration() - $previousDuration);
+        // Retieve Task
+        $task = $this->_retrieveTaskFromTaskIdParam($request);
+        $this->_assertValidWorkflow($task, $workflow);
 
-			}
+        $previousEstimatedDuration = $task->getEstimatedDuration();
+        $previousDuration = $task->getDuration();
 
-			// Compute parts count
-			$this->_computePartCount($task);
+        $form = $this->createForm(TaskType::class, $task, array( 'label_choices' => $this->_computeLabelChoices($workflow) ));
+        $form->handleRequest($request);
 
-			$om->flush();
+        if ($form->isValid()) {
 
-			if ($newEstimatedDuration != $previousEstimatedDuration || $newDuration != $previousDuration) {
+            // Flag workflow as updated
+            $workflow->setUpdatedAt(new \DateTime());
 
-				$parameters = array_merge($parameters, array(
-					'workflowInfos' => $this->_generateWorkflowInfos($workflow),
-				));
+            $parameters = array();
 
-			}
+            $newEstimatedDuration = $task->getEstimatedDuration();
+            if ($newEstimatedDuration != $previousEstimatedDuration) {
 
-			$this->_push($workflow, array_merge($parameters, array(
-				'updatedTaskInfos' => $this->_generateTaskInfos($task, self::TASKINFO_STATUS | self::TASKINFO_BOX),
-			)));
+                // Update workflow estimated duration
+                $workflow->incrementEstimatedDuration($task->getEstimatedDuration() - $previousEstimatedDuration);
 
-			return new JsonResponse(array(
-				'success' => true,
-			));
-		}
+            }
 
-		return array(
-			'workflow' => $workflow,
-			'task'     => $task,
-			'form'     => $form->createView(),
-		);
-	}
+            $newDuration = $task->getDuration();
+            if ($newDuration != $previousDuration) {
 
-	/**
-	 * @Route("/{id}/task/position/update", requirements={"id" = "\d+"}, name="core_workflow_task_position_update")
-	 */
-	public function positionUpdateAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$taskRepository = $om->getRepository(Task::CLASS_NAME);
+                // Update workflow duration
+                $workflow->incrementDuration($task->getDuration() - $previousDuration);
 
-		// Retrieve Workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+            }
 
-		$tasks = array();
-		$index = 1;
-		while (true) {
+            // Compute parts count
+            $this->_computePartCount($task);
 
-			try {
+            $om->flush();
 
-				// Retieve Task
-				$task = $this->_retrieveTaskFromTaskIdParam($request, 'taskId'.$index);
-				$this->_assertValidWorkflow($task, $workflow);
+            if ($newEstimatedDuration != $previousEstimatedDuration || $newDuration != $previousDuration) {
 
-				$tasks[] = $task;
+                $parameters = array_merge($parameters, array(
+                    'workflowInfos' => $this->_generateWorkflowInfos($workflow),
+                ));
 
-			} catch (\Exception $e) {
-				// Parameter do not exists => break loop
-				break;
-			}
+            }
 
-			// PositionLeft
-			$positionLeftKey = 'positionLeft'.$index;
-			if ($request->request->has($positionLeftKey)) {
-				$positionLeft = intval($request->request->get($positionLeftKey));
-				$task->setPositionLeft($positionLeft);
-			}
+            $this->_push($workflow, array_merge($parameters, array(
+                'updatedTaskInfos' => $this->_generateTaskInfos($task, self::TASKINFO_STATUS | self::TASKINFO_BOX),
+            )));
 
-			// PositionTop
-			$positionTopKey = 'positionTop'.$index;
-			if ($request->request->has($positionTopKey)) {
-				$positionTop = intval($request->request->get($positionTopKey));
-				$task->setPositionTop($positionTop);
-			}
+            return new JsonResponse(array(
+                'success' => true,
+            ));
+        }
 
-			$index++;
-		}
+        return array(
+            'workflow' => $workflow,
+            'task'     => $task,
+            'form'     => $form->createView(),
+        );
+    }
 
-		if (count($tasks) == 0) {
-			throw $this->createNotFoundException('Unable to find Task entities.');
-		}
+    /**
+     * @Route("/{id}/task/position/update", requirements={"id" = "\d+"}, name="core_workflow_task_position_update")
+     */
+    public function positionUpdateAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $taskRepository = $om->getRepository(Task::CLASS_NAME);
 
-		// Flag workflow as updated
-		$workflow->setUpdatedAt(new \DateTime());
+        // Retrieve Workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
 
-		$om->flush();
+        $tasks = array();
+        $index = 1;
+        while (true) {
 
-		$this->_push($workflow, array(
-			'movedTaskInfos' => $this->_generateTaskInfos($tasks, self::TASKINFO_POSITION_LEFT | self::TASKINFO_POSITION_TOP | self::TASKINFO_SORT_INDEX),
-		));
+            try {
 
-		return new JsonResponse(array(
-			'success' => true,
-		));
-	}
+                // Retieve Task
+                $task = $this->_retrieveTaskFromTaskIdParam($request, 'taskId' . $index);
+                $this->_assertValidWorkflow($task, $workflow);
 
-	/**
-	 * @Route("/{id}/task/status/update", requirements={"id" = "\d+"}, name="core_workflow_task_status_update")
-	 */
-	public function statusUpdateAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
+                $tasks[] = $task;
 
-		// Retrieve Workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+            } catch (\Exception $e) {
+                // Parameter do not exists => break loop
+                break;
+            }
 
-		// Retieve Task
-		$task = $this->_retrieveTaskFromTaskIdParam($request);
-		$this->_assertValidWorkflow($task, $workflow);
+            // PositionLeft
+            $positionLeftKey = 'positionLeft' . $index;
+            if ($request->request->has($positionLeftKey)) {
+                $positionLeft = intval($request->request->get($positionLeftKey));
+                $task->setPositionLeft($positionLeft);
+            }
 
-		// Status
-		$statusChanged = false;
+            // PositionTop
+            $positionTopKey = 'positionTop' . $index;
+            if ($request->request->has($positionTopKey)) {
+                $positionTop = intval($request->request->get($positionTopKey));
+                $task->setPositionTop($positionTop);
+            }
 
-		$newStatus = intval($request->get('status', Task::STATUS_UNKNOW));
-		if ($newStatus < Task::STATUS_PENDING || $newStatus > Task::STATUS_DONE) {
-			throw $this->createNotFoundException('Invalid status (status='.$newStatus.')');
-		}
+            $index++;
+        }
 
-		$previousStatus = $task->getStatus();
-		if ($newStatus != $previousStatus) {
+        if (count($tasks) == 0) {
+            throw $this->createNotFoundException('Unable to find Task entities.');
+        }
 
-			$now = new \DateTime();
+        // Flag workflow as updated
+        $workflow->setUpdatedAt(new \DateTime());
 
-			// The task was running -> increment duration
-			if ($previousStatus == Task::STATUS_RUNNING) {
+        $om->flush();
 
-				$this->_finishTaskCurrentRun($task, $workflow, $now);
+        $this->_push($workflow, array(
+            'movedTaskInfos' => $this->_generateTaskInfos($tasks, self::TASKINFO_POSITION_LEFT | self::TASKINFO_POSITION_TOP | self::TASKINFO_SORT_INDEX),
+        ));
 
-			}
+        return new JsonResponse(array(
+            'success' => true,
+        ));
+    }
 
-			// The task was done -> unset finishedAt
-			if ($previousStatus == Task::STATUS_DONE) {
+    /**
+     * @Route("/{id}/task/status/update", requirements={"id" = "\d+"}, name="core_workflow_task_status_update")
+     */
+    public function statusUpdateAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-				if ($task->getDuration() == 0) {
-					$task->setStartedAt(null);
-				}
-				$task->setFinishedAt(null);
+        // Retrieve Workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
 
-			}
+        // Retieve Task
+        $task = $this->_retrieveTaskFromTaskIdParam($request);
+        $this->_assertValidWorkflow($task, $workflow);
 
-			// The task will run -> create a run
-			if ($newStatus == Task::STATUS_RUNNING) {
+        // Status
+        $statusChanged = false;
 
-				if ($task->getDuration() == 0) {
-					$task->setStartedAt($now);
-				}
+        $newStatus = intval($request->get('status', Task::STATUS_UNKNOW));
+        if ($newStatus < Task::STATUS_PENDING || $newStatus > Task::STATUS_DONE) {
+            throw $this->createNotFoundException('Invalid status (status=' . $newStatus . ')');
+        }
 
-				$run = new \ladb\CoreBundle\Entity\Workflow\Run();
-				$run->setStartedAt($now);
-				$task->addRun($run);
+        $previousStatus = $task->getStatus();
+        if ($newStatus != $previousStatus) {
 
-			}
+            $now = new \DateTime();
 
-			// The task will be done -> set finishedAt
-			if ($newStatus == Task::STATUS_DONE) {
+            // The task was running -> increment duration
+            if ($previousStatus == Task::STATUS_RUNNING) {
 
-				if (is_null($task->getStartedAt())) {
-					$task->setStartedAt($now);
-				}
-				$task->setFinishedAt($now);
+                $this->_finishTaskCurrentRun($task, $workflow, $now);
 
-			}
+            }
 
-			if ($task->getStatus() == Task::STATUS_DONE) {
-				$workflow->incrementDoneTaskCount(-1);
-			} else if ($task->getStatus() == Task::STATUS_RUNNING) {
-				$workflow->incrementRunningTaskCount(-1);
-			}
-			$task->setStatus($newStatus);
-			if ($task->getStatus() == Task::STATUS_DONE) {
-				$workflow->incrementDoneTaskCount();
-			} else if ($task->getStatus() == Task::STATUS_RUNNING) {
-				$workflow->incrementRunningTaskCount();
-			}
-			$statusChanged = true;
+            // The task was done -> unset finishedAt
+            if ($previousStatus == Task::STATUS_DONE) {
 
-		}
+                if ($task->getDuration() == 0) {
+                    $task->setStartedAt(null);
+                }
+                $task->setFinishedAt(null);
 
-		$om->flush();
+            }
 
-		if ($statusChanged) {
+            // The task will run -> create a run
+            if ($newStatus == Task::STATUS_RUNNING) {
 
-			// Update dependant tasks status
-			$updatedTasks = array_merge(array( $task ), $this->_updateTasksStatus($task->getTargetTasks()->toArray()));
-			$om->flush();
+                if ($task->getDuration() == 0) {
+                    $task->setStartedAt($now);
+                }
 
-		} else {
-			$updatedTasks = array();
-		}
+                $run = new \ladb\CoreBundle\Entity\Workflow\Run();
+                $run->setStartedAt($now);
+                $task->addRun($run);
 
-		$this->_push($workflow, array(
-			'workflowInfos'    => $this->_generateWorkflowInfos($workflow),
-			'updatedTaskInfos' => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
-		));
+            }
 
-		return new JsonResponse(array(
-			'success' => true,
-		));
-	}
+            // The task will be done -> set finishedAt
+            if ($newStatus == Task::STATUS_DONE) {
 
-	/**
-	 * @Route("/{id}/task/delete", requirements={"id" = "\d+"}, name="core_workflow_task_delete")
-	 */
-	public function deleteAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
+                if (is_null($task->getStartedAt())) {
+                    $task->setStartedAt($now);
+                }
+                $task->setFinishedAt($now);
 
-		// Retrieve Workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
+            }
 
-		// Retieve Task
-		$task = $this->_retrieveTaskFromTaskIdParam($request);
-		$this->_assertValidWorkflow($task, $workflow);
+            if ($task->getStatus() == Task::STATUS_DONE) {
+                $workflow->incrementDoneTaskCount(-1);
+            } elseif ($task->getStatus() == Task::STATUS_RUNNING) {
+                $workflow->incrementRunningTaskCount(-1);
+            }
+            $task->setStatus($newStatus);
+            if ($task->getStatus() == Task::STATUS_DONE) {
+                $workflow->incrementDoneTaskCount();
+            } elseif ($task->getStatus() == Task::STATUS_RUNNING) {
+                $workflow->incrementRunningTaskCount();
+            }
+            $statusChanged = true;
 
-		$taskId = $task->getId();
-		$sourceTasks = $task->getSourceTasks()->toArray();
-		$targetTasks = $task->getTargetTasks()->toArray();
+        }
 
-		// Decrement task durations on workflow
-		$workflow->incrementEstimatedDuration(-$task->getEstimatedDuration());
-		$workflow->incrementDuration(-$task->getDuration());
-
-		$workflow->incrementTaskCount(-1);
-		if ($task->getStatus() == Task::STATUS_DONE) {
-			$workflow->incrementDoneTaskCount(-1);
-		} else if ($task->getStatus() == Task::STATUS_RUNNING) {
-			$workflow->incrementRunningTaskCount(-1);
-		}
-
-		// Flag workflow as updated
-		$workflow->setUpdatedAt(new \DateTime());
+        $om->flush();
 
-		// Remove the task
-		$om->remove($task);
-		$om->flush();
+        if ($statusChanged) {
 
-		// Update dependant tasks status
-		$updatedTasks = $this->_updateTasksStatus(array_merge($sourceTasks, $targetTasks));
-		$om->flush();
-
-		$this->_push($workflow, array(
-			'workflowInfos'    => $this->_generateWorkflowInfos($workflow),
-			'updatedTaskInfos' => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
-			'deletedTaskId'    => $taskId,
-		));
-
-		return new JsonResponse(array(
-			'success' => true,
-		));
-	}
-
-	/**
-	 * @Route("/{id}/tasks", requirements={"id" = "\d+"}, name="core_workflow_task_list")
-	 */
-	public function listAction(Request $request, $id) {
-
-		// Retrieve Workflow
-		$workflow = $this->_retrieveWorkflow($id);
-
-		// Retrieve readOnly parameter
-		$readOnly = $request->get('readOnly', false);
-
-		// Compute durationHidden parameter
-		$durationsHidden = !$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $this->getUser() != $workflow->getUser();
-
-		$connections = array();
-		foreach ($workflow->getTasks() as $sourceTask) {
-			foreach ($sourceTask->getTargetTasks() as $targetTask) {
-				$connections[] = array(
-					'from' => $sourceTask->getId(),
-					'to'   => $targetTask->getId(),
-				);
-			}
-		}
-
-		return new JsonResponse(array(
-			'success'       => true,
-			'workflowInfos' => $this->_generateWorkflowInfos($workflow),
-			'taskInfos'     => $this->_generateTaskInfos($workflow->getTasks(), self::TASKINFO_STATUS | self::TASKINFO_ROW | self::TASKINFO_WIDGET, $readOnly, $durationsHidden),
-			'connections'   => $connections
-		));
-	}
-
-	/**
-	 * @Route("/{id}/task/connection/create", requirements={"id" = "\d+"}, name="core_workflow_task_connection_create")
-	 */
-	public function createTaskConnectionAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-
-		// Retrieve Workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
-
-		// Retieve source Task
-		$sourceTask = $this->_retrieveTaskFromTaskIdParam($request, 'sourceTaskId');
-		$this->_assertValidWorkflow($sourceTask, $workflow);
-
-		// Retieve target Task
-		$targetTask = $this->_retrieveTaskFromTaskIdParam($request, 'targetTaskId');
-		$this->_assertValidWorkflow($targetTask, $workflow);
-
-		// Check if connection exists
-		if (!$sourceTask->getTargetTasks()->contains($targetTask)) {
-
-			// Flag workflow as updated
-			$workflow->setUpdatedAt(new \DateTime());
-
-			// Link tasks
-			$sourceTask->addTargetTask($targetTask);
-			$om->flush();
-
-			// Update dependant tasks status
-			$updatedTasks = $this->_updateTasksStatus(array( $targetTask ));
-			$om->flush();
-
-			$createdConnections = array(
-				array(
-					'from' => $sourceTask->getId(),
-					'to'   => $targetTask->getId(),
-				)
-			);
-
-			$this->_push($workflow, array(
-				'createdConnections' => $createdConnections,
-				'updatedTaskInfos'   => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
-			));
-
-		}
-
-		return new JsonResponse(array(
-			'success' => true,
-		));
-	}
-
-	/**
-	 * @Route("/{id}/task/connection/delete", requirements={"id" = "\d+"}, name="core_workflow_task_connection_delete")
-	 */
-	public function deleteTaskConnectionAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-
-		// Retrieve Workflow
-		$workflow = $this->_retrieveWorkflow($id);
-		$this->_assertAuthorizedWorkflow($workflow);
-
-		// Retieve source Task
-		$sourceTask = $this->_retrieveTaskFromTaskIdParam($request, 'sourceTaskId');
-		$this->_assertValidWorkflow($sourceTask, $workflow);
-
-		// Retieve target Task
-		$targetTask = $this->_retrieveTaskFromTaskIdParam($request, 'targetTaskId');
-		$this->_assertValidWorkflow($targetTask, $workflow);
-
-		$deletedConnections = array(
-			array(
-				'from' => $sourceTask->getId(),
-				'to'   => $targetTask->getId(),
-			)
-		);
-
-		// Flag workflow as updated
-		$workflow->setUpdatedAt(new \DateTime());
-
-		// Unlink tasks
-		$sourceTask->removeTargetTask($targetTask);
-		$om->flush();
-
-		// Update dependant tasks status
-		$updatedTasks = $this->_updateTasksStatus(array( $targetTask ));
-		$om->flush();
-
-		$this->_push($workflow, array(
-			'deletedConnections' => $deletedConnections,
-			'updatedTaskInfos'   => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
-		));
-
-		return new JsonResponse(array(
-			'success' => true,
-		));
-	}
+            // Update dependant tasks status
+            $updatedTasks = array_merge(array( $task ), $this->_updateTasksStatus($task->getTargetTasks()->toArray()));
+            $om->flush();
 
+        } else {
+            $updatedTasks = array();
+        }
+
+        $this->_push($workflow, array(
+            'workflowInfos'    => $this->_generateWorkflowInfos($workflow),
+            'updatedTaskInfos' => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
+        ));
+
+        return new JsonResponse(array(
+            'success' => true,
+        ));
+    }
+
+    /**
+     * @Route("/{id}/task/delete", requirements={"id" = "\d+"}, name="core_workflow_task_delete")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+
+        // Retrieve Workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
+
+        // Retieve Task
+        $task = $this->_retrieveTaskFromTaskIdParam($request);
+        $this->_assertValidWorkflow($task, $workflow);
+
+        $taskId = $task->getId();
+        $sourceTasks = $task->getSourceTasks()->toArray();
+        $targetTasks = $task->getTargetTasks()->toArray();
+
+        // Decrement task durations on workflow
+        $workflow->incrementEstimatedDuration(-$task->getEstimatedDuration());
+        $workflow->incrementDuration(-$task->getDuration());
+
+        $workflow->incrementTaskCount(-1);
+        if ($task->getStatus() == Task::STATUS_DONE) {
+            $workflow->incrementDoneTaskCount(-1);
+        } elseif ($task->getStatus() == Task::STATUS_RUNNING) {
+            $workflow->incrementRunningTaskCount(-1);
+        }
+
+        // Flag workflow as updated
+        $workflow->setUpdatedAt(new \DateTime());
+
+        // Remove the task
+        $om->remove($task);
+        $om->flush();
+
+        // Update dependant tasks status
+        $updatedTasks = $this->_updateTasksStatus(array_merge($sourceTasks, $targetTasks));
+        $om->flush();
+
+        $this->_push($workflow, array(
+            'workflowInfos'    => $this->_generateWorkflowInfos($workflow),
+            'updatedTaskInfos' => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
+            'deletedTaskId'    => $taskId,
+        ));
+
+        return new JsonResponse(array(
+            'success' => true,
+        ));
+    }
+
+    /**
+     * @Route("/{id}/tasks", requirements={"id" = "\d+"}, name="core_workflow_task_list")
+     */
+    public function listAction(Request $request, $id)
+    {
+
+        // Retrieve Workflow
+        $workflow = $this->_retrieveWorkflow($id);
+
+        // Retrieve readOnly parameter
+        $readOnly = $request->get('readOnly', false);
+
+        // Compute durationHidden parameter
+        $durationsHidden = !$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN') && $this->getUser() != $workflow->getUser();
+
+        $connections = array();
+        foreach ($workflow->getTasks() as $sourceTask) {
+            foreach ($sourceTask->getTargetTasks() as $targetTask) {
+                $connections[] = array(
+                    'from' => $sourceTask->getId(),
+                    'to'   => $targetTask->getId(),
+                );
+            }
+        }
+
+        return new JsonResponse(array(
+            'success'       => true,
+            'workflowInfos' => $this->_generateWorkflowInfos($workflow),
+            'taskInfos'     => $this->_generateTaskInfos($workflow->getTasks(), self::TASKINFO_STATUS | self::TASKINFO_ROW | self::TASKINFO_WIDGET, $readOnly, $durationsHidden),
+            'connections'   => $connections
+        ));
+    }
+
+    /**
+     * @Route("/{id}/task/connection/create", requirements={"id" = "\d+"}, name="core_workflow_task_connection_create")
+     */
+    public function createTaskConnectionAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+
+        // Retrieve Workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
+
+        // Retieve source Task
+        $sourceTask = $this->_retrieveTaskFromTaskIdParam($request, 'sourceTaskId');
+        $this->_assertValidWorkflow($sourceTask, $workflow);
+
+        // Retieve target Task
+        $targetTask = $this->_retrieveTaskFromTaskIdParam($request, 'targetTaskId');
+        $this->_assertValidWorkflow($targetTask, $workflow);
+
+        // Check if connection exists
+        if (!$sourceTask->getTargetTasks()->contains($targetTask)) {
+
+            // Flag workflow as updated
+            $workflow->setUpdatedAt(new \DateTime());
+
+            // Link tasks
+            $sourceTask->addTargetTask($targetTask);
+            $om->flush();
+
+            // Update dependant tasks status
+            $updatedTasks = $this->_updateTasksStatus(array( $targetTask ));
+            $om->flush();
+
+            $createdConnections = array(
+                array(
+                    'from' => $sourceTask->getId(),
+                    'to'   => $targetTask->getId(),
+                )
+            );
+
+            $this->_push($workflow, array(
+                'createdConnections' => $createdConnections,
+                'updatedTaskInfos'   => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
+            ));
+
+        }
+
+        return new JsonResponse(array(
+            'success' => true,
+        ));
+    }
+
+    /**
+     * @Route("/{id}/task/connection/delete", requirements={"id" = "\d+"}, name="core_workflow_task_connection_delete")
+     */
+    public function deleteTaskConnectionAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+
+        // Retrieve Workflow
+        $workflow = $this->_retrieveWorkflow($id);
+        $this->_assertAuthorizedWorkflow($workflow);
+
+        // Retieve source Task
+        $sourceTask = $this->_retrieveTaskFromTaskIdParam($request, 'sourceTaskId');
+        $this->_assertValidWorkflow($sourceTask, $workflow);
+
+        // Retieve target Task
+        $targetTask = $this->_retrieveTaskFromTaskIdParam($request, 'targetTaskId');
+        $this->_assertValidWorkflow($targetTask, $workflow);
+
+        $deletedConnections = array(
+            array(
+                'from' => $sourceTask->getId(),
+                'to'   => $targetTask->getId(),
+            )
+        );
+
+        // Flag workflow as updated
+        $workflow->setUpdatedAt(new \DateTime());
+
+        // Unlink tasks
+        $sourceTask->removeTargetTask($targetTask);
+        $om->flush();
+
+        // Update dependant tasks status
+        $updatedTasks = $this->_updateTasksStatus(array( $targetTask ));
+        $om->flush();
+
+        $this->_push($workflow, array(
+            'deletedConnections' => $deletedConnections,
+            'updatedTaskInfos'   => $this->_generateTaskInfos($updatedTasks, self::TASKINFO_STATUS | self::TASKINFO_BOX),
+        ));
+
+        return new JsonResponse(array(
+            'success' => true,
+        ));
+    }
 }

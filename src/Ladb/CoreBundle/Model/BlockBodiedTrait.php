@@ -2,71 +2,83 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait BlockBodiedTrait {
+trait BlockBodiedTrait
+{
 
-	// Body /////
+    // Body /////
 
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
-	}
+    public function setBody($body)
+    {
+        $this->body = $body;
+        return $this;
+    }
 
-	public function getBody() {
-		return $this->body;
-	}
+    public function getBody()
+    {
+        return $this->body;
+    }
 
-	// BodyExtract /////
+    // BodyExtract /////
 
-	public function setBodyExtract($bodyExtract) {
-		$this->bodyExtract = $bodyExtract;
-		return $this;
-	}
+    public function setBodyExtract($bodyExtract)
+    {
+        $this->bodyExtract = $bodyExtract;
+        return $this;
+    }
 
-	public function getBodyExtract() {
-		return $this->bodyExtract;
-	}
+    public function getBodyExtract()
+    {
+        return $this->bodyExtract;
+    }
 
-	// BodyBlocks /////
+    // BodyBlocks /////
 
-	public function addBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock) {
-		if (!$this->bodyBlocks->contains($bodyBlock)) {
-			$this->bodyBlocks[] = $bodyBlock;
-		}
-		return $this;
-	}
+    public function addBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock)
+    {
+        if (!$this->bodyBlocks->contains($bodyBlock)) {
+            $this->bodyBlocks[] = $bodyBlock;
+        }
+        return $this;
+    }
 
-	public function removeBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock) {
-		$this->bodyBlocks->removeElement($bodyBlock);
-	}
+    public function removeBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock)
+    {
+        $this->bodyBlocks->removeElement($bodyBlock);
+    }
 
-	public function getBodyBlocks() {
-		return $this->bodyBlocks;
-	}
+    public function getBodyBlocks()
+    {
+        return $this->bodyBlocks;
+    }
 
-	public function resetBodyBlocks() {
-		$this->bodyBlocks = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function resetBodyBlocks()
+    {
+        $this->bodyBlocks = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	// BodyBlockPictureCount /////
+    // BodyBlockPictureCount /////
 
-	public function setBodyBlockPictureCount($bodyBlockPictureCount) {
-		$this->bodyBlockPictureCount = $bodyBlockPictureCount;
-		return $this;
-	}
+    public function setBodyBlockPictureCount($bodyBlockPictureCount)
+    {
+        $this->bodyBlockPictureCount = $bodyBlockPictureCount;
+        return $this;
+    }
 
-	public function getBodyBlockPictureCount() {
-		return $this->bodyBlockPictureCount;
-	}
+    public function getBodyBlockPictureCount()
+    {
+        return $this->bodyBlockPictureCount;
+    }
 
-	// BodyBlockVideoCount /////
+    // BodyBlockVideoCount /////
 
-	public function setBodyBlockVideoCount($bodyBlockVideoCount) {
-		$this->bodyBlockVideoCount = $bodyBlockVideoCount;
-		return $this;
-	}
+    public function setBodyBlockVideoCount($bodyBlockVideoCount)
+    {
+        $this->bodyBlockVideoCount = $bodyBlockVideoCount;
+        return $this;
+    }
 
-	public function getBodyBlockVideoCount() {
-		return $this->bodyBlockVideoCount;
-	}
-
+    public function getBodyBlockVideoCount()
+    {
+        return $this->bodyBlockVideoCount;
+    }
 }

@@ -2,12 +2,12 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface BasicEmbeddableInterface extends TypableInterface, IdentifiableInterface, TitledInterface, AuthoredInterface {
+interface BasicEmbeddableInterface extends TypableInterface, IdentifiableInterface, TitledInterface, AuthoredInterface
+{
 
-	// Sticker /////
+    // Sticker /////
 
-	public function setSticker(\Ladb\CoreBundle\Entity\Core\Picture $sticker);
+    public function setSticker(\Ladb\CoreBundle\Entity\Core\Picture $sticker);
 
-	public function getSticker();
-
+    public function getSticker();
 }

@@ -11,75 +11,82 @@ use Ladb\CoreBundle\Validator\Constraints as LadbAssert;
  * @ORM\Table("tbl_workflow_label")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Workflow\LabelRepository")
  */
-class Label {
+class Label
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Workflow\Label';
-	const COLOR_SEQUENCE = [ '#61BD4F', '#F2D600', '#FFAB4A', '#EB5A46', '#C377E0', '#0079BF', '#00C2E0', '#51E898', '#FF80CE', '#4D4D4D' ];
+    const CLASS_NAME = 'LadbCoreBundle:Workflow\Label';
+    const COLOR_SEQUENCE = [ '#61BD4F', '#F2D600', '#FFAB4A', '#EB5A46', '#C377E0', '#0079BF', '#00C2E0', '#51E898', '#FF80CE', '#4D4D4D' ];
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(type="string", length=40)
-	 * @Assert\NotBlank()
-	 */
-	private $name;
+    /**
+     * @ORM\Column(type="string", length=40)
+     * @Assert\NotBlank()
+     */
+    private $name;
 
-	/**
-	 * @ORM\Column(type="string", length=7)
-	 * @LadbAssert\ValidHexColor()
-	 */
-	private $color;
+    /**
+     * @ORM\Column(type="string", length=7)
+     * @LadbAssert\ValidHexColor()
+     */
+    private $color;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Workflow\Workflow", inversedBy="labels")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $workflow;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Workflow\Workflow", inversedBy="labels")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $workflow;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// Name /////
+    // Name /////
 
-	public function setName($name) {
-		$this->name = $name;
-		return $this;
-	}
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-	public function getName() {
-		return $this->name;
-	}
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	// Color /////
+    // Color /////
 
-	public function setColor($color) {
-		$this->color = $color;
-		return $this;
-	}
+    public function setColor($color)
+    {
+        $this->color = $color;
+        return $this;
+    }
 
-	public function getColor() {
-		return $this->color;
-	}
+    public function getColor()
+    {
+        return $this->color;
+    }
 
-	// Workflow /////
+    // Workflow /////
 
-	public function setWorkflow(\Ladb\CoreBundle\Entity\Workflow\Workflow $workflow = null) {
-		$this->workflow = $workflow;
-		return $this;
-	}
+    public function setWorkflow(\Ladb\CoreBundle\Entity\Workflow\Workflow $workflow = null)
+    {
+        $this->workflow = $workflow;
+        return $this;
+    }
 
-	public function getWorkflow() {
-		return $this->workflow;
-	}
-
+    public function getWorkflow()
+    {
+        return $this->workflow;
+    }
 }

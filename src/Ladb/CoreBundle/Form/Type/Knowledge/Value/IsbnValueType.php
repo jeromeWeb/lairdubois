@@ -8,42 +8,45 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class IsbnValueType extends AbstractValueType {
+class IsbnValueType extends AbstractValueType
+{
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		parent::buildForm($builder, $options);
-		$builder
-			->add('rawIsbn', TextType::class)
-		;
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        parent::buildForm($builder, $options);
+        $builder
+            ->add('rawIsbn', TextType::class)
+        ;
 
-		$builder->addEventListener(
-			FormEvents::POST_SUBMIT,
-			function(FormEvent $event) {
-				$value = $event->getForm()->getData();
+        $builder->addEventListener(
+            FormEvents::POST_SUBMIT,
+            function (FormEvent $event) {
+                $value = $event->getForm()->getData();
 
-				$rawIsbn = $value->getRawIsbn();
+                $rawIsbn = $value->getRawIsbn();
 
-				$isbn = new \Biblys\Isbn\Isbn($rawIsbn);
-				if ($isbn->isValid()) {
+                $isbn = new \Biblys\Isbn\Isbn($rawIsbn);
+                if ($isbn->isValid()) {
 
-					$formatedIsbn = $isbn->format('ISBN-13');
-					$value->setData($formatedIsbn);
+                    $formatedIsbn = $isbn->format('ISBN-13');
+                    $value->setData($formatedIsbn);
 
-				}
-			}
-		);
+                }
+            }
+        );
 
-	}
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		parent::configureOptions($resolver);
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Knowledge\Value\Isbn',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        parent::configureOptions($resolver);
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Knowledge\Value\Isbn',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_knowledge_value_isbn';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_knowledge_value_isbn';
+    }
 }

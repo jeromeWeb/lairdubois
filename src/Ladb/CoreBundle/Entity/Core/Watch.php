@@ -11,71 +11,78 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * })
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Core\WatchRepository")
  */
-class Watch {
+class Watch
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Core\Watch';
+    const CLASS_NAME = 'LadbCoreBundle:Core\Watch';
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(name="entity_type", type="smallint", nullable=false)
-	 */
-	private $entityType;
+    /**
+     * @ORM\Column(name="entity_type", type="smallint", nullable=false)
+     */
+    private $entityType;
 
-	/**
-	 * @ORM\Column(name="entity_id", type="integer", nullable=false)
-	 */
-	private $entityId;
+    /**
+     * @ORM\Column(name="entity_id", type="integer", nullable=false)
+     */
+    private $entityId;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// EntityType /////
+    // EntityType /////
 
-	public function getEntityType() {
-		return $this->entityType;
-	}
+    public function getEntityType()
+    {
+        return $this->entityType;
+    }
 
-	public function setEntityType($entityType) {
-		$this->entityType = $entityType;
-	}
+    public function setEntityType($entityType)
+    {
+        $this->entityType = $entityType;
+    }
 
-	// EntityId /////
+    // EntityId /////
 
-	public function getEntityId() {
-		return $this->entityId;
-	}
+    public function getEntityId()
+    {
+        return $this->entityId;
+    }
 
-	public function setEntityId($entityId) {
-		$this->entityId = $entityId;
-		return $this;
-	}
+    public function setEntityId($entityId)
+    {
+        $this->entityId = $entityId;
+        return $this;
+    }
 
-	// User /////
+    // User /////
 
-	public function getUser() {
-		return $this->user;
-	}
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	public function setUser($user) {
-		$this->user = $user;
-		return $this;
-	}
-
+    public function setUser($user)
+    {
+        $this->user = $user;
+        return $this;
+    }
 }

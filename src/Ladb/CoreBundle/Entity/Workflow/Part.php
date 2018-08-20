@@ -11,90 +11,99 @@ use Ladb\CoreBundle\Validator\Constraints as LadbAssert;
  * @ORM\Table("tbl_workflow_part")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Workflow\PartRepository")
  */
-class Part {
+class Part
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Workflow\Part';
+    const CLASS_NAME = 'LadbCoreBundle:Workflow\Part';
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(type="string", length=10, nullable=true)
-	 */
-	private $number;
+    /**
+     * @ORM\Column(type="string", length=10, nullable=true)
+     */
+    private $number;
 
-	/**
-	 * @ORM\Column(type="string", length=40)
-	 * @Assert\NotBlank()
-	 */
-	private $name;
+    /**
+     * @ORM\Column(type="string", length=40)
+     * @Assert\NotBlank()
+     */
+    private $name;
 
-	/**
-	 * @ORM\Column(type="integer")
-	 * @Assert\GreaterThan(0)
-	 */
-	private $count = 1;
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\GreaterThan(0)
+     */
+    private $count = 1;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Workflow\Workflow", inversedBy="parts")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $workflow;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Workflow\Workflow", inversedBy="parts")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $workflow;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// Number /////
+    // Number /////
 
-	public function setNumber($number) {
-		$this->number = $number;
-		return $this;
-	}
+    public function setNumber($number)
+    {
+        $this->number = $number;
+        return $this;
+    }
 
-	public function getNumber() {
-		return $this->number;
-	}
+    public function getNumber()
+    {
+        return $this->number;
+    }
 
-	// Name /////
+    // Name /////
 
-	public function setName($name) {
-		$this->name = $name;
-		return $this;
-	}
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-	public function getName() {
-		return $this->name;
-	}
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	// Count /////
+    // Count /////
 
-	public function setCount($count) {
-		$this->count = $count;
-		return $this;
-	}
+    public function setCount($count)
+    {
+        $this->count = $count;
+        return $this;
+    }
 
-	public function getCount() {
-		return $this->count;
-	}
+    public function getCount()
+    {
+        return $this->count;
+    }
 
-	// Workflow /////
+    // Workflow /////
 
-	public function setWorkflow(\Ladb\CoreBundle\Entity\Workflow\Workflow $workflow = null) {
-		$this->workflow = $workflow;
-		return $this;
-	}
+    public function setWorkflow(\Ladb\CoreBundle\Entity\Workflow\Workflow $workflow = null)
+    {
+        $this->workflow = $workflow;
+        return $this;
+    }
 
-	public function getWorkflow() {
-		return $this->workflow;
-	}
-
+    public function getWorkflow()
+    {
+        return $this->workflow;
+    }
 }

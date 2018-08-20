@@ -2,36 +2,36 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface LocalisableExtendedInterface extends LocalisableInterface {
+interface LocalisableExtendedInterface extends LocalisableInterface
+{
 
-	// PostalCode /////
+    // PostalCode /////
 
-	public function setPostalCode($postalCode = null);
+    public function setPostalCode($postalCode = null);
 
-	public function getPostalCode();
+    public function getPostalCode();
 
-	// Locality /////
+    // Locality /////
 
-	public function setLocality($locality = null);
+    public function setLocality($locality = null);
 
-	public function getLocality();
+    public function getLocality();
 
-	// Country /////
+    // Country /////
 
-	public function setCountry($country = null);
+    public function setCountry($country = null);
 
-	public function getCountry();
+    public function getCountry();
 
-	// GeographicalAreas /////
+    // GeographicalAreas /////
 
-	public function setGeographicalAreas($geographicalAreas = null);
+    public function setGeographicalAreas($geographicalAreas = null);
 
-	public function getGeographicalAreas();
+    public function getGeographicalAreas();
 
-	// FormattedAddress /////
+    // FormattedAddress /////
 
-	public function setFormattedAddress($formattedAddress = null);
+    public function setFormattedAddress($formattedAddress = null);
 
-	public function getFormattedAddress();
-
+    public function getFormattedAddress();
 }

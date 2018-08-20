@@ -13,169 +13,188 @@ use Symfony\Component\Validator\Constraints as Assert;
  * })
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Core\VoteRepository")
  */
-class Vote {
+class Vote
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Core\Vote';
+    const CLASS_NAME = 'LadbCoreBundle:Core\Vote';
 
-	const TYPE = 2;
+    const TYPE = 2;
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(name="entity_type", type="smallint", nullable=false)
-	 */
-	private $entityType;
+    /**
+     * @ORM\Column(name="entity_type", type="smallint", nullable=false)
+     */
+    private $entityType;
 
-	/**
-	 * @ORM\Column(name="entity_id", type="integer", nullable=false)
-	 */
-	private $entityId;
+    /**
+     * @ORM\Column(name="entity_id", type="integer", nullable=false)
+     */
+    private $entityId;
 
-	/**
-	 * @ORM\Column(name="parent_entity_type", type="smallint", nullable=false)
-	 */
-	private $parentEntityType;
+    /**
+     * @ORM\Column(name="parent_entity_type", type="smallint", nullable=false)
+     */
+    private $parentEntityType;
 
-	/**
-	 * @ORM\Column(name="parent_entity_id", type="integer", nullable=false)
-	 */
-	private $parentEntityId;
+    /**
+     * @ORM\Column(name="parent_entity_id", type="integer", nullable=false)
+     */
+    private $parentEntityId;
 
-	/**
-	 * @ORM\Column(name="parent_entity_field", type="string", length=40)
-	 */
-	private $parentEntityField;
+    /**
+     * @ORM\Column(name="parent_entity_field", type="string", length=40)
+     */
+    private $parentEntityField;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\Column(name="updated_at", type="datetime")
-	 * @Gedmo\Timestampable(on="update")
-	 */
-	private $updatedAt;
+    /**
+     * @ORM\Column(name="updated_at", type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updatedAt;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $user;
 
-	/**
-	 * @ORM\Column(type="smallint")
-	 */
-	private $score = 0;
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $score = 0;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// EntityType /////
+    // EntityType /////
 
-	public function getEntityType() {
-		return $this->entityType;
-	}
+    public function getEntityType()
+    {
+        return $this->entityType;
+    }
 
-	public function setEntityType($entityType) {
-		$this->entityType = $entityType;
-	}
+    public function setEntityType($entityType)
+    {
+        $this->entityType = $entityType;
+    }
 
-	// EntityId /////
+    // EntityId /////
 
-	public function getEntityId() {
-		return $this->entityId;
-	}
+    public function getEntityId()
+    {
+        return $this->entityId;
+    }
 
-	public function setEntityId($entityId) {
-		$this->entityId = $entityId;
-		return $this;
-	}
+    public function setEntityId($entityId)
+    {
+        $this->entityId = $entityId;
+        return $this;
+    }
 
-	// ParentEntityType /////
+    // ParentEntityType /////
 
-	public function getParentEntityType() {
-		return $this->parentEntityType;
-	}
+    public function getParentEntityType()
+    {
+        return $this->parentEntityType;
+    }
 
-	public function setParentEntityType($parentEntityType) {
-		$this->parentEntityType = $parentEntityType;
-	}
+    public function setParentEntityType($parentEntityType)
+    {
+        $this->parentEntityType = $parentEntityType;
+    }
 
-	// ParentEntityId /////
+    // ParentEntityId /////
 
-	public function getParentEntityId() {
-		return $this->parentEntityId;
-	}
+    public function getParentEntityId()
+    {
+        return $this->parentEntityId;
+    }
 
-	public function setParentEntityId($parentEntityId) {
-		$this->parentEntityId = $parentEntityId;
-		return $this;
-	}
+    public function setParentEntityId($parentEntityId)
+    {
+        $this->parentEntityId = $parentEntityId;
+        return $this;
+    }
 
-	// ParentEntityField /////
+    // ParentEntityField /////
 
-	public function getParentEntityField() {
-		return $this->parentEntityField;
-	}
+    public function getParentEntityField()
+    {
+        return $this->parentEntityField;
+    }
 
-	public function setParentEntityField($groupName) {
-		$this->parentEntityField = $groupName;
-	}
+    public function setParentEntityField($groupName)
+    {
+        $this->parentEntityField = $groupName;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	// UpdatedAt /////
+    // UpdatedAt /////
 
-	public function getUpdatedAt() {
-		return $this->updatedAt;
-	}
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-	public function setUpdatedAt($updatedAt) {
-		$this->updatedAt = $updatedAt;
-		return $this;
-	}
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-	// User /////
+    // User /////
 
-	public function getUser() {
-		return $this->user;
-	}
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	public function setUser(\Ladb\CoreBundle\Entity\Core\User $user) {
-		$this->user = $user;
-		return $this;
-	}
+    public function setUser(\Ladb\CoreBundle\Entity\Core\User $user)
+    {
+        $this->user = $user;
+        return $this;
+    }
 
-	// Score /////
+    // Score /////
 
-	public function getScore() {
-		return $this->score;
-	}
+    public function getScore()
+    {
+        return $this->score;
+    }
 
-	public function setScore($score) {
-		$this->score = $score;
-		return $this;
-	}
-
+    public function setScore($score)
+    {
+        $this->score = $score;
+        return $this;
+    }
 }

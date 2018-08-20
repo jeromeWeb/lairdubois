@@ -25,201 +25,205 @@ use Ladb\CoreBundle\Utils\TypableUtils;
 /**
  * @Route("/likes")
  */
-class LikeController extends Controller {
+class LikeController extends Controller
+{
 
-	/**
-	 * @Route("/{entityType}/{entityId}/create", requirements={"entityType" = "\d+", "entityId" = "\d+"}, name="core_like_create")
-	 * @Template("LadbCoreBundle:Core/Like:create-xhr.html.twig")
-	 */
-	public function createAction(Request $request, $entityType, $entityId) {
+    /**
+     * @Route("/{entityType}/{entityId}/create", requirements={"entityType" = "\d+", "entityId" = "\d+"}, name="core_like_create")
+     * @Template("LadbCoreBundle:Core/Like:create-xhr.html.twig")
+     */
+    public function createAction(Request $request, $entityType, $entityId)
+    {
 
-		// Retrieve related entity
+        // Retrieve related entity
 
-		$entity = $this->_retrieveRelatedEntity($entityType, $entityId);
-		if ($entity instanceof HiddableInterface && !$entity->getIsPublic()) {
-			throw $this->createNotFoundException('Hidden entity could not be liked.');
-		}
+        $entity = $this->_retrieveRelatedEntity($entityType, $entityId);
+        if ($entity instanceof HiddableInterface && !$entity->getIsPublic()) {
+            throw $this->createNotFoundException('Hidden entity could not be liked.');
+        }
 
-		$om = $this->getDoctrine()->getManager();
-		$likeRepository = $om->getRepository(Like::CLASS_NAME);
+        $om = $this->getDoctrine()->getManager();
+        $likeRepository = $om->getRepository(Like::CLASS_NAME);
 
-		if (!$likeRepository->existsByEntityTypeAndEntityIdAndUser($entityType, $entityId, $this->getUser())) {
+        if (!$likeRepository->existsByEntityTypeAndEntityIdAndUser($entityType, $entityId, $this->getUser())) {
 
-			$selfLike = $entity instanceof AuthoredInterface && $entity->getUser()->getId() == $this->getUser()->getId();
-			if (!$selfLike) {
+            $selfLike = $entity instanceof AuthoredInterface && $entity->getUser()->getId() == $this->getUser()->getId();
+            if (!$selfLike) {
 
-				$entity->incrementLikeCount();
+                $entity->incrementLikeCount();
 
-				// Prepare like
+                // Prepare like
 
-				$like = new Like();
-				$like->setEntityType($entityType);
-				$like->setEntityId($entityId);
-				$like->setUser($this->getUser());
+                $like = new Like();
+                $like->setEntityType($entityType);
+                $like->setEntityId($entityId);
+                $like->setUser($this->getUser());
 
-				$this->getUser()->getMeta()->incrementSentLikeCount();
-				if ($entity instanceof AuthoredInterface) {
-					$like->setEntityUser($entity->getUser());
-					$entity->getUser()->getMeta()->incrementRecievedLikeCount();
-				}
+                $this->getUser()->getMeta()->incrementSentLikeCount();
+                if ($entity instanceof AuthoredInterface) {
+                    $like->setEntityUser($entity->getUser());
+                    $entity->getUser()->getMeta()->incrementRecievedLikeCount();
+                }
 
-				$om->persist($like);
+                $om->persist($like);
 
-				// Update index
-				if ($entity instanceof IndexableInterface) {
-					$searchUtils = $this->get(SearchUtils::NAME);
-					$searchUtils->replaceEntityInIndex($entity);
-				}
+                // Update index
+                if ($entity instanceof IndexableInterface) {
+                    $searchUtils = $this->get(SearchUtils::NAME);
+                    $searchUtils->replaceEntityInIndex($entity);
+                }
 
-				// Create activity
-				$activityUtils = $this->get(ActivityUtils::NAME);
-				$activityUtils->createLikeActivity($like, false);
+                // Create activity
+                $activityUtils = $this->get(ActivityUtils::NAME);
+                $activityUtils->createLikeActivity($like, false);
 
-				// Auto watch
-				if ($entity instanceof WatchableInterface) {
-					$watchableUtils = $this->get(WatchableUtils::NAME);
-					$watchableUtils->autoCreateWatch($entity, $this->getUser());
-				}
+                // Auto watch
+                if ($entity instanceof WatchableInterface) {
+                    $watchableUtils = $this->get(WatchableUtils::NAME);
+                    $watchableUtils->autoCreateWatch($entity, $this->getUser());
+                }
 
-				// Publish a webpush notification in queue
-				if ($entity instanceof AuthoredInterface) {
-					$webpushNotificationUtils = $this->get(WebpushNotificationUtils::class);
-					$webpushNotificationUtils->enqueueNewLikeNotification($like, $entity);
-				}
+                // Publish a webpush notification in queue
+                if ($entity instanceof AuthoredInterface) {
+                    $webpushNotificationUtils = $this->get(WebpushNotificationUtils::class);
+                    $webpushNotificationUtils->enqueueNewLikeNotification($like, $entity);
+                }
 
-				$om->flush();
+                $om->flush();
 
-			}
+            }
 
-		}
+        }
 
-		if (!$request->isXmlHttpRequest()) {
+        if (!$request->isXmlHttpRequest()) {
 
-			// Return to
-			$returnToUrl = $request->get('rtu');
-			if (is_null($returnToUrl)) {
-				$returnToUrl = $request->headers->get('referer');
-			}
+            // Return to
+            $returnToUrl = $request->get('rtu');
+            if (is_null($returnToUrl)) {
+                $returnToUrl = $request->headers->get('referer');
+            }
 
-			return $this->redirect($returnToUrl);
-		}
+            return $this->redirect($returnToUrl);
+        }
 
-		$likableUtils = $this->get(LikableUtils::NAME);
+        $likableUtils = $this->get(LikableUtils::NAME);
 
-		return array(
-			'likeContext' => $likableUtils->getLikeContext($entity, $this->getUser()),
-		);
-	}
+        return array(
+            'likeContext' => $likableUtils->getLikeContext($entity, $this->getUser()),
+        );
+    }
 
-	private function _retrieveRelatedEntity($entityType, $entityId) {
-		$typableUtils = $this->get(TypableUtils::NAME);
-		try {
-			$entity = $typableUtils->findTypable($entityType, $entityId);
-		} catch (\Exception $e) {
-			throw $this->createNotFoundException($e->getMessage());
-		}
-		if (!($entity instanceof LikableInterface)) {
-			throw $this->createNotFoundException('Entity must implements LikableInterface.');
-		}
-		return $entity;
-	}
+    private function _retrieveRelatedEntity($entityType, $entityId)
+    {
+        $typableUtils = $this->get(TypableUtils::NAME);
+        try {
+            $entity = $typableUtils->findTypable($entityType, $entityId);
+        } catch (\Exception $e) {
+            throw $this->createNotFoundException($e->getMessage());
+        }
+        if (!($entity instanceof LikableInterface)) {
+            throw $this->createNotFoundException('Entity must implements LikableInterface.');
+        }
+        return $entity;
+    }
 
-	/**
-	 * @Route("/{id}/delete", requirements={"id" = "\d+"}, name="core_like_delete")
-	 * @Template("LadbCoreBundle:Core/Like:delete-xhr.html.twig")
-	 */
-	public function deleteAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$likeRepository = $om->getRepository(Like::CLASS_NAME);
+    /**
+     * @Route("/{id}/delete", requirements={"id" = "\d+"}, name="core_like_delete")
+     * @Template("LadbCoreBundle:Core/Like:delete-xhr.html.twig")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $likeRepository = $om->getRepository(Like::CLASS_NAME);
 
-		$like = $likeRepository->findOneById($id);
-		if (is_null($like)) {
-			throw $this->createNotFoundException('Unable to find Like entity (id='.$id.').');
-		}
-		if ($like->getUser()->getId() != $this->getUser()->getId()) {
-			throw $this->createNotFoundException('Not allowed (core_like_delete)');
-		}
+        $like = $likeRepository->findOneById($id);
+        if (is_null($like)) {
+            throw $this->createNotFoundException('Unable to find Like entity (id=' . $id . ').');
+        }
+        if ($like->getUser()->getId() != $this->getUser()->getId()) {
+            throw $this->createNotFoundException('Not allowed (core_like_delete)');
+        }
 
-		// Retrieve related entity
+        // Retrieve related entity
 
-		$entity = $this->_retrieveRelatedEntity($like->getEntityType(), $like->getEntityId());
-		if ($entity instanceof HiddableInterface && !$entity->getIsPublic()) {
-			throw $this->createNotFoundException('Hidden entity could not be unliked.');
-		}
+        $entity = $this->_retrieveRelatedEntity($like->getEntityType(), $like->getEntityId());
+        if ($entity instanceof HiddableInterface && !$entity->getIsPublic()) {
+            throw $this->createNotFoundException('Hidden entity could not be unliked.');
+        }
 
-		// Update related entity
-		$entity->incrementLikeCount(-1);
+        // Update related entity
+        $entity->incrementLikeCount(-1);
 
-		// Decrement recieved like count on entity author
-		if ($entity instanceof AuthoredInterface) {
-			$entity->getUser()->getMeta()->incrementRecievedLikeCount(-1);
-		}
+        // Decrement recieved like count on entity author
+        if ($entity instanceof AuthoredInterface) {
+            $entity->getUser()->getMeta()->incrementRecievedLikeCount(-1);
+        }
 
-		// Decrement sent like count on like user
-		$like->getUser()->getMeta()->incrementSentLikeCount(-1);
+        // Decrement sent like count on like user
+        $like->getUser()->getMeta()->incrementSentLikeCount(-1);
 
-		// Delete activities
-		$activityUtils = $this->get(ActivityUtils::NAME);
-		$activityUtils->deleteActivitiesByLike($like, false);
+        // Delete activities
+        $activityUtils = $this->get(ActivityUtils::NAME);
+        $activityUtils->deleteActivitiesByLike($like, false);
 
-		// Delete like
-		$om->remove($like);
-		$om->flush();
+        // Delete like
+        $om->remove($like);
+        $om->flush();
 
-		// Update index
-		if ($entity instanceof IndexableInterface) {
-			$searchUtils = $this->get(SearchUtils::NAME);
-			$searchUtils->replaceEntityInIndex($entity);
-		}
+        // Update index
+        if ($entity instanceof IndexableInterface) {
+            $searchUtils = $this->get(SearchUtils::NAME);
+            $searchUtils->replaceEntityInIndex($entity);
+        }
 
-		if (!$request->isXmlHttpRequest()) {
+        if (!$request->isXmlHttpRequest()) {
 
-			// Return to (use referer because the user is already logged)
-			$returnToUrl = $request->headers->get('referer');
+            // Return to (use referer because the user is already logged)
+            $returnToUrl = $request->headers->get('referer');
 
-			return $this->redirect($returnToUrl);
-		}
+            return $this->redirect($returnToUrl);
+        }
 
-		$likableUtils = $this->get(LikableUtils::NAME);
+        $likableUtils = $this->get(LikableUtils::NAME);
 
-		return array(
-			'likeContext' => $likableUtils->getLikeContext($entity, $this->getUser()),
-		);
-	}
+        return array(
+            'likeContext' => $likableUtils->getLikeContext($entity, $this->getUser()),
+        );
+    }
 
-	/**
-	 * @Route("/{entityType}/{entityId}", requirements={"entityType" = "\d+", "entityId" = "\d+"}, name="core_like_list_entity")
-	 * @Route("/{entityType}/{entityId}/{page}", requirements={"entityType" = "\d+", "entityId" = "\d+", "page" = "\d+"}, name="core_like_list_entity_page")
-	 * @Template("LadbCoreBundle:Core/Like:list-byentity.html.twig")
-	 */
-	public function listEntityAction(Request $request, $entityType, $entityId, $page = 0) {
-		$om = $this->getDoctrine()->getManager();
-		$likeRepository = $om->getRepository(Like::CLASS_NAME);
-		$paginatorUtils = $this->get(PaginatorUtils::NAME);
+    /**
+     * @Route("/{entityType}/{entityId}", requirements={"entityType" = "\d+", "entityId" = "\d+"}, name="core_like_list_entity")
+     * @Route("/{entityType}/{entityId}/{page}", requirements={"entityType" = "\d+", "entityId" = "\d+", "page" = "\d+"}, name="core_like_list_entity_page")
+     * @Template("LadbCoreBundle:Core/Like:list-byentity.html.twig")
+     */
+    public function listEntityAction(Request $request, $entityType, $entityId, $page = 0)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $likeRepository = $om->getRepository(Like::CLASS_NAME);
+        $paginatorUtils = $this->get(PaginatorUtils::NAME);
 
-		// Retrieve related entity
+        // Retrieve related entity
 
-		$entity = $this->_retrieveRelatedEntity($entityType, $entityId);
+        $entity = $this->_retrieveRelatedEntity($entityType, $entityId);
 
-		// Retrive likes
+        // Retrive likes
 
-		$offset = $paginatorUtils->computePaginatorOffset($page);
-		$limit = $paginatorUtils->computePaginatorLimit($page);
-		$paginator = $likeRepository->findPaginedByEntityTypeAndEntityIdJoinedOnUser($entityType, $entityId, $offset, $limit);
-		$pageUrls = $paginatorUtils->generatePrevAndNextPageUrl('core_like_list_entity_page', array( 'entityType' => $entityType, 'entityId' => $entityId ), $page, $paginator->count());
+        $offset = $paginatorUtils->computePaginatorOffset($page);
+        $limit = $paginatorUtils->computePaginatorLimit($page);
+        $paginator = $likeRepository->findPaginedByEntityTypeAndEntityIdJoinedOnUser($entityType, $entityId, $offset, $limit);
+        $pageUrls = $paginatorUtils->generatePrevAndNextPageUrl('core_like_list_entity_page', array( 'entityType' => $entityType, 'entityId' => $entityId ), $page, $paginator->count());
 
-		$parameters = array(
-			'prevPageUrl' => $pageUrls->prev,
-			'nextPageUrl' => $pageUrls->next,
-			'entity'      => $entity,
-			'authored'    => $entity instanceof AuthoredInterface,
-			'likes'       => $paginator,
-		);
+        $parameters = array(
+            'prevPageUrl' => $pageUrls->prev,
+            'nextPageUrl' => $pageUrls->next,
+            'entity'      => $entity,
+            'authored'    => $entity instanceof AuthoredInterface,
+            'likes'       => $paginator,
+        );
 
-		if ($request->isXmlHttpRequest()) {
-			return $this->render('LadbCoreBundle:Core/Like:list-byentity-xhr.html.twig', $parameters);
-		}
-		return $parameters;
-	}
-
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('LadbCoreBundle:Core/Like:list-byentity-xhr.html.twig', $parameters);
+        }
+        return $parameters;
+    }
 }

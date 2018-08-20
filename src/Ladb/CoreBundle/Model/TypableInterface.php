@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface TypableInterface {
+interface TypableInterface
+{
 
-	// Type /////
+    // Type /////
 
-	public function getType();
-
+    public function getType();
 }

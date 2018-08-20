@@ -2,24 +2,24 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface VotableParentInterface extends IdentifiableInterface, TypableInterface {
+interface VotableParentInterface extends IdentifiableInterface, TypableInterface
+{
 
-	// PositiveVoteCount /////
+    // PositiveVoteCount /////
 
-	public function incrementPositiveVoteCount($by = 1);
+    public function incrementPositiveVoteCount($by = 1);
 
-	public function getPositiveVoteCount();
+    public function getPositiveVoteCount();
 
-	// NegativeVoteCount /////
+    // NegativeVoteCount /////
 
-	public function incrementNegativeVoteCount($by = 1);
+    public function incrementNegativeVoteCount($by = 1);
 
-	public function getNegativeVoteCount();
+    public function getNegativeVoteCount();
 
-	// VoteCount /////
+    // VoteCount /////
 
-	public function incrementVoteCount($by = 1);
+    public function incrementVoteCount($by = 1);
 
-	public function getVoteCount();
-
+    public function getVoteCount();
 }

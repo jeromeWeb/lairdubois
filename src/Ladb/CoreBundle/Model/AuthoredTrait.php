@@ -2,17 +2,19 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait AuthoredTrait {
+trait AuthoredTrait
+{
 
-	// User /////
+    // User /////
 
-	public function getUser() {
-		return $this->user;
-	}
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	public function setUser(\Ladb\CoreBundle\Entity\Core\User $user) {
-		$this->user = $user;
-		return $this;
-	}
-
+    public function setUser(\Ladb\CoreBundle\Entity\Core\User $user)
+    {
+        $this->user = $user;
+        return $this;
+    }
 }

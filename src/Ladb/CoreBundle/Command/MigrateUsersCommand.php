@@ -10,144 +10,146 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateUsersCommand extends ContainerAwareCommand {
+class MigrateUsersCommand extends ContainerAwareCommand
+{
 
-	protected function configure() {
-		$this
-			->setName('ladb:migrate:users')
-			->addOption('force', null, InputOption::VALUE_NONE, 'Force updating')
-			->setDescription('Migrate users')
-			->setHelp(<<<EOT
+    protected function configure()
+    {
+        $this
+            ->setName('ladb:migrate:users')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force updating')
+            ->setDescription('Migrate users')
+            ->setHelp(<<<EOT
 The <info>ladb:migrate:users</info> command migrate users
 EOT
-			);
-	}
+            );
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
 
-		$verbose = $input->getOption('verbose');
-		$forced = $input->getOption('force');
+        $verbose = $input->getOption('verbose');
+        $forced = $input->getOption('force');
 
-		$om = $this->getContainer()->get('doctrine')->getManager();
+        $om = $this->getContainer()->get('doctrine')->getManager();
 
-		// Count users /////
+        // Count users /////
 
-		$queryBuilder = $om->createQueryBuilder();
-		$queryBuilder
-			->select(array('count(u.id)'))
-			->from('LadbCoreBundle:Core\User', 'u');
+        $queryBuilder = $om->createQueryBuilder();
+        $queryBuilder
+            ->select(array('count(u.id)'))
+            ->from('LadbCoreBundle:Core\User', 'u');
 
-		try {
-			$userCount = $queryBuilder->getQuery()->getSingleScalarResult();
-		} catch (\Doctrine\ORM\NoResultException $e) {
-			$userCount = 0;
-		}
+        try {
+            $userCount = $queryBuilder->getQuery()->getSingleScalarResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $userCount = 0;
+        }
 
-		$output->writeln('<comment> ['.$userCount.' users]</comment>');
+        $output->writeln('<comment> [' . $userCount . ' users]</comment>');
 
-		$progress = new ProgressBar($output, $userCount);
-		$progress->start();
+        $progress = new ProgressBar($output, $userCount);
+        $progress->start();
 
-		$batchSize = 1000;
-		$batchCount = $userCount / $batchSize;
+        $batchSize = 1000;
+        $batchCount = $userCount / $batchSize;
 
-		for ($batchIndex = 0; $batchIndex <= $batchCount; $batchIndex++) {
+        for ($batchIndex = 0; $batchIndex <= $batchCount; $batchIndex++) {
 
-			// Extract users /////
+            // Extract users /////
 
-			$queryBuilder = $om->createQueryBuilder();
-			$queryBuilder
-				->select(array('u'))
-				->from('LadbCoreBundle:Core\User', 'u')
-				->setFirstResult($batchIndex * $batchSize)
-				->setMaxResults($batchSize);
+            $queryBuilder = $om->createQueryBuilder();
+            $queryBuilder
+                ->select(array('u'))
+                ->from('LadbCoreBundle:Core\User', 'u')
+                ->setFirstResult($batchIndex * $batchSize)
+                ->setMaxResults($batchSize);
 
-			try {
-				$users = $queryBuilder->getQuery()->getResult();
-			} catch (\Doctrine\ORM\NoResultException $e) {
-				$users = array();
-			}
+            try {
+                $users = $queryBuilder->getQuery()->getResult();
+            } catch (\Doctrine\ORM\NoResultException $e) {
+                $users = array();
+            }
 
-			foreach ($users as $user) {
-				$progress->advance();
-				if ($verbose) {
-					$output->write('<info>Processing User username='.$user->getUsername().'...</info>');
-				}
+            foreach ($users as $user) {
+                $progress->advance();
+                if ($verbose) {
+                    $output->write('<info>Processing User username=' . $user->getUsername() . '...</info>');
+                }
 
-				$meta = $user->getMeta();
-				$meta->setBanner($user->getDeprecatedBanner());
-				$meta->setBiography($user->getDeprecatedBiography());
-				foreach ($user->getDeprecatedSkills() as $skill) {
-					$meta->addSkill($skill);
-				}
+                $meta = $user->getMeta();
+                $meta->setBanner($user->getDeprecatedBanner());
+                $meta->setBiography($user->getDeprecatedBiography());
+                foreach ($user->getDeprecatedSkills() as $skill) {
+                    $meta->addSkill($skill);
+                }
 
-				$meta->setWebsite($user->getDeprecatedWebsite());
-				$meta->setFacebook($user->getDeprecatedFacebook());
-				$meta->setTwitter($user->getDeprecatedTwitter());
-				$meta->setGoogleplus($user->getDeprecatedGoogleplus());
-				$meta->setYoutube($user->getDeprecatedYoutube());
-				$meta->setVimeo($user->getDeprecatedVimeo());
-				$meta->setPinterest($user->getDeprecatedPinterest());
-				$meta->setInstagram($user->getDeprecatedInstagram());
+                $meta->setWebsite($user->getDeprecatedWebsite());
+                $meta->setFacebook($user->getDeprecatedFacebook());
+                $meta->setTwitter($user->getDeprecatedTwitter());
+                $meta->setGoogleplus($user->getDeprecatedGoogleplus());
+                $meta->setYoutube($user->getDeprecatedYoutube());
+                $meta->setVimeo($user->getDeprecatedVimeo());
+                $meta->setPinterest($user->getDeprecatedPinterest());
+                $meta->setInstagram($user->getDeprecatedInstagram());
 
-				$meta->setAutoWatchEnabled($user->getDeprecatedAutoWatchEnabled());
-				$meta->setIncomingMessageEmailNotificationEnabled($user->getDeprecatedIncomingMessageEmailNotificationEnabled());
-				$meta->setNewFollowerEmailNotificationEnabled($user->getDeprecatedNewFollowerEmailNotificationEnabled());
-				$meta->setNewLikeEmailNotificationEnabled($user->getDeprecatedNewLikeEmailNotificationEnabled());
-				$meta->setNewVoteEmailNotificationEnabled($user->getDeprecatedNewVoteEmailNotificationEnabled());
-				$meta->setNewFollowingPostEmailNotificationEnabled($user->getDeprecatedNewFollowingPostEmailNotificationEnabled());
-				$meta->setNewWatchActivityEmailNotificationEnabled($user->getDeprecatedNewWatchActivityEmailNotificationEnabled());
-				$meta->setNewSpotlightEmailNotificationEnabled($user->getDeprecatedNewSpotlightEmailNotificationEnabled());
-				$meta->setWeekNewsEmailEnabled($user->getDeprecatedWeekNewsEmailEnabled());
+                $meta->setAutoWatchEnabled($user->getDeprecatedAutoWatchEnabled());
+                $meta->setIncomingMessageEmailNotificationEnabled($user->getDeprecatedIncomingMessageEmailNotificationEnabled());
+                $meta->setNewFollowerEmailNotificationEnabled($user->getDeprecatedNewFollowerEmailNotificationEnabled());
+                $meta->setNewLikeEmailNotificationEnabled($user->getDeprecatedNewLikeEmailNotificationEnabled());
+                $meta->setNewVoteEmailNotificationEnabled($user->getDeprecatedNewVoteEmailNotificationEnabled());
+                $meta->setNewFollowingPostEmailNotificationEnabled($user->getDeprecatedNewFollowingPostEmailNotificationEnabled());
+                $meta->setNewWatchActivityEmailNotificationEnabled($user->getDeprecatedNewWatchActivityEmailNotificationEnabled());
+                $meta->setNewSpotlightEmailNotificationEnabled($user->getDeprecatedNewSpotlightEmailNotificationEnabled());
+                $meta->setWeekNewsEmailEnabled($user->getDeprecatedWeekNewsEmailEnabled());
 
-				$meta->incrementFollowerCount($user->getDeprecatedFollowerCount());
-				$meta->incrementFollowingCount($user->getDeprecatedFollowingCount());
-				$meta->incrementRecievedLikeCount($user->getDeprecatedRecievedLikeCount());
-				$meta->incrementSentLikeCount($user->getDeprecatedSentLikeCount());
-				$meta->incrementPositiveVoteCount($user->getDeprecatedPositiveVoteCount());
-				$meta->incrementNegativeVoteCount($user->getDeprecatedNegativeVoteCount());
-				$meta->incrementUnreadMessageCount($user->getDeprecatedUnreadMessageCount());
-				$meta->incrementFreshNotificationCount($user->getDeprecatedFreshNotificationCount());
-				$meta->incrementCommentCount($user->getDeprecatedCommentCount());
+                $meta->incrementFollowerCount($user->getDeprecatedFollowerCount());
+                $meta->incrementFollowingCount($user->getDeprecatedFollowingCount());
+                $meta->incrementRecievedLikeCount($user->getDeprecatedRecievedLikeCount());
+                $meta->incrementSentLikeCount($user->getDeprecatedSentLikeCount());
+                $meta->incrementPositiveVoteCount($user->getDeprecatedPositiveVoteCount());
+                $meta->incrementNegativeVoteCount($user->getDeprecatedNegativeVoteCount());
+                $meta->incrementUnreadMessageCount($user->getDeprecatedUnreadMessageCount());
+                $meta->incrementFreshNotificationCount($user->getDeprecatedFreshNotificationCount());
+                $meta->incrementCommentCount($user->getDeprecatedCommentCount());
 
-				$meta->incrementContributionCount($user->getDeprecatedContributionCount());
+                $meta->incrementContributionCount($user->getDeprecatedContributionCount());
 
-				$meta->incrementPrivateCreationCount($user->getDeprecatedDraftCreationCount());
-				$meta->incrementPublicCreationCount($user->getDeprecatedPublishedCreationCount());
-				$meta->incrementPrivatePlanCount($user->getDeprecatedDraftPlanCount());
-				$meta->incrementPublicPlanCount($user->getDeprecatedPublishedPlanCount());
-				$meta->incrementPrivateHowtoCount($user->getDeprecatedDraftHowtoCount());
-				$meta->incrementPublicHowtoCount($user->getDeprecatedPublishedHowtoCount());
-				$meta->incrementPrivateWorkshopCount($user->getDeprecatedDraftWorkshopCount());
-				$meta->incrementPublicWorkshopCount($user->getDeprecatedPublishedWorkshopCount());
-				$meta->incrementPrivateFindCount($user->getDeprecatedDraftFindCount());
-				$meta->incrementPublicFindCount($user->getDeprecatedPublishedFindCount());
-				$meta->incrementPrivateQuestionCount($user->getDeprecatedDraftQuestionCount());
-				$meta->incrementPublicQuestionCount($user->getDeprecatedPublishedQuestionCount());
-				$meta->incrementAnswerCount($user->getDeprecatedAnswerCount());
-				$meta->incrementPrivateGraphicCount($user->getDeprecatedDraftGraphicCount());
-				$meta->incrementPublicGraphicCount($user->getDeprecatedPublishedGraphicCount());
+                $meta->incrementPrivateCreationCount($user->getDeprecatedDraftCreationCount());
+                $meta->incrementPublicCreationCount($user->getDeprecatedPublishedCreationCount());
+                $meta->incrementPrivatePlanCount($user->getDeprecatedDraftPlanCount());
+                $meta->incrementPublicPlanCount($user->getDeprecatedPublishedPlanCount());
+                $meta->incrementPrivateHowtoCount($user->getDeprecatedDraftHowtoCount());
+                $meta->incrementPublicHowtoCount($user->getDeprecatedPublishedHowtoCount());
+                $meta->incrementPrivateWorkshopCount($user->getDeprecatedDraftWorkshopCount());
+                $meta->incrementPublicWorkshopCount($user->getDeprecatedPublishedWorkshopCount());
+                $meta->incrementPrivateFindCount($user->getDeprecatedDraftFindCount());
+                $meta->incrementPublicFindCount($user->getDeprecatedPublishedFindCount());
+                $meta->incrementPrivateQuestionCount($user->getDeprecatedDraftQuestionCount());
+                $meta->incrementPublicQuestionCount($user->getDeprecatedPublishedQuestionCount());
+                $meta->incrementAnswerCount($user->getDeprecatedAnswerCount());
+                $meta->incrementPrivateGraphicCount($user->getDeprecatedDraftGraphicCount());
+                $meta->incrementPublicGraphicCount($user->getDeprecatedPublishedGraphicCount());
 
-				$meta->incrementProposalCount($user->getDeprecatedProposalCount());
-				$meta->incrementTestimonialCount($user->getDeprecatedTestimonialCount());
+                $meta->incrementProposalCount($user->getDeprecatedProposalCount());
+                $meta->incrementTestimonialCount($user->getDeprecatedTestimonialCount());
 
-				if ($verbose) {
-					$output->writeln('<comment> [Done]</comment>');
-				}
-			}
+                if ($verbose) {
+                    $output->writeln('<comment> [Done]</comment>');
+                }
+            }
 
-			if ($forced) {
-				$om->flush();
-			}
+            if ($forced) {
+                $om->flush();
+            }
 
-			unset($users);
+            unset($users);
 
-		}
+        }
 
-		$progress->finish();
+        $progress->finish();
 
-		$output->writeln('<comment>[Finished]</comment>');
+        $output->writeln('<comment>[Finished]</comment>');
 
-	}
-
+    }
 }

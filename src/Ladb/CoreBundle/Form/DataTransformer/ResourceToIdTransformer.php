@@ -8,43 +8,46 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Doctrine\Common\Persistence\ObjectManager;
 use Ladb\CoreBundle\Entity\Core\Resource;
 
-class ResourceToIdTransformer implements DataTransformerInterface {
+class ResourceToIdTransformer implements DataTransformerInterface
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function transform($resource) {
-		if (null === $resource) {
-			return '';
-		}
+    public function transform($resource)
+    {
+        if (null === $resource) {
+            return '';
+        }
 
-		if (!$resource instanceof \Ladb\CoreBundle\Entity\Core\Resource) {
-			throw new UnexpectedTypeException($resource, '\Ladb\CoreBundle\Entity\Core\Resource');
-		}
+        if (!$resource instanceof \Ladb\CoreBundle\Entity\Core\Resource) {
+            throw new UnexpectedTypeException($resource, '\Ladb\CoreBundle\Entity\Core\Resource');
+        }
 
-		return $resource->getId();
-	}
+        return $resource->getId();
+    }
 
-	public function reverseTransform($idString) {
-		if (!$idString) {
-			return null;
-		}
+    public function reverseTransform($idString)
+    {
+        if (!$idString) {
+            return null;
+        }
 
-		$id = intval($idString);
-		if ($id == 0) {
-			throw new TransformationFailedException();
-		}
-		$resource = $this->om
-			->getRepository(Resource::CLASS_NAME)
-			->find($id);
-		if (is_null($resource)) {
-			throw new TransformationFailedException();
-		}
+        $id = intval($idString);
+        if ($id == 0) {
+            throw new TransformationFailedException();
+        }
+        $resource = $this->om
+            ->getRepository(Resource::CLASS_NAME)
+            ->find($id);
+        if (is_null($resource)) {
+            throw new TransformationFailedException();
+        }
 
-		return $resource;
-	}
-
+        return $resource;
+    }
 }

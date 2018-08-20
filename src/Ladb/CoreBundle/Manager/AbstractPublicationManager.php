@@ -17,134 +17,139 @@ use Ladb\CoreBundle\Utils\LikableUtils;
 use Ladb\CoreBundle\Utils\ReportableUtils;
 use Ladb\CoreBundle\Utils\WatchableUtils;
 
-abstract class AbstractPublicationManager extends AbstractManager {
+abstract class AbstractPublicationManager extends AbstractManager
+{
 
-	/////
+    /////
 
-	public function lock(AbstractPublication $publication, $flush = true) {
-		$om = $this->getDoctrine()->getManager();
+    public function lock(AbstractPublication $publication, $flush = true)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-		$publication->setIsLocked(true);
+        $publication->setIsLocked(true);
 
-		if ($flush) {
-			$om->flush();
-		}
+        if ($flush) {
+            $om->flush();
+        }
 
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_LOCKED, new PublicationEvent($publication));
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_LOCKED, new PublicationEvent($publication));
 
-	}
+    }
 
-	public function unlock(AbstractPublication $publication, $flush = true) {
-		$om = $this->getDoctrine()->getManager();
+    public function unlock(AbstractPublication $publication, $flush = true)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-		$publication->setIsLocked(false);
+        $publication->setIsLocked(false);
 
-		if ($flush) {
-			$om->flush();
-		}
+        if ($flush) {
+            $om->flush();
+        }
 
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_UNLOCKED, new PublicationEvent($publication));
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_UNLOCKED, new PublicationEvent($publication));
 
-	}
+    }
 
-	/////
+    /////
 
-	protected function publishPublication(AbstractPublication $publication, $flush = true) {
-		$om = $this->getDoctrine()->getManager();
+    protected function publishPublication(AbstractPublication $publication, $flush = true)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-		$publication->setCreatedAt(new \DateTime());
-		$publication->setChangedAt(new \DateTime());
+        $publication->setCreatedAt(new \DateTime());
+        $publication->setChangedAt(new \DateTime());
 
-		if ($publication instanceof HiddableInterface) {
-			$publication->setVisibility(HiddableInterface::VISIBILITY_PUBLIC);
-		}
+        if ($publication instanceof HiddableInterface) {
+            $publication->setVisibility(HiddableInterface::VISIBILITY_PUBLIC);
+        }
 
-		if ($publication instanceof DraftableInterface) {
-			$publication->setIsDraft(false);
-		}
+        if ($publication instanceof DraftableInterface) {
+            $publication->setIsDraft(false);
+        }
 
-		// Delete the witness (if it exists)
-		$witnessManager = $this->get(WitnessManager::NAME);
-		$witnessManager->deleteByPublication($publication);
+        // Delete the witness (if it exists)
+        $witnessManager = $this->get(WitnessManager::NAME);
+        $witnessManager->deleteByPublication($publication);
 
-		if ($flush) {
-			$om->flush();
-		}
+        if ($flush) {
+            $om->flush();
+        }
 
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_PUBLISHED, new PublicationEvent($publication));
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_PUBLISHED, new PublicationEvent($publication));
 
-	}
+    }
 
-	protected function unpublishPublication(AbstractPublication $publication, $flush = true) {
-		$om = $this->getDoctrine()->getManager();
+    protected function unpublishPublication(AbstractPublication $publication, $flush = true)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-		if ($publication instanceof HiddableInterface) {
-			$publication->setVisibility(HiddableInterface::VISIBILITY_PRIVATE);
-		}
+        if ($publication instanceof HiddableInterface) {
+            $publication->setVisibility(HiddableInterface::VISIBILITY_PRIVATE);
+        }
 
-		if ($publication instanceof DraftableInterface) {
-			$publication->setIsDraft(true);
-		}
+        if ($publication instanceof DraftableInterface) {
+            $publication->setIsDraft(true);
+        }
 
-		// Create the witness
-		$witnessManager = $this->get(WitnessManager::NAME);
-		$witnessManager->createUnpublishedByPublication($publication, false);
+        // Create the witness
+        $witnessManager = $this->get(WitnessManager::NAME);
+        $witnessManager->createUnpublishedByPublication($publication, false);
 
-		if ($flush) {
-			$om->flush();
-		}
+        if ($flush) {
+            $om->flush();
+        }
 
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_UNPUBLISHED, new PublicationEvent($publication));
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_UNPUBLISHED, new PublicationEvent($publication));
 
-	}
+    }
 
-	protected function deletePublication(AbstractPublication $publication, $withWitness = true, $flush = true) {
+    protected function deletePublication(AbstractPublication $publication, $withWitness = true, $flush = true)
+    {
 
-		if ($publication instanceof WatchableInterface) {
-			// Delete watches
-			$watchableUtils = $this->get(WatchableUtils::NAME);
-			$watchableUtils->deleteWatches($publication, false);
-		}
+        if ($publication instanceof WatchableInterface) {
+            // Delete watches
+            $watchableUtils = $this->get(WatchableUtils::NAME);
+            $watchableUtils->deleteWatches($publication, false);
+        }
 
-		if ($publication instanceof LikableInterface) {
-			// Delete likes
-			$likableUtils = $this->get(LikableUtils::NAME);
-			$likableUtils->deleteLikes($publication, false);
-		}
+        if ($publication instanceof LikableInterface) {
+            // Delete likes
+            $likableUtils = $this->get(LikableUtils::NAME);
+            $likableUtils->deleteLikes($publication, false);
+        }
 
-		if ($publication instanceof CommentableInterface) {
-			// Delete comments
-			$commentableUtils = $this->get(CommentableUtils::NAME);
-			$commentableUtils->deleteComments($publication, false);
-		}
+        if ($publication instanceof CommentableInterface) {
+            // Delete comments
+            $commentableUtils = $this->get(CommentableUtils::NAME);
+            $commentableUtils->deleteComments($publication, false);
+        }
 
-		if ($publication instanceof ReportableInterface) {
-			// Delete reports
-			$reportableUtils = $this->get(ReportableUtils::NAME);
-			$reportableUtils->deleteReports($publication, false);
-		}
+        if ($publication instanceof ReportableInterface) {
+            // Delete reports
+            $reportableUtils = $this->get(ReportableUtils::NAME);
+            $reportableUtils->deleteReports($publication, false);
+        }
 
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_DELETED, new PublicationEvent($publication));
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_DELETED, new PublicationEvent($publication));
 
-		if ($withWitness) {
+        if ($withWitness) {
 
-			// Create the witness
-			$witnessManager = $this->get(WitnessManager::NAME);
-			$witnessManager->createDeletedByPublication($publication, false);
+            // Create the witness
+            $witnessManager = $this->get(WitnessManager::NAME);
+            $witnessManager->createDeletedByPublication($publication, false);
 
-		}
+        }
 
-		parent::deleteEntity($publication, $flush);
-	}
-
+        parent::deleteEntity($publication, $flush);
+    }
 }

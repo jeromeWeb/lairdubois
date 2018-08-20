@@ -2,36 +2,40 @@
 
 namespace Ladb\CoreBundle\Form\Model;
 
-class NewBook {
+class NewBook
+{
 
-	/**
-	 */
-	private $titleValue;
+    /**
+     */
+    private $titleValue;
 
-	/**
-	 */
-	private $coverValue;
+    /**
+     */
+    private $coverValue;
 
-	// NameValue /////
+    // NameValue /////
 
-	public function getTitleValue() {
-		return $this->titleValue;
-	}
+    public function getTitleValue()
+    {
+        return $this->titleValue;
+    }
 
-	public function setTitleValue($titleValue) {
-		$this->titleValue = $titleValue;
-		return $this;
-	}
+    public function setTitleValue($titleValue)
+    {
+        $this->titleValue = $titleValue;
+        return $this;
+    }
 
-	// GrainValue /////
+    // GrainValue /////
 
-	public function getCoverValue() {
-		return $this->coverValue;
-	}
+    public function getCoverValue()
+    {
+        return $this->coverValue;
+    }
 
-	public function setCoverValue($coverValue) {
-		$this->coverValue = $coverValue;
-		return $this;
-	}
-
+    public function setCoverValue($coverValue)
+    {
+        $this->coverValue = $coverValue;
+        return $this;
+    }
 }

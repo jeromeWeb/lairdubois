@@ -6,88 +6,93 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Ladb\CoreBundle\Entity\Core\User;
 use Ladb\CoreBundle\Repository\AbstractEntityRepository;
 
-class TookRepository extends AbstractEntityRepository {
+class TookRepository extends AbstractEntityRepository
+{
 
-	/////
+    /////
 
-	public function existsByEmbedIdentifierAndUser($embedIdentifier, User $user) {
-		$queryBuilder = $this->getEntityManager()->createQueryBuilder();
-		$queryBuilder
-			->select(array( 'count(t.id)' ))
-			->from($this->getEntityName(), 't')
-			->where('t.embedIdentifier = :embedIdentifier')
-			->andWhere('t.user = :user')
-			->setParameter('embedIdentifier', $embedIdentifier)
-			->setParameter('user', $user)
-		;
+    public function existsByEmbedIdentifierAndUser($embedIdentifier, User $user)
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 'count(t.id)' ))
+            ->from($this->getEntityName(), 't')
+            ->where('t.embedIdentifier = :embedIdentifier')
+            ->andWhere('t.user = :user')
+            ->setParameter('embedIdentifier', $embedIdentifier)
+            ->setParameter('user', $user)
+        ;
 
-		try {
-			return $queryBuilder->getQuery()->getSingleScalarResult() > 0;
-		} catch (\Doctrine\ORM\NoResultException $e) {
-			return null;
-		}
-	}
+        try {
+            return $queryBuilder->getQuery()->getSingleScalarResult() > 0;
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }
+    }
 
-	/////
+    /////
 
-	public function findOneByEmbedIdentifierAndUser($embedIdentifier, User $user) {
-		$queryBuilder = $this->getEntityManager()->createQueryBuilder();
-		$queryBuilder
-			->select(array( 't' ))
-			->from($this->getEntityName(), 't')
-			->where('t.embedIdentifier = :embedIdentifier')
-			->andWhere('t.user = :user')
-			->setParameter('embedIdentifier', $embedIdentifier)
-			->setParameter('user', $user)
-		;
+    public function findOneByEmbedIdentifierAndUser($embedIdentifier, User $user)
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 't' ))
+            ->from($this->getEntityName(), 't')
+            ->where('t.embedIdentifier = :embedIdentifier')
+            ->andWhere('t.user = :user')
+            ->setParameter('embedIdentifier', $embedIdentifier)
+            ->setParameter('user', $user)
+        ;
 
-		try {
-			return $queryBuilder->getQuery()->getSingleResult();
-		} catch (\Doctrine\ORM\NoResultException $e) {
-			return null;
-		}
-	}
+        try {
+            return $queryBuilder->getQuery()->getSingleResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }
+    }
 
-	/////
+    /////
 
-	public function findPagined($offset, $limit, $filter = 'recent') {
-		$queryBuilder = $this->getEntityManager()->createQueryBuilder();
-		$queryBuilder
-			->select(array( 't', 'mp' ))
-			->from($this->getEntityName(), 't')
-			->innerJoin('t.user', 'u')
-			->innerJoin('t.mainPicture', 'mp')
-			->setFirstResult($offset)
-			->setMaxResults($limit)
-		;
+    public function findPagined($offset, $limit, $filter = 'recent')
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 't', 'mp' ))
+            ->from($this->getEntityName(), 't')
+            ->innerJoin('t.user', 'u')
+            ->innerJoin('t.mainPicture', 'mp')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+        ;
 
-		$this->_applyCommonFilter($queryBuilder, $filter);
+        $this->_applyCommonFilter($queryBuilder, $filter);
 
-		return new Paginator($queryBuilder->getQuery());
-	}
+        return new Paginator($queryBuilder->getQuery());
+    }
 
-	private function _applyCommonFilter(&$queryBuilder, $filter) {
-		$queryBuilder
-			->addOrderBy('t.changedAt', 'DESC')
-		;
-	}
+    private function _applyCommonFilter(&$queryBuilder, $filter)
+    {
+        $queryBuilder
+            ->addOrderBy('t.changedAt', 'DESC')
+        ;
+    }
 
-	public function findPaginedByUser(User $user, $offset, $limit, $filter = 'recent') {
-		$queryBuilder = $this->getEntityManager()->createQueryBuilder();
-		$queryBuilder
-			->select(array( 't', 'u', 'mp' ))
-			->from($this->getEntityName(), 't')
-			->innerJoin('t.user', 'u')
-			->innerJoin('t.mainPicture', 'mp')
-			->where('t.user = :user')
-			->setParameter('user', $user)
-			->setFirstResult($offset)
-			->setMaxResults($limit)
-		;
+    public function findPaginedByUser(User $user, $offset, $limit, $filter = 'recent')
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 't', 'u', 'mp' ))
+            ->from($this->getEntityName(), 't')
+            ->innerJoin('t.user', 'u')
+            ->innerJoin('t.mainPicture', 'mp')
+            ->where('t.user = :user')
+            ->setParameter('user', $user)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+        ;
 
-		$this->_applyCommonFilter($queryBuilder, $filter);
+        $this->_applyCommonFilter($queryBuilder, $filter);
 
-		return new Paginator($queryBuilder->getQuery());
-	}
-
+        return new Paginator($queryBuilder->getQuery());
+    }
 }

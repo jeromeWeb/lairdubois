@@ -4,7 +4,8 @@ namespace Ladb\CoreBundle\Form\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class NewThreadAnnouncementMessage {
+class NewThreadAnnouncementMessage
+{
 
     /**
      * @Assert\NotBlank()
@@ -20,23 +21,26 @@ class NewThreadAnnouncementMessage {
 
     // Subject /////
 
-    public function setSubject($subject) {
+    public function setSubject($subject)
+    {
         $this->subject = $subject;
     }
 
-    public function getSubject() {
+    public function getSubject()
+    {
         return $this->subject;
     }
 
     // Body /////
 
-    public function setBody($body) {
+    public function setBody($body)
+    {
         $this->body = $body;
         return $this;
     }
 
-    public function getBody() {
+    public function getBody()
+    {
         return $this->body;
     }
-
 }

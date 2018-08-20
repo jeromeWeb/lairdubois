@@ -26,177 +26,192 @@ use Ladb\CoreBundle\Model\ChildInterface;
  * @LadbAssert\ArticleBody()
  * @LadbAssert\BodyBlocks()
  */
-class Article extends AbstractPublication implements AuthoredInterface, TitledInterface, BlockBodiedInterface, DraftableInterface, WatchableChildInterface, BasicEmbeddableInterface, ChildInterface {
+class Article extends AbstractPublication implements AuthoredInterface, TitledInterface, BlockBodiedInterface, DraftableInterface, WatchableChildInterface, BasicEmbeddableInterface, ChildInterface
+{
 
-	use TitledTrait, BlockBodiedTrait;
-	use DraftableTrait, BasicEmbeddableTrait;
+    use TitledTrait, BlockBodiedTrait;
+    use DraftableTrait, BasicEmbeddableTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Howto\Article';
-	const TYPE = 107;
+    const CLASS_NAME = 'LadbCoreBundle:Howto\Article';
+    const TYPE = 107;
 
-	const MAX_SORT_INDEX = 2147483647;
+    const MAX_SORT_INDEX = 2147483647;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Howto\Howto", inversedBy="articles")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $howto;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Howto\Howto", inversedBy="articles")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $howto;
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=4)
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
-	 * @ladbAssert\UpperCaseRatio()
-	 */
-	private $title;
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4)
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
+     * @ladbAssert\UpperCaseRatio()
+     */
+    private $title;
 
-	/**
-	 * @Gedmo\Slug(fields={"title"}, separator="-")
-	 * @ORM\Column(type="string", length=100, unique=true)
-	 */
-	private $slug;
+    /**
+     * @Gedmo\Slug(fields={"title"}, separator="-")
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $slug;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 */
-	private $body;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    private $body;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 */
-	private $bodyExtract;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    private $bodyExtract;
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Block\AbstractBlock", cascade={"persist", "remove"})
-	 * @ORM\JoinTable(name="tbl_howto_article_body_block", inverseJoinColumns={@ORM\JoinColumn(name="block_id", referencedColumnName="id", unique=true, onDelete="cascade")})
-	 * @ORM\OrderBy({"sortIndex" = "ASC"})
-	 * @Assert\Count(min=1)
-	 */
-	private $bodyBlocks;
+    /**
+     * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Block\AbstractBlock", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="tbl_howto_article_body_block", inverseJoinColumns={@ORM\JoinColumn(name="block_id", referencedColumnName="id", unique=true, onDelete="cascade")})
+     * @ORM\OrderBy({"sortIndex" = "ASC"})
+     * @Assert\Count(min=1)
+     */
+    private $bodyBlocks;
 
-	/**
-	 * @ORM\Column(type="integer", name="body_block_picture_count")
-	 */
-	private $bodyBlockPictureCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="body_block_picture_count")
+     */
+    private $bodyBlockPictureCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="body_block_video_count")
-	 */
-	private $bodyBlockVideoCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="body_block_video_count")
+     */
+    private $bodyBlockVideoCount = 0;
 
-	/**
-	 * @ORM\Column(name="is_draft", type="boolean")
-	 */
-	protected $isDraft = true;
+    /**
+     * @ORM\Column(name="is_draft", type="boolean")
+     */
+    protected $isDraft = true;
 
-	/**
-	 * @ORM\Column(type="integer")
-	 */
-	private $sortIndex = 0;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $sortIndex = 0;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(name="sticker_id", nullable=true)
-	 */
-	private $sticker;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(name="sticker_id", nullable=true)
+     */
+    private $sticker;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->bodyBlocks = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->bodyBlocks = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	/////
+    /////
 
-	// NotificationStrategy /////
+    // NotificationStrategy /////
 
-	public function getNotificationStrategy() {
-		return self::NOTIFICATION_STRATEGY_FOLLOWER | self::NOTIFICATION_STRATEGY_WATCH;
-	}
+    public function getNotificationStrategy()
+    {
+        return self::NOTIFICATION_STRATEGY_FOLLOWER | self::NOTIFICATION_STRATEGY_WATCH;
+    }
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return Article::TYPE;
-	}
+    public function getType()
+    {
+        return Article::TYPE;
+    }
 
-	// Howto /////
+    // Howto /////
 
-    public function setHowto(\Ladb\CoreBundle\Entity\Howto\Howto $howto = null) {
+    public function setHowto(\Ladb\CoreBundle\Entity\Howto\Howto $howto = null)
+    {
         $this->howto = $howto;
         return $this;
     }
 
-    public function getHowto() {
+    public function getHowto()
+    {
         return $this->howto;
     }
 
-	// User /////
+    // User /////
 
-	public function getUser() {
-		if (is_null($this->howto)) {
-			return null;
-		}
-		return $this->howto->getUser();
-	}
+    public function getUser()
+    {
+        if (is_null($this->howto)) {
+            return null;
+        }
+        return $this->howto->getUser();
+    }
 
     // Slug /////
 
-    public function setSlug($slug) {
+    public function setSlug($slug)
+    {
         $this->slug = $slug;
         return $this;
     }
 
-    public function getSlug() {
+    public function getSlug()
+    {
         return $this->slug;
     }
 
-    public function getSluggedId() {
-        return $this->id.'-'.$this->slug;
+    public function getSluggedId()
+    {
+        return $this->id . '-' . $this->slug;
     }
 
-	// MainPicture /////
+    // MainPicture /////
 
-	public function getMainPicture() {
-		foreach ($this->getBodyBlocks() as $bodyBlock) {
-			if ($bodyBlock instanceof Gallery) {
-				$pictures = $bodyBlock->getPictures();
-				if ($pictures->count() > 0) {
-					return $pictures->first();
-				}
-			}
-		}
-		return null;
-	}
+    public function getMainPicture()
+    {
+        foreach ($this->getBodyBlocks() as $bodyBlock) {
+            if ($bodyBlock instanceof Gallery) {
+                $pictures = $bodyBlock->getPictures();
+                if ($pictures->count() > 0) {
+                    return $pictures->first();
+                }
+            }
+        }
+        return null;
+    }
 
-	// SortIndex /////
+    // SortIndex /////
 
-	public function setSortIndex($sortIndex) {
-		$this->sortIndex = $sortIndex;
-		return $this;
-	}
+    public function setSortIndex($sortIndex)
+    {
+        $this->sortIndex = $sortIndex;
+        return $this;
+    }
 
-	public function getSortIndex() {
-		return $this->sortIndex;
-	}
+    public function getSortIndex()
+    {
+        return $this->sortIndex;
+    }
 
-	// ParentEntityType /////
+    // ParentEntityType /////
 
-	public function getParentEntityType() {
-		return $this->getHowto()->getType();
-	}
+    public function getParentEntityType()
+    {
+        return $this->getHowto()->getType();
+    }
 
-	// ParentEntityId /////
+    // ParentEntityId /////
 
-	public function getParentEntityId() {
-		return $this->getHowto()->getId();
-	}
+    public function getParentEntityId()
+    {
+        return $this->getHowto()->getId();
+    }
 
-	// ParentEntity /////
+    // ParentEntity /////
 
-	public function getParentEntity() {
-		return $this->getHowto();
-	}
-
+    public function getParentEntity()
+    {
+        return $this->getHowto();
+    }
 }

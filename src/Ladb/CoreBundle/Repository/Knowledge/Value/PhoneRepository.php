@@ -2,6 +2,7 @@
 
 namespace Ladb\CoreBundle\Repository\Knowledge\Value;
 
-class PhoneRepository extends BaseValueRepository {
+class PhoneRepository extends BaseValueRepository
+{
 
 }

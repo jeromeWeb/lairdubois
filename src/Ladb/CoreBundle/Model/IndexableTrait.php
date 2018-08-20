@@ -2,12 +2,13 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait IndexableTrait {
+trait IndexableTrait
+{
 
-	// IsIndexable /////
+    // IsIndexable /////
 
-	public function isIndexable() {
-		return true;
-	}
-
+    public function isIndexable()
+    {
+        return true;
+    }
 }

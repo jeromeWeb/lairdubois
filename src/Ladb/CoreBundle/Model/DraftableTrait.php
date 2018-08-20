@@ -2,17 +2,19 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait DraftableTrait {
+trait DraftableTrait
+{
 
-	// IsDraft /////
+    // IsDraft /////
 
-	public function setIsDraft($isDraft) {
-		$this->isDraft = $isDraft;
-		return $this;
-	}
+    public function setIsDraft($isDraft)
+    {
+        $this->isDraft = $isDraft;
+        return $this;
+    }
 
-	public function getIsDraft() {
-		return $this->isDraft;
-	}
-
+    public function getIsDraft()
+    {
+        return $this->isDraft;
+    }
 }

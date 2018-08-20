@@ -9,70 +9,77 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table("tbl_message_meta")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Message\MessageMetaRepository")
  */
-class MessageMeta {
+class MessageMeta
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Message\MessageMeta';
+    const CLASS_NAME = 'LadbCoreBundle:Message\MessageMeta';
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Message\Message", inversedBy="metas")
-	 */
-	private $message;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Message\Message", inversedBy="metas")
+     */
+    private $message;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(name="participant_user_id", referencedColumnName="id")
-	 */
-	private $participant;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(name="participant_user_id", referencedColumnName="id")
+     */
+    private $participant;
 
-	/**
-	 * @ORM\Column(type="boolean", name="is_read")
-	 */
-	private $isRead = false;
+    /**
+     * @ORM\Column(type="boolean", name="is_read")
+     */
+    private $isRead = false;
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// Message /////
+    // Message /////
 
-	public function getMessage() {
-		return $this->message;
-	}
+    public function getMessage()
+    {
+        return $this->message;
+    }
 
-	public function setMessage(\Ladb\CoreBundle\Entity\Message\Message $message) {
-		$this->message = $message;
-		return $this;
-	}
+    public function setMessage(\Ladb\CoreBundle\Entity\Message\Message $message)
+    {
+        $this->message = $message;
+        return $this;
+    }
 
-	// Participant /////
+    // Participant /////
 
-	public function getParticipant() {
-		return $this->participant;
-	}
+    public function getParticipant()
+    {
+        return $this->participant;
+    }
 
-	public function setParticipant(\Ladb\CoreBundle\Entity\Core\User $participant) {
-		$this->participant = $participant;
-		return $this;
-	}
+    public function setParticipant(\Ladb\CoreBundle\Entity\Core\User $participant)
+    {
+        $this->participant = $participant;
+        return $this;
+    }
 
-	// IsRead /////
+    // IsRead /////
 
-	public function getIsRead() {
-		return $this->isRead;
-	}
+    public function getIsRead()
+    {
+        return $this->isRead;
+    }
 
-	public function setIsRead($isRead) {
-		$this->isRead = $isRead;
-		return $this;
-	}
-
+    public function setIsRead($isRead)
+    {
+        $this->isRead = $isRead;
+        return $this;
+    }
 }

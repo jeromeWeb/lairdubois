@@ -29,521 +29,517 @@ use Ladb\CoreBundle\Utils\PropertyUtils;
 use Ladb\CoreBundle\Utils\SearchUtils;
 use Ladb\CoreBundle\Utils\WatchableUtils;
 
-
 /**
  * @Route("/fournisseurs")
  */
-class ProviderController extends Controller {
-
-	/**
-	 * @Route("/new", name="core_provider_new")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:new.html.twig")
-	 */
-	public function newAction() {
-
-		$newProvider = new NewProvider();
-		$form = $this->createForm(NewProviderType::class, $newProvider);
-
-		return array(
-			'form' => $form->createView(),
-		);
-	}
-
-	/**
-	 * @Route("/create", name="core_provider_create")
-	 * @Method("POST")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:new.html.twig")
-	 */
-	public function createAction(Request $request) {
-		$om = $this->getDoctrine()->getManager();
-		$dispatcher = $this->get('event_dispatcher');
-
-		$newProvider = new NewProvider();
-		$form = $this->createForm(NewProviderType::class, $newProvider);
-		$form->handleRequest($request);
-
-		if ($form->isValid()) {
-
-			$signValue = $newProvider->getSignValue();
-			$logoValue = $newProvider->getLogoValue();
-			$user = $this->getUser();
-
-			$provider = new Provider();
-			$provider->setSign($signValue->getData());
-			$provider->setBrand($signValue->getBrand());
-			$provider->setStore($signValue->getStore());
-			$provider->incrementContributorCount();
-
-			$om->persist($provider);
-			$om->flush();	// Need to save provider to be sure ID is generated
-
-			$provider->addSignValue($signValue);
-			$provider->addLogoValue($logoValue);
-
-			// Dispatch knowledge events
-			$dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($provider, array( 'field' => Provider::FIELD_SIGN, 'value' => $signValue )));
-			$dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($provider, array( 'field' => Provider::FIELD_LOGO, 'value' => $logoValue )));
-
-			$signValue->setParentEntity($provider);
-			$signValue->setParentEntityField(Provider::FIELD_SIGN);
-			$signValue->setUser($user);
-
-			$logoValue->setParentEntity($provider);
-			$logoValue->setParentEntityField(Provider::FIELD_LOGO);
-			$logoValue->setUser($user);
-
-			$user->getMeta()->incrementProposalCount(2);	// Sign and Logo of this new provider
-
-			// Create activity
-			$activityUtils = $this->get(ActivityUtils::NAME);
-			$activityUtils->createContributeActivity($signValue, false);
-			$activityUtils->createContributeActivity($logoValue, false);
-
-			// Dispatch publication event
-			$dispatcher->dispatch(PublicationListener::PUBLICATION_CREATED, new PublicationEvent($provider));
-
-			$om->flush();
-
-			// Dispatch publication event
-			$dispatcher->dispatch(PublicationListener::PUBLICATION_PUBLISHED, new PublicationEvent($provider));
-
-			return $this->redirect($this->generateUrl('core_provider_show', array('id' => $provider->getSluggedId())));
-		}
-
-		// Flashbag
-		$this->get('session')->getFlashBag()->add('error', $this->get('translator')->trans('default.form.alert.error'));
-
-		return array(
-			'newProvider' => $newProvider,
-			'form'        => $form->createView(),
-			'hideWarning' => true,
-		);
-	}
-
-	/**
-	 * @Route("/{id}/delete", requirements={"id" = "\d+"}, name="core_provider_delete")
-	 * @Security("has_role('ROLE_ADMIN')", statusCode=404, message="Not allowed (core_provider_delete)")
-	 */
-	public function deleteAction($id) {
-		$propertyUtils = $this->get(PropertyUtils::NAME);
-		$om = $this->getDoctrine()->getManager();
-		$providerRepository = $om->getRepository(Provider::CLASS_NAME);
-
-		$provider = $providerRepository->findOneById($id);
-		if (is_null($provider)) {
-			throw $this->createNotFoundException('Unable to find Provider entity (id='.$id.').');
-		}
-
-		// Delete
-		$providerManager = $this->get(ProviderManager::NAME);
-		$providerManager->delete($provider);
+class ProviderController extends Controller
+{
+
+    /**
+     * @Route("/new", name="core_provider_new")
+     * @Template("LadbCoreBundle:Knowledge/Provider:new.html.twig")
+     */
+    public function newAction()
+    {
+
+        $newProvider = new NewProvider();
+        $form = $this->createForm(NewProviderType::class, $newProvider);
+
+        return array(
+            'form' => $form->createView(),
+        );
+    }
+
+    /**
+     * @Route("/create", name="core_provider_create")
+     * @Method("POST")
+     * @Template("LadbCoreBundle:Knowledge/Provider:new.html.twig")
+     */
+    public function createAction(Request $request)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $dispatcher = $this->get('event_dispatcher');
+
+        $newProvider = new NewProvider();
+        $form = $this->createForm(NewProviderType::class, $newProvider);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $signValue = $newProvider->getSignValue();
+            $logoValue = $newProvider->getLogoValue();
+            $user = $this->getUser();
+
+            $provider = new Provider();
+            $provider->setSign($signValue->getData());
+            $provider->setBrand($signValue->getBrand());
+            $provider->setStore($signValue->getStore());
+            $provider->incrementContributorCount();
+
+            $om->persist($provider);
+            $om->flush();   // Need to save provider to be sure ID is generated
+
+            $provider->addSignValue($signValue);
+            $provider->addLogoValue($logoValue);
+
+            // Dispatch knowledge events
+            $dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($provider, array( 'field' => Provider::FIELD_SIGN, 'value' => $signValue )));
+            $dispatcher->dispatch(KnowledgeListener::FIELD_VALUE_ADDED, new KnowledgeEvent($provider, array( 'field' => Provider::FIELD_LOGO, 'value' => $logoValue )));
+
+            $signValue->setParentEntity($provider);
+            $signValue->setParentEntityField(Provider::FIELD_SIGN);
+            $signValue->setUser($user);
+
+            $logoValue->setParentEntity($provider);
+            $logoValue->setParentEntityField(Provider::FIELD_LOGO);
+            $logoValue->setUser($user);
+
+            $user->getMeta()->incrementProposalCount(2);    // Sign and Logo of this new provider
+
+            // Create activity
+            $activityUtils = $this->get(ActivityUtils::NAME);
+            $activityUtils->createContributeActivity($signValue, false);
+            $activityUtils->createContributeActivity($logoValue, false);
+
+            // Dispatch publication event
+            $dispatcher->dispatch(PublicationListener::PUBLICATION_CREATED, new PublicationEvent($provider));
+
+            $om->flush();
+
+            // Dispatch publication event
+            $dispatcher->dispatch(PublicationListener::PUBLICATION_PUBLISHED, new PublicationEvent($provider));
+
+            return $this->redirect($this->generateUrl('core_provider_show', array('id' => $provider->getSluggedId())));
+        }
+
+        // Flashbag
+        $this->get('session')->getFlashBag()->add('error', $this->get('translator')->trans('default.form.alert.error'));
+
+        return array(
+            'newProvider' => $newProvider,
+            'form'        => $form->createView(),
+            'hideWarning' => true,
+        );
+    }
+
+    /**
+     * @Route("/{id}/delete", requirements={"id" = "\d+"}, name="core_provider_delete")
+     * @Security("has_role('ROLE_ADMIN')", statusCode=404, message="Not allowed (core_provider_delete)")
+     */
+    public function deleteAction($id)
+    {
+        $propertyUtils = $this->get(PropertyUtils::NAME);
+        $om = $this->getDoctrine()->getManager();
+        $providerRepository = $om->getRepository(Provider::CLASS_NAME);
+
+        $provider = $providerRepository->findOneById($id);
+        if (is_null($provider)) {
+            throw $this->createNotFoundException('Unable to find Provider entity (id=' . $id . ').');
+        }
+
+        // Delete
+        $providerManager = $this->get(ProviderManager::NAME);
+        $providerManager->delete($provider);
+
+        // Flashbag
+        $this->get('session')->getFlashBag()->add('success', $this->get('translator')->trans('knowledge.provider.form.alert.delete_success', array( '%title%' => $provider->getTitle() )));
+
+        return $this->redirect($this->generateUrl('core_provider_list'));
+    }
+
+    /**
+     * @Route("/{id}/location.geojson", name="core_provider_location", defaults={"_format" = "json"})
+     * @Template("LadbCoreBundle:Knowledge/Provider:location.geojson.twig")
+     */
+    public function locationAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $providerRepository = $om->getRepository(Provider::CLASS_NAME);
+
+        $id = intval($id);
+
+        $provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
+        if (is_null($provider)) {
+            throw $this->createNotFoundException('Unable to find Provider entity (id=' . $id . ').');
+        }
+
+        $features = array();
+        if (!is_null($provider->getLongitude()) && !is_null($provider->getLatitude())) {
+            $properties = array(
+                'type' => 0,
+            );
+            $gerometry = new \GeoJson\Geometry\Point($provider->getGeoPoint());
+            $features[] = new \GeoJson\Feature\Feature($gerometry, $properties);
+        }
+
+        $crs = new \GeoJson\CoordinateReferenceSystem\Named('urn:ogc:def:crs:OGC:1.3:CRS84');
+        $collection = new \GeoJson\Feature\FeatureCollection($features, $crs);
+
+        return array(
+            'collection' => $collection,
+        );
+    }
+
+    /**
+     * @Route("/", name="core_provider_list")
+     * @Route("/{page}", requirements={"page" = "\d+"}, name="core_provider_list_page")
+     * @Route(".geojson", defaults={"_format" = "json", "page"=-1, "layout"="geojson"}, name="core_provider_list_geojson")
+     * @Template("LadbCoreBundle:Knowledge/Provider:list.html.twig")
+     */
+    public function listAction(Request $request, $page = 0, $layout = 'view')
+    {
+        $searchUtils = $this->get(SearchUtils::NAME);
+
+        // Elasticsearch paginiation limit
+        if ($page > 624) {
+            throw $this->createNotFoundException('Page limit reached (core_provider_list_page)');
+        }
+
+        $layout = $request->get('layout', 'view');
 
-		// Flashbag
-		$this->get('session')->getFlashBag()->add('success', $this->get('translator')->trans('knowledge.provider.form.alert.delete_success', array( '%title%' => $provider->getTitle() )));
+        $routeParameters = array();
+        if ($layout != 'view') {
+            $routeParameters['layout'] = $layout;
+        }
+
+        $searchParameters = $searchUtils->searchPaginedEntities(
+            $request,
+            $page,
+            function ($facet, &$filters, &$sort, &$noGlobalFilters, &$couldUseDefaultSort) {
+                switch ($facet->name) {
 
-		return $this->redirect($this->generateUrl('core_provider_list'));
-	}
+                    // Filters /////
+
+                    case 'brand':
+                        $filter = new \Elastica\Query\Match('brand', $facet->value);
+                        $filters[] = $filter;
+
+                        break;
 
-	/**
-	 * @Route("/{id}/location.geojson", name="core_provider_location", defaults={"_format" = "json"})
-	 * @Template("LadbCoreBundle:Knowledge/Provider:location.geojson.twig")
-	 */
-	public function locationAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$providerRepository = $om->getRepository(Provider::CLASS_NAME);
+                    case 'products':
+                        $filter = new \Elastica\Query\QueryString('"' . $facet->value . '"');
+                        $filter->setFields(array( 'products' ));
+                        $filters[] = $filter;
 
-		$id = intval($id);
+                        break;
 
-		$provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
-		if (is_null($provider)) {
-			throw $this->createNotFoundException('Unable to find Provider entity (id='.$id.').');
-		}
+                    case 'services':
+                        $filter = new \Elastica\Query\QueryString('"' . $facet->value . '"');
+                        $filter->setFields(array( 'services' ));
+                        $filters[] = $filter;
 
-		$features = array();
-		if (!is_null($provider->getLongitude()) && !is_null($provider->getLatitude())) {
-			$properties = array(
-				'type' => 0,
-			);
-			$gerometry = new \GeoJson\Geometry\Point($provider->getGeoPoint());
-			$features[] = new \GeoJson\Feature\Feature($gerometry, $properties);
-		}
+                        break;
 
-		$crs = new \GeoJson\CoordinateReferenceSystem\Named('urn:ogc:def:crs:OGC:1.3:CRS84');
-		$collection = new \GeoJson\Feature\FeatureCollection($features, $crs);
+                    case 'woods':
+                        $query1 = new \Elastica\Query\QueryString('"Bois massif"');
+                        $query1->setFields(array( 'products' ));
+                        $query2 = new \Elastica\Query\Match('woodsWorkaround', $facet->value);
+                        $filter = new \Elastica\Query\BoolQuery();
+                        $filter->addMust($query1);
+                        $filter->addMust($query2);
+                        $filters[] = $filter;
 
-		return array(
-			'collection' => $collection,
-		);
-	}
+                        break;
 
-	/**
-	 * @Route("/", name="core_provider_list")
-	 * @Route("/{page}", requirements={"page" = "\d+"}, name="core_provider_list_page")
-	 * @Route(".geojson", defaults={"_format" = "json", "page"=-1, "layout"="geojson"}, name="core_provider_list_geojson")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:list.html.twig")
-	 */
-	public function listAction(Request $request, $page = 0, $layout = 'view') {
-		$searchUtils = $this->get(SearchUtils::NAME);
+                    case 'in-store-selling':
+                        $filter = new \Elastica\Query\Range('inStoreSelling', array( 'gte' => 1 ));
+                        $filters[] = $filter;
 
-		// Elasticsearch paginiation limit
-		if ($page > 624) {
-			throw $this->createNotFoundException('Page limit reached (core_provider_list_page)');
-		}
+                        break;
 
-		$layout = $request->get('layout', 'view');
+                    case 'mail-order-selling':
+                        $filter = new \Elastica\Query\Range('mailOrderSelling', array( 'gte' => 1 ));
+                        $filters[] = $filter;
 
-		$routeParameters = array();
-		if ($layout != 'view') {
-			$routeParameters['layout'] = $layout;
-		}
+                        break;
 
-		$searchParameters = $searchUtils->searchPaginedEntities(
-			$request,
-			$page,
-			function($facet, &$filters, &$sort, &$noGlobalFilters, &$couldUseDefaultSort) {
-				switch ($facet->name) {
+                    case 'sale-to-individuals':
+                        $filter = new \Elastica\Query\Range('saleToIndividuals', array( 'gte' => 1 ));
+                        $filters[] = $filter;
 
-					// Filters /////
+                        break;
 
-					case 'brand':
+                    case 'pro-only':
+                        $filter = new \Elastica\Query\Range('saleToIndividuals', array( 'lt' => 1 ));
+                        $filters[] = $filter;
 
-						$filter = new \Elastica\Query\Match('brand', $facet->value);
-						$filters[] = $filter;
+                        break;
 
-						break;
-
-					case 'products':
-
-						$filter = new \Elastica\Query\QueryString('"'.$facet->value.'"');
-						$filter->setFields(array( 'products' ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'services':
-
-						$filter = new \Elastica\Query\QueryString('"'.$facet->value.'"');
-						$filter->setFields(array( 'services' ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'woods':
-
-						$query1 = new \Elastica\Query\QueryString('"Bois massif"');
-						$query1->setFields(array( 'products' ));
-						$query2 = new \Elastica\Query\Match('woodsWorkaround', $facet->value);
-						$filter = new \Elastica\Query\BoolQuery();
-						$filter->addMust($query1);
-						$filter->addMust($query2);
-						$filters[] = $filter;
-
-						break;
-
-					case 'in-store-selling':
-
-						$filter = new \Elastica\Query\Range('inStoreSelling', array( 'gte' => 1 ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'mail-order-selling':
-
-						$filter = new \Elastica\Query\Range('mailOrderSelling', array( 'gte' => 1 ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'sale-to-individuals':
-
-						$filter = new \Elastica\Query\Range('saleToIndividuals', array( 'gte' => 1 ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'pro-only':
-
-						$filter = new \Elastica\Query\Range('saleToIndividuals', array( 'lt' => 1 ));
-						$filters[] = $filter;
-
-						break;
-
-					case 'geocoded':
-
-						$filter = new \Elastica\Query\Exists('geoPoint');
-						$filters[] = $filter;
-
-						break;
-
-					case 'location':
-
-						$localisableUtils = $this->get(LocalisableUtils::NAME);
-						$bounds = $localisableUtils->getTopLeftBottomRightBounds($facet->value);
-
-						if (!is_null($bounds)) {
-							$filter = new \Elastica\Query\GeoBoundingBox('geoPoint', $bounds);
-							$filters[] = $filter;
-						}
-
-						break;
-
-					case 'around':
-
-						if (isset($facet->value)) {
-							$filter = new \Elastica\Query\GeoDistance('geoPoint', $facet->value, '100km');
-							$filters[] = $filter;
-						}
-
-						break;
-
-					case 'rejected':
-
-						$filter = new \Elastica\Query\Range('signRejected', array( 'gte' => 1 ));
-						$filters[] = $filter;
-
-						break;
-
-					// Sorters /////
-
-					case 'sort-recent':
-						$sort = array( 'changedAt' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-views':
-						$sort = array( 'viewCount' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-likes':
-						$sort = array( 'likeCount' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-popular-comments':
-						$sort = array( 'commentCount' => array( 'order' => 'desc' ) );
-						break;
-
-					case 'sort-random':
-						$sort = array( 'randomSeed' => isset($facet->value) ? $facet->value : '' );
-						break;
-
-					/////
-
-					default:
-						if (is_null($facet->name)) {
-
-							$filter = new \Elastica\Query\QueryString($facet->value);
-							$filter->setFields(array( 'sign^100', 'geographicalAreas^50', 'products', 'services', 'description' ));
-							$filters[] = $filter;
-
-						}
-
-				}
-			},
-			function(&$filters, &$sort) {
-
-				$filters[] = new \Elastica\Query\Range('signRejected', array( 'lt' => 1 ));
-
-				$sort = array( 'changedAt' => array( 'order' => 'desc' ) );
-
-			},
-			null,
-			'fos_elastica.index.ladb.knowledge_provider',
-			\Ladb\CoreBundle\Entity\Knowledge\Provider::CLASS_NAME,
-			'core_provider_list_page',
-			$routeParameters
-		);
-
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATIONS_LISTED, new PublicationsEvent($searchParameters['entities']));
-
-		$parameters = array_merge($searchParameters, array(
-			'providers'       => $searchParameters['entities'],
-			'layout'          => $layout,
-			'routeParameters' => $routeParameters,
-		));
-
-		if ($layout == 'geojson') {
-
-			$features = array();
-			foreach ($searchParameters['entities'] as $provider) {
-				$properties = array(
-					'type'    => 0,
-					'cardUrl' => $this->generateUrl('core_provider_card', array( 'id' => $provider->getId() )),
-				);
-				$gerometry = new \GeoJson\Geometry\Point($provider->getGeoPoint());
-				$features[] = new \GeoJson\Feature\Feature($gerometry, $properties);
-			}
-			$crs = new \GeoJson\CoordinateReferenceSystem\Named('urn:ogc:def:crs:OGC:1.3:CRS84');
-			$collection = new \GeoJson\Feature\FeatureCollection($features, $crs);
-
-			$parameters = array_merge($parameters, array(
-				'collection' => $collection,
-			));
-
-			return $this->render('LadbCoreBundle:Knowledge/Provider:list-xhr.geojson.twig', $parameters);
-		}
-
-		if ($request->isXmlHttpRequest()) {
-			if ($layout == 'choice') {
-				return $this->render('LadbCoreBundle:Knowledge/Provider:list-choice-xhr.html.twig', $parameters);
-			} else {
-				return $this->render('LadbCoreBundle:Knowledge/Provider:list-xhr.html.twig', $parameters);
-			}
-		}
-
-		if ($layout == 'choice') {
-			return $this->render('LadbCoreBundle:Knowledge/Provider:list-choice.html.twig', $parameters);
-		}
-
-		return $parameters;
-	}
-
-	/**
-	 * @Route("/{id}/creations", requirements={"id" = "\d+"}, name="core_provider_creations")
-	 * @Route("/{id}/creations/{filter}", requirements={"id" = "\d+", "filter" = "[a-z-]+"}, name="core_provider_creations_filter")
-	 * @Route("/{id}/creations/{filter}/{page}", requirements={"id" = "\d+", "filter" = "[a-z-]+", "page" = "\d+"}, name="core_provider_creations_filter_page")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:creations.html.twig")
-	 */
-	public function creationsAction(Request $request, $id, $filter = "recent", $page = 0) {
-		$om = $this->getDoctrine()->getManager();
-		$providerRepository = $om->getRepository(Provider::CLASS_NAME);
-
-		$provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
-		if (is_null($provider)) {
-			throw $this->createNotFoundException('Unable to find Provider entity (id='.$id.').');
-		}
-
-		// Creations
-
-		$creationRepository = $om->getRepository(Creation::CLASS_NAME);
-		$paginatorUtils = $this->get(PaginatorUtils::NAME);
-
-		$offset = $paginatorUtils->computePaginatorOffset($page);
-		$limit = $paginatorUtils->computePaginatorLimit($page);
-		$paginator = $creationRepository->findPaginedByProvider($provider, $offset, $limit, $filter);
-		$pageUrls = $paginatorUtils->generatePrevAndNextPageUrl('core_provider_creations_filter_page', array( 'id' => $id, 'filter' => $filter ), $page, $paginator->count());
-
-		$parameters = array(
-			'filter'      => $filter,
-			'prevPageUrl' => $pageUrls->prev,
-			'nextPageUrl' => $pageUrls->next,
-			'creations'   => $paginator,
-		);
-
-		if ($request->isXmlHttpRequest()) {
-			return $this->render('LadbCoreBundle:Wonder/Creation:list-xhr.html.twig', $parameters);
-		}
-
-		return array_merge($parameters, array(
-			'provider' => $provider,
-		));
-	}
-
-	/**
-	 * @Route("/{id}/pas-a-pas", requirements={"id" = "\d+"}, name="core_provider_howtos")
-	 * @Route("/{id}/pas-a-pas/{filter}", requirements={"id" = "\d+", "filter" = "[a-z-]+"}, name="core_provider_howtos_filter")
-	 * @Route("/{id}/pas-a-pas/{filter}/{page}", requirements={"id" = "\d+", "filter" = "[a-z-]+", "page" = "\d+"}, name="core_provider_howtos_filter_page")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:howtos.html.twig")
-	 */
-	public function howtosAction(Request $request, $id, $filter = "recent", $page = 0) {
-		$om = $this->getDoctrine()->getManager();
-		$providerRepository = $om->getRepository(Provider::CLASS_NAME);
-
-		$provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
-		if (is_null($provider)) {
-			throw $this->createNotFoundException('Unable to find Provider entity (id='.$id.').');
-		}
-
-		// Howtos
-
-		$howtoRepository = $om->getRepository(Howto::CLASS_NAME);
-		$paginatorUtils = $this->get(PaginatorUtils::NAME);
-
-		$offset = $paginatorUtils->computePaginatorOffset($page);
-		$limit = $paginatorUtils->computePaginatorLimit($page);
-		$paginator = $howtoRepository->findPaginedByProvider($provider, $offset, $limit, $filter);
-		$pageUrls = $paginatorUtils->generatePrevAndNextPageUrl('core_howto_howtos_filter_page', array( 'id' => $id, 'filter' => $filter ), $page, $paginator->count());
-
-		$parameters = array(
-			'filter'      => $filter,
-			'prevPageUrl' => $pageUrls->prev,
-			'nextPageUrl' => $pageUrls->next,
-			'howtos'      => $paginator,
-		);
-
-		if ($request->isXmlHttpRequest()) {
-			return $this->render('LadbCoreBundle:Wonder/Creation:list-xhr.html.twig', $parameters);
-		}
-
-		return array_merge($parameters, array(
-			'provider' => $provider,
-		));
-	}
-
-	/**
-	 * @Route("/{id}/card.xhr", name="core_provider_card")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:card-xhr.html.twig")
-	 */
-	public function cardAction(Request $request, $id) {
-		if (!$request->isXmlHttpRequest()) {
-			throw $this->createNotFoundException('Only XML request allowed.');
-		}
-
-		$om = $this->getDoctrine()->getManager();
-		$providerRepository = $om->getRepository(Provider::CLASS_NAME);
-
-		$id = intval($id);
-
-		$provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
-		if (is_null($provider)) {
-			throw $this->createNotFoundException('Unable to find Provider entity (id='.$id.').');
-		}
-
-		return array(
-			'provider' => $provider,
-		);
-	}
-
-	/**
-	 * @Route("/{id}.html", name="core_provider_show")
-	 * @Template("LadbCoreBundle:Knowledge/Provider:show.html.twig")
-	 */
-	public function showAction(Request $request, $id) {
-		$om = $this->getDoctrine()->getManager();
-		$providerRepository = $om->getRepository(Provider::CLASS_NAME);
-		$witnessManager = $this->get(WitnessManager::NAME);
-
-		$id = intval($id);
-
-		$provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
-		if (is_null($provider)) {
-			if ($response = $witnessManager->checkResponse(Provider::TYPE, $id)) {
-				return $response;
-			}
-			throw $this->createNotFoundException('Unable to find Provider entity (id='.$id.').');
-		}
-
-		// Dispatch publication event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_SHOWN, new PublicationEvent($provider));
-
-		$searchUtils = $this->get(SearchUtils::NAME);
-		$searchableStoreCount = $searchUtils->searchEntitiesCount(array( new \Elastica\Query\Match('brand', $provider->getBrand()) ), 'fos_elastica.index.ladb.knowledge_provider');
-		$searchableWoodCount = $searchUtils->searchEntitiesCount(array( new \Elastica\Query\Match('name', $provider->getWoods()) ), 'fos_elastica.index.ladb.knowledge_wood');
-
-		$likableUtils = $this->get(LikableUtils::NAME);
-		$watchableUtils = $this->get(WatchableUtils::NAME);
-		$commentableUtils = $this->get(CommentableUtils::NAME);
-
-		return array(
-			'provider'             => $provider,
-			'searchableStoreCount' => $searchableStoreCount,
-			'searchableWoodCount'  => $searchableWoodCount,
-			'likeContext'          => $likableUtils->getLikeContext($provider, $this->getUser()),
-			'watchContext'         => $watchableUtils->getWatchContext($provider, $this->getUser()),
-			'commentContext'       => $commentableUtils->getCommentContext($provider),
-			'hasMap'               => !is_null($provider->getLatitude()) && !is_null($provider->getLongitude()),
-		);
-	}
-
+                    case 'geocoded':
+                        $filter = new \Elastica\Query\Exists('geoPoint');
+                        $filters[] = $filter;
+
+                        break;
+
+                    case 'location':
+                        $localisableUtils = $this->get(LocalisableUtils::NAME);
+                        $bounds = $localisableUtils->getTopLeftBottomRightBounds($facet->value);
+
+                        if (!is_null($bounds)) {
+                            $filter = new \Elastica\Query\GeoBoundingBox('geoPoint', $bounds);
+                            $filters[] = $filter;
+                        }
+
+                        break;
+
+                    case 'around':
+                        if (isset($facet->value)) {
+                            $filter = new \Elastica\Query\GeoDistance('geoPoint', $facet->value, '100km');
+                            $filters[] = $filter;
+                        }
+
+                        break;
+
+                    case 'rejected':
+                        $filter = new \Elastica\Query\Range('signRejected', array( 'gte' => 1 ));
+                        $filters[] = $filter;
+
+                        break;
+
+                    // Sorters /////
+
+                    case 'sort-recent':
+                        $sort = array( 'changedAt' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-views':
+                        $sort = array( 'viewCount' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-likes':
+                        $sort = array( 'likeCount' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-popular-comments':
+                        $sort = array( 'commentCount' => array( 'order' => 'desc' ) );
+                        break;
+
+                    case 'sort-random':
+                        $sort = array( 'randomSeed' => isset($facet->value) ? $facet->value : '' );
+                        break;
+
+                    /////
+
+                    default:
+                        if (is_null($facet->name)) {
+
+                            $filter = new \Elastica\Query\QueryString($facet->value);
+                            $filter->setFields(array( 'sign^100', 'geographicalAreas^50', 'products', 'services', 'description' ));
+                            $filters[] = $filter;
+
+                        }
+
+                }
+            },
+            function (&$filters, &$sort) {
+
+                $filters[] = new \Elastica\Query\Range('signRejected', array( 'lt' => 1 ));
+
+                $sort = array( 'changedAt' => array( 'order' => 'desc' ) );
+
+            },
+            null,
+            'fos_elastica.index.ladb.knowledge_provider',
+            \Ladb\CoreBundle\Entity\Knowledge\Provider::CLASS_NAME,
+            'core_provider_list_page',
+            $routeParameters
+        );
+
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATIONS_LISTED, new PublicationsEvent($searchParameters['entities']));
+
+        $parameters = array_merge($searchParameters, array(
+            'providers'       => $searchParameters['entities'],
+            'layout'          => $layout,
+            'routeParameters' => $routeParameters,
+        ));
+
+        if ($layout == 'geojson') {
+
+            $features = array();
+            foreach ($searchParameters['entities'] as $provider) {
+                $properties = array(
+                    'type'    => 0,
+                    'cardUrl' => $this->generateUrl('core_provider_card', array( 'id' => $provider->getId() )),
+                );
+                $gerometry = new \GeoJson\Geometry\Point($provider->getGeoPoint());
+                $features[] = new \GeoJson\Feature\Feature($gerometry, $properties);
+            }
+            $crs = new \GeoJson\CoordinateReferenceSystem\Named('urn:ogc:def:crs:OGC:1.3:CRS84');
+            $collection = new \GeoJson\Feature\FeatureCollection($features, $crs);
+
+            $parameters = array_merge($parameters, array(
+                'collection' => $collection,
+            ));
+
+            return $this->render('LadbCoreBundle:Knowledge/Provider:list-xhr.geojson.twig', $parameters);
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            if ($layout == 'choice') {
+                return $this->render('LadbCoreBundle:Knowledge/Provider:list-choice-xhr.html.twig', $parameters);
+            } else {
+                return $this->render('LadbCoreBundle:Knowledge/Provider:list-xhr.html.twig', $parameters);
+            }
+        }
+
+        if ($layout == 'choice') {
+            return $this->render('LadbCoreBundle:Knowledge/Provider:list-choice.html.twig', $parameters);
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * @Route("/{id}/creations", requirements={"id" = "\d+"}, name="core_provider_creations")
+     * @Route("/{id}/creations/{filter}", requirements={"id" = "\d+", "filter" = "[a-z-]+"}, name="core_provider_creations_filter")
+     * @Route("/{id}/creations/{filter}/{page}", requirements={"id" = "\d+", "filter" = "[a-z-]+", "page" = "\d+"}, name="core_provider_creations_filter_page")
+     * @Template("LadbCoreBundle:Knowledge/Provider:creations.html.twig")
+     */
+    public function creationsAction(Request $request, $id, $filter = "recent", $page = 0)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $providerRepository = $om->getRepository(Provider::CLASS_NAME);
+
+        $provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
+        if (is_null($provider)) {
+            throw $this->createNotFoundException('Unable to find Provider entity (id=' . $id . ').');
+        }
+
+        // Creations
+
+        $creationRepository = $om->getRepository(Creation::CLASS_NAME);
+        $paginatorUtils = $this->get(PaginatorUtils::NAME);
+
+        $offset = $paginatorUtils->computePaginatorOffset($page);
+        $limit = $paginatorUtils->computePaginatorLimit($page);
+        $paginator = $creationRepository->findPaginedByProvider($provider, $offset, $limit, $filter);
+        $pageUrls = $paginatorUtils->generatePrevAndNextPageUrl('core_provider_creations_filter_page', array( 'id' => $id, 'filter' => $filter ), $page, $paginator->count());
+
+        $parameters = array(
+            'filter'      => $filter,
+            'prevPageUrl' => $pageUrls->prev,
+            'nextPageUrl' => $pageUrls->next,
+            'creations'   => $paginator,
+        );
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('LadbCoreBundle:Wonder/Creation:list-xhr.html.twig', $parameters);
+        }
+
+        return array_merge($parameters, array(
+            'provider' => $provider,
+        ));
+    }
+
+    /**
+     * @Route("/{id}/pas-a-pas", requirements={"id" = "\d+"}, name="core_provider_howtos")
+     * @Route("/{id}/pas-a-pas/{filter}", requirements={"id" = "\d+", "filter" = "[a-z-]+"}, name="core_provider_howtos_filter")
+     * @Route("/{id}/pas-a-pas/{filter}/{page}", requirements={"id" = "\d+", "filter" = "[a-z-]+", "page" = "\d+"}, name="core_provider_howtos_filter_page")
+     * @Template("LadbCoreBundle:Knowledge/Provider:howtos.html.twig")
+     */
+    public function howtosAction(Request $request, $id, $filter = "recent", $page = 0)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $providerRepository = $om->getRepository(Provider::CLASS_NAME);
+
+        $provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
+        if (is_null($provider)) {
+            throw $this->createNotFoundException('Unable to find Provider entity (id=' . $id . ').');
+        }
+
+        // Howtos
+
+        $howtoRepository = $om->getRepository(Howto::CLASS_NAME);
+        $paginatorUtils = $this->get(PaginatorUtils::NAME);
+
+        $offset = $paginatorUtils->computePaginatorOffset($page);
+        $limit = $paginatorUtils->computePaginatorLimit($page);
+        $paginator = $howtoRepository->findPaginedByProvider($provider, $offset, $limit, $filter);
+        $pageUrls = $paginatorUtils->generatePrevAndNextPageUrl('core_howto_howtos_filter_page', array( 'id' => $id, 'filter' => $filter ), $page, $paginator->count());
+
+        $parameters = array(
+            'filter'      => $filter,
+            'prevPageUrl' => $pageUrls->prev,
+            'nextPageUrl' => $pageUrls->next,
+            'howtos'      => $paginator,
+        );
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('LadbCoreBundle:Wonder/Creation:list-xhr.html.twig', $parameters);
+        }
+
+        return array_merge($parameters, array(
+            'provider' => $provider,
+        ));
+    }
+
+    /**
+     * @Route("/{id}/card.xhr", name="core_provider_card")
+     * @Template("LadbCoreBundle:Knowledge/Provider:card-xhr.html.twig")
+     */
+    public function cardAction(Request $request, $id)
+    {
+        if (!$request->isXmlHttpRequest()) {
+            throw $this->createNotFoundException('Only XML request allowed.');
+        }
+
+        $om = $this->getDoctrine()->getManager();
+        $providerRepository = $om->getRepository(Provider::CLASS_NAME);
+
+        $id = intval($id);
+
+        $provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
+        if (is_null($provider)) {
+            throw $this->createNotFoundException('Unable to find Provider entity (id=' . $id . ').');
+        }
+
+        return array(
+            'provider' => $provider,
+        );
+    }
+
+    /**
+     * @Route("/{id}.html", name="core_provider_show")
+     * @Template("LadbCoreBundle:Knowledge/Provider:show.html.twig")
+     */
+    public function showAction(Request $request, $id)
+    {
+        $om = $this->getDoctrine()->getManager();
+        $providerRepository = $om->getRepository(Provider::CLASS_NAME);
+        $witnessManager = $this->get(WitnessManager::NAME);
+
+        $id = intval($id);
+
+        $provider = $providerRepository->findOneByIdJoinedOnOptimized($id);
+        if (is_null($provider)) {
+            if ($response = $witnessManager->checkResponse(Provider::TYPE, $id)) {
+                return $response;
+            }
+            throw $this->createNotFoundException('Unable to find Provider entity (id=' . $id . ').');
+        }
+
+        // Dispatch publication event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_SHOWN, new PublicationEvent($provider));
+
+        $searchUtils = $this->get(SearchUtils::NAME);
+        $searchableStoreCount = $searchUtils->searchEntitiesCount(array( new \Elastica\Query\Match('brand', $provider->getBrand()) ), 'fos_elastica.index.ladb.knowledge_provider');
+        $searchableWoodCount = $searchUtils->searchEntitiesCount(array( new \Elastica\Query\Match('name', $provider->getWoods()) ), 'fos_elastica.index.ladb.knowledge_wood');
+
+        $likableUtils = $this->get(LikableUtils::NAME);
+        $watchableUtils = $this->get(WatchableUtils::NAME);
+        $commentableUtils = $this->get(CommentableUtils::NAME);
+
+        return array(
+            'provider'             => $provider,
+            'searchableStoreCount' => $searchableStoreCount,
+            'searchableWoodCount'  => $searchableWoodCount,
+            'likeContext'          => $likableUtils->getLikeContext($provider, $this->getUser()),
+            'watchContext'         => $watchableUtils->getWatchContext($provider, $this->getUser()),
+            'commentContext'       => $commentableUtils->getCommentContext($provider),
+            'hasMap'               => !is_null($provider->getLatitude()) && !is_null($provider->getLongitude()),
+        );
+    }
 }

@@ -2,40 +2,40 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface BlockBodiedInterface {
+interface BlockBodiedInterface
+{
 
-	// Body /////
+    // Body /////
 
-	public function setBody($body);
+    public function setBody($body);
 
-	public function getBody();
+    public function getBody();
 
-	// BodyExtract /////
+    // BodyExtract /////
 
-	public function setBodyExtract($bodyExtract);
+    public function setBodyExtract($bodyExtract);
 
-	public function getBodyExtract();
+    public function getBodyExtract();
 
-	// BodyBlocks /////
+    // BodyBlocks /////
 
-	public function addBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock);
+    public function addBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock);
 
-	public function removeBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock);
+    public function removeBodyBlock(\Ladb\CoreBundle\Entity\Core\Block\AbstractBlock $bodyBlock);
 
-	public function getBodyBlocks();
+    public function getBodyBlocks();
 
-	public function resetBodyBlocks();
+    public function resetBodyBlocks();
 
-	// BodyBlockPictureCount /////
+    // BodyBlockPictureCount /////
 
-	public function setBodyBlockPictureCount($bodyBlockPictureCount);
+    public function setBodyBlockPictureCount($bodyBlockPictureCount);
 
-	public function getBodyBlockPictureCount();
+    public function getBodyBlockPictureCount();
 
-	// BodyBlockVideoCount /////
+    // BodyBlockVideoCount /////
 
-	public function setBodyBlockVideoCount($bodyBlockVideoCount);
+    public function setBodyBlockVideoCount($bodyBlockVideoCount);
 
-	public function getBodyBlockVideoCount();
-
+    public function getBodyBlockVideoCount();
 }

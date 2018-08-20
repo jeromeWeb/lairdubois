@@ -4,95 +4,106 @@ namespace Ladb\CoreBundle\Form\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class NewThreadMessage {
+class NewThreadMessage
+{
 
-	/**
-	 * Assert\NotBlank(message="Aucun membre n'a ce nom d'utilisateur")
-	 */
+    /**
+     * Assert\NotBlank(message="Aucun membre n'a ce nom d'utilisateur")
+     */
 
-	/**
-	 * @Ladb\CoreBundle\Validator\Constraints\SelfRecipient()
-	 * @Assert\Count(min=1, max=20)
-	 */
-	private $recipients;
+    /**
+     * @Ladb\CoreBundle\Validator\Constraints\SelfRecipient()
+     * @Assert\Count(min=1, max=20)
+     */
+    private $recipients;
 
-	/**
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=2, max=255)
-	 */
-	private $subject;
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=255)
+     */
+    private $subject;
 
-	/**
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=2, max=10000)
-	 */
-	private $body;
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=10000)
+     */
+    private $body;
 
-	/**
-	 * @Assert\Count(min=0, max=4)
-	 */
-	protected $pictures;
+    /**
+     * @Assert\Count(min=0, max=4)
+     */
+    protected $pictures;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->recipients = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->pictures = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->recipients = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->pictures = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	// Recipients /////
+    // Recipients /////
 
-	public function addRecipient(\Ladb\CoreBundle\Entity\Core\User $recipient) {
-		if (!$this->recipients->contains($recipient)) {
-			$this->recipients[] = $recipient;
-		}
-		return $this;
-	}
+    public function addRecipient(\Ladb\CoreBundle\Entity\Core\User $recipient)
+    {
+        if (!$this->recipients->contains($recipient)) {
+            $this->recipients[] = $recipient;
+        }
+        return $this;
+    }
 
-	public function removeRecipient(\Ladb\CoreBundle\Entity\Core\User $recipient) {
-		$this->recipients->removeElement($recipient);
-	}
+    public function removeRecipient(\Ladb\CoreBundle\Entity\Core\User $recipient)
+    {
+        $this->recipients->removeElement($recipient);
+    }
 
-	public function getRecipients() {
-		return $this->recipients;
-	}
+    public function getRecipients()
+    {
+        return $this->recipients;
+    }
 
-	// Subject /////
+    // Subject /////
 
-	public function getSubject() {
-		return $this->subject;
-	}
+    public function getSubject()
+    {
+        return $this->subject;
+    }
 
-	public function setSubject($subject) {
-		$this->subject = $subject;
-	}
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+    }
 
-	// Body /////
+    // Body /////
 
-	public function getBody() {
-		return $this->body;
-	}
+    public function getBody()
+    {
+        return $this->body;
+    }
 
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
-	}
+    public function setBody($body)
+    {
+        $this->body = $body;
+        return $this;
+    }
 
-	// Pictures /////
+    // Pictures /////
 
-	public function addPicture(\Ladb\CoreBundle\Entity\Core\Picture $picture) {
-		if (!$this->pictures->contains($picture)) {
-			$this->pictures[] = $picture;
-		}
-		return $this;
-	}
+    public function addPicture(\Ladb\CoreBundle\Entity\Core\Picture $picture)
+    {
+        if (!$this->pictures->contains($picture)) {
+            $this->pictures[] = $picture;
+        }
+        return $this;
+    }
 
-	public function removePicture(\Ladb\CoreBundle\Entity\Core\Picture $picture) {
-		$this->pictures->removeElement($picture);
-	}
+    public function removePicture(\Ladb\CoreBundle\Entity\Core\Picture $picture)
+    {
+        $this->pictures->removeElement($picture);
+    }
 
-	public function getPictures() {
-		return $this->pictures;
-	}
-
+    public function getPictures()
+    {
+        return $this->pictures;
+    }
 }

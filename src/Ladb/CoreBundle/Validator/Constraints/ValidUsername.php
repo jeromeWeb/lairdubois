@@ -7,14 +7,16 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class ValidUsername extends Constraint {
+class ValidUsername extends Constraint
+{
 
-	public function validatedBy() {
-		return 'ladb_core.valid_username_validator';
-	}
+    public function validatedBy()
+    {
+        return 'ladb_core.valid_username_validator';
+    }
 
-	public function getTargets() {
-		return self::CLASS_CONSTRAINT;
-	}
-
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

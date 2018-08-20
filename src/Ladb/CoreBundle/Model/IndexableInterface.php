@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface IndexableInterface {
+interface IndexableInterface
+{
 
-	// IsIndexable /////
+    // IsIndexable /////
 
-	public function isIndexable();
-
+    public function isIndexable();
 }

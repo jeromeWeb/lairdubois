@@ -9,104 +9,116 @@ use Ladb\CoreBundle\Model\PublicationInterface;
 /**
  * @ORM\MappedSuperclass
  */
-abstract class AbstractPublication implements PublicationInterface {
+abstract class AbstractPublication implements PublicationInterface
+{
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	protected $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	protected $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    protected $createdAt;
 
-	/**
-	 * @ORM\Column(name="changed_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	protected $changedAt;
+    /**
+     * @ORM\Column(name="changed_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    protected $changedAt;
 
-	/**
-	 * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-	 */
-	protected $updatedAt;
+    /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    protected $updatedAt;
 
-	/**
-	 * @ORM\Column(name="is_locked", type="boolean")
-	 */
-	protected $isLocked = false;
+    /**
+     * @ORM\Column(name="is_locked", type="boolean")
+     */
+    protected $isLocked = false;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	// UpdatedAt /////
+    // UpdatedAt /////
 
-	public function setUpdatedAt($updatedAt) {
-		$this->updatedAt = $updatedAt;
-		return $this;
-	}
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-	public function getUpdatedAt() {
-		return $this->updatedAt;
-	}
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-	// UpdatedAge /////
+    // UpdatedAge /////
 
-	public function getUpdatedAge() {
-		return $this->getUpdatedAt()->diff(new \DateTime());
-	}
+    public function getUpdatedAge()
+    {
+        return $this->getUpdatedAt()->diff(new \DateTime());
+    }
 
-	// ChangedAt /////
+    // ChangedAt /////
 
-	public function setChangedAt($changedAt) {
-		$this->changedAt = $changedAt;
-		return $this;
-	}
+    public function setChangedAt($changedAt)
+    {
+        $this->changedAt = $changedAt;
+        return $this;
+    }
 
-	public function getChangedAt() {
-		return $this->changedAt;
-	}
+    public function getChangedAt()
+    {
+        return $this->changedAt;
+    }
 
-	// IsLocked /////
+    // IsLocked /////
 
-	public function setIsLocked($isLocked) {
-		$this->isLocked = $isLocked;
-	}
+    public function setIsLocked($isLocked)
+    {
+        $this->isLocked = $isLocked;
+    }
 
-	public function getIsLocked() {
-		return $this->isLocked;
-	}
+    public function getIsLocked()
+    {
+        return $this->isLocked;
+    }
 
-	// NotificationStrategy /////
+    // NotificationStrategy /////
 
-	public function getNotificationStrategy() {
-		return self::NOTIFICATION_STRATEGY_NONE;
-	}
+    public function getNotificationStrategy()
+    {
+        return self::NOTIFICATION_STRATEGY_NONE;
+    }
 
-	// SubPublications /////
+    // SubPublications /////
 
-	public function getSubPublications() {
-		return null;
-	}
-
+    public function getSubPublications()
+    {
+        return null;
+    }
 }

@@ -39,166 +39,179 @@ use Ladb\CoreBundle\Entity\AbstractAuthoredPublication;
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Promotion\GraphicRepository")
  * @LadbAssert\BodyBlocks()
  */
-class Graphic extends AbstractDraftableAuthoredPublication implements TitledInterface, PicturedInterface, BodiedInterface, IndexableInterface, SitemapableInterface, TaggableInterface, ViewableInterface, ScrapableInterface, LikableInterface, WatchableInterface, CommentableInterface, ReportableInterface, ExplorableInterface {
+class Graphic extends AbstractDraftableAuthoredPublication implements TitledInterface, PicturedInterface, BodiedInterface, IndexableInterface, SitemapableInterface, TaggableInterface, ViewableInterface, ScrapableInterface, LikableInterface, WatchableInterface, CommentableInterface, ReportableInterface, ExplorableInterface
+{
 
-	use TitledTrait, PicturedTrait, BodiedTrait, LicensedTrait;
-	use IndexableTrait, SitemapableTrait, TaggableTrait, ViewableTrait, ScrapableTrait, LikableTrait, WatchableTrait, CommentableTrait;
+    use TitledTrait, PicturedTrait, BodiedTrait, LicensedTrait;
+    use IndexableTrait, SitemapableTrait, TaggableTrait, ViewableTrait, ScrapableTrait, LikableTrait, WatchableTrait, CommentableTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Promotion\Graphic';
-	const TYPE = 117;
+    const CLASS_NAME = 'LadbCoreBundle:Promotion\Graphic';
+    const TYPE = 117;
 
-	const ACCEPTED_FILE_TYPE = '/(\.|\/)(pdf|svg)$/i';
+    const ACCEPTED_FILE_TYPE = '/(\.|\/)(pdf|svg)$/i';
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=4)
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
-	 */
-	private $title;
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4)
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
+     */
+    private $title;
 
-	/**
-	 * @Gedmo\Slug(fields={"title"}, separator="-")
-	 * @ORM\Column(type="string", length=100, unique=true)
-	 */
-	private $slug;
+    /**
+     * @Gedmo\Slug(fields={"title"}, separator="-")
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $slug;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true, name="main_picture_id")
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
-	 */
-	private $mainPicture;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true, name="main_picture_id")
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
+     */
+    private $mainPicture;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 */
-	private $body;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    private $body;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 */
-	private $htmlBody;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    private $htmlBody;
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Tag", cascade={"persist"})
-	 * @ORM\JoinTable(name="tbl_promotion_graphic_tag")
-	 * @Assert\Count(min=2)
-	 */
-	private $tags;
+    /**
+     * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Tag", cascade={"persist"})
+     * @ORM\JoinTable(name="tbl_promotion_graphic_tag")
+     * @Assert\Count(min=2)
+     */
+    private $tags;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Resource", cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false, name="resource_id")
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Resource")
-	 * @Assert\NotNull()
-	 */
-	private $resource;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Resource", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false, name="resource_id")
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Resource")
+     * @Assert\NotNull()
+     */
+    private $resource;
 
-	/**
-	 * @ORM\OneToOne(targetEntity="Ladb\CoreBundle\Entity\Core\License", cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(nullable=true, name="license_id")
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\License")
-	 */
-	private $license;
+    /**
+     * @ORM\OneToOne(targetEntity="Ladb\CoreBundle\Entity\Core\License", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, name="license_id")
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\License")
+     */
+    private $license;
 
-	/**
-	 * @ORM\Column(type="integer", name="zip_archive_size")
-	 */
-	private $zipArchiveSize = 0;
+    /**
+     * @ORM\Column(type="integer", name="zip_archive_size")
+     */
+    private $zipArchiveSize = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="download_count")
-	 */
-	private $downloadCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="download_count")
+     */
+    private $downloadCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="like_count")
-	 */
-	private $likeCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="like_count")
+     */
+    private $likeCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="watch_count")
-	 */
-	private $watchCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="watch_count")
+     */
+    private $watchCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="comment_count")
-	 */
-	private $commentCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="comment_count")
+     */
+    private $commentCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="view_count")
-	 */
-	private $viewCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="view_count")
+     */
+    private $viewCount = 0;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->tags = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	// NotificationStrategy /////
+    // NotificationStrategy /////
 
-	public function getNotificationStrategy() {
-		return self::NOTIFICATION_STRATEGY_FOLLOWER;
-	}
+    public function getNotificationStrategy()
+    {
+        return self::NOTIFICATION_STRATEGY_FOLLOWER;
+    }
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return Graphic::TYPE;
-	}
+    public function getType()
+    {
+        return Graphic::TYPE;
+    }
 
-	// Slug /////
+    // Slug /////
 
-	public function getSlug() {
-		return $this->slug;
-	}
+    public function getSlug()
+    {
+        return $this->slug;
+    }
 
-	public function setSlug($slug) {
-		$this->slug = $slug;
-		return $this;
-	}
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
+    }
 
-	public function getSluggedId() {
-		return $this->id.'-'.$this->slug;
-	}
+    public function getSluggedId()
+    {
+        return $this->id . '-' . $this->slug;
+    }
 
-	// Resources /////
+    // Resources /////
 
-	public function setResource(\Ladb\CoreBundle\Entity\Core\Resource $resource) {
-		$this->resource = $resource;
-		return $this;
-	}
+    public function setResource(\Ladb\CoreBundle\Entity\Core\Resource $resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
 
-	public function getResource() {
-		return $this->resource;
-	}
+    public function getResource()
+    {
+        return $this->resource;
+    }
 
-	// ResourceSizeSum /////
+    // ResourceSizeSum /////
 
-	public function setZipArchiveSize($zipArchiveSize) {
-		return $this->zipArchiveSize = $zipArchiveSize;
-	}
+    public function setZipArchiveSize($zipArchiveSize)
+    {
+        return $this->zipArchiveSize = $zipArchiveSize;
+    }
 
-	public function getZipArchiveSize() {
-		return $this->zipArchiveSize;
-	}
+    public function getZipArchiveSize()
+    {
+        return $this->zipArchiveSize;
+    }
 
-	// DownloadCount /////
+    // DownloadCount /////
 
-	public function incrementDownloadCount($by = 1) {
-		return $this->downloadCount += intval($by);
-	}
+    public function incrementDownloadCount($by = 1)
+    {
+        return $this->downloadCount += intval($by);
+    }
 
-	public function setDownloadCount($downloadCount) {
-		$this->downloadCount = $downloadCount;
-		return $this;
-	}
+    public function setDownloadCount($downloadCount)
+    {
+        $this->downloadCount = $downloadCount;
+        return $this;
+    }
 
-	public function getDownloadCount() {
-		return $this->downloadCount;
-	}
-
+    public function getDownloadCount()
+    {
+        return $this->downloadCount;
+    }
 }

@@ -9,242 +9,276 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table("tbl_funding")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Funding\FundingRepository")
  */
-class Funding {
+class Funding
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Funding\Funding';
+    const CLASS_NAME = 'LadbCoreBundle:Funding\Funding';
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(type="smallint")
-	 */
-	private $month;
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $month;
 
-	/**
-	 * @ORM\Column(type="smallint")
-	 */
-	private $year;
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $year;
 
-	/**
-	 * @ORM\Column(name="charge_balance", type="integer")
-	 */
-	private $chargeBalance = 0;
+    /**
+     * @ORM\Column(name="charge_balance", type="integer")
+     */
+    private $chargeBalance = 0;
 
-	/**
-	 * @ORM\Column(name="donation_fee_balance", type="integer")
-	 */
-	private $donationFeeBalance = 0;
+    /**
+     * @ORM\Column(name="donation_fee_balance", type="integer")
+     */
+    private $donationFeeBalance = 0;
 
-	/**
-	 * @ORM\Column(name="carried_forward_balance", type="integer")
-	 */
-	private $carriedForwoardBalance = 0;
+    /**
+     * @ORM\Column(name="carried_forward_balance", type="integer")
+     */
+    private $carriedForwoardBalance = 0;
 
-	/**
-	 * @ORM\Column(name="donation_balance", type="integer")
-	 */
-	private $donationBalance = 0;
+    /**
+     * @ORM\Column(name="donation_balance", type="integer")
+     */
+    private $donationBalance = 0;
 
-	/**
-	 * @ORM\Column(name="donation_count", type="integer")
-	 */
-	private $donationCount = 0;
+    /**
+     * @ORM\Column(name="donation_count", type="integer")
+     */
+    private $donationCount = 0;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="Ladb\CoreBundle\Entity\Funding\Charge", mappedBy="funding", cascade={"all"})
-	 */
-	private $charges;
+    /**
+     * @ORM\OneToMany(targetEntity="Ladb\CoreBundle\Entity\Funding\Charge", mappedBy="funding", cascade={"all"})
+     */
+    private $charges;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->charges = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->charges = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	/////
+    /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// Month /////
+    // Month /////
 
-	public function setMonth($month) {
-		$this->month = $month;
-		return $this;
-	}
+    public function setMonth($month)
+    {
+        $this->month = $month;
+        return $this;
+    }
 
-	public function getMonth() {
-		return $this->month;
-	}
+    public function getMonth()
+    {
+        return $this->month;
+    }
 
-	// Year /////
+    // Year /////
 
-	public function setYear($year) {
-		$this->year = $year;
-		return $this;
-	}
+    public function setYear($year)
+    {
+        $this->year = $year;
+        return $this;
+    }
 
-	public function getYear() {
-		return $this->year;
-	}
+    public function getYear()
+    {
+        return $this->year;
+    }
 
-	// IsCurrent /////
+    // IsCurrent /////
 
-	public function getDate() {
-		return new \DateTime($this->getYear().'-'.$this->getMonth().'-01');
-	}
+    public function getDate()
+    {
+        return new \DateTime($this->getYear() . '-' . $this->getMonth() . '-01');
+    }
 
-	// IsCurrent /////
+    // IsCurrent /////
 
-	public function getIsCurrent() {
-		$now = new \DateTime();
-		return $this->getMonth() == $now->format('m') && $this->getYear() == $now->format('Y');
-	}
+    public function getIsCurrent()
+    {
+        $now = new \DateTime();
+        return $this->getMonth() == $now->format('m') && $this->getYear() == $now->format('Y');
+    }
 
-	// ChargeBalance /////
+    // ChargeBalance /////
 
-	public function incrementChargeBalance($by) {
-		$this->chargeBalance += $by;
-		return $this;
-	}
+    public function incrementChargeBalance($by)
+    {
+        $this->chargeBalance += $by;
+        return $this;
+    }
 
-	public function setChargeBalance($chargeBalance) {
-		$this->chargeBalance = $chargeBalance;
-		return $this;
-	}
+    public function setChargeBalance($chargeBalance)
+    {
+        $this->chargeBalance = $chargeBalance;
+        return $this;
+    }
 
-	public function getChargeBalance() {
-		return $this->chargeBalance;
-	}
+    public function getChargeBalance()
+    {
+        return $this->chargeBalance;
+    }
 
-	public function getChargeBalanceEur() {
-		return $this->getChargeBalance() / 100;
-	}
+    public function getChargeBalanceEur()
+    {
+        return $this->getChargeBalance() / 100;
+    }
 
-	// DonationFeeBalance /////
+    // DonationFeeBalance /////
 
-	public function incrementDonationFeeBalance($by) {
-		$this->donationFeeBalance += $by;
-		return $this;
-	}
+    public function incrementDonationFeeBalance($by)
+    {
+        $this->donationFeeBalance += $by;
+        return $this;
+    }
 
-	public function setDonationFeeBalance($donationFeeBalance) {
-		$this->donationFeeBalance = $donationFeeBalance;
-		return $this;
-	}
+    public function setDonationFeeBalance($donationFeeBalance)
+    {
+        $this->donationFeeBalance = $donationFeeBalance;
+        return $this;
+    }
 
-	public function getDonationFeeBalance() {
-		return $this->donationFeeBalance;
-	}
+    public function getDonationFeeBalance()
+    {
+        return $this->donationFeeBalance;
+    }
 
-	public function getDonationFeeBalanceEur() {
-		return $this->getDonationFeeBalance() / 100;
-	}
+    public function getDonationFeeBalanceEur()
+    {
+        return $this->getDonationFeeBalance() / 100;
+    }
 
-	// CarriedForwardBalance /////
+    // CarriedForwardBalance /////
 
-	public function setCarriedForwardBalance($carriedForwoardBalance) {
-		$this->carriedForwoardBalance = $carriedForwoardBalance;
-		return $this;
-	}
+    public function setCarriedForwardBalance($carriedForwoardBalance)
+    {
+        $this->carriedForwoardBalance = $carriedForwoardBalance;
+        return $this;
+    }
 
-	public function getCarriedForwardBalance() {
-		return $this->carriedForwoardBalance;
-	}
+    public function getCarriedForwardBalance()
+    {
+        return $this->carriedForwoardBalance;
+    }
 
-	public function getCarriedForwardBalanceEur() {
-		return $this->getCarriedForwardBalance() / 100;
-	}
+    public function getCarriedForwardBalanceEur()
+    {
+        return $this->getCarriedForwardBalance() / 100;
+    }
 
-	// DonationBalance /////
+    // DonationBalance /////
 
-	public function incrementDonationBalance($by) {
-		$this->donationBalance += $by;
-		return $this;
-	}
+    public function incrementDonationBalance($by)
+    {
+        $this->donationBalance += $by;
+        return $this;
+    }
 
-	public function setDonationBalance($donationBalance) {
-		$this->donationBalance = $donationBalance;
-		return $this;
-	}
+    public function setDonationBalance($donationBalance)
+    {
+        $this->donationBalance = $donationBalance;
+        return $this;
+    }
 
-	public function getDonationBalance() {
-		return $this->donationBalance;
-	}
+    public function getDonationBalance()
+    {
+        return $this->donationBalance;
+    }
 
-	public function getDonationBalanceEur() {
-		return $this->getDonationBalance() / 100;
-	}
+    public function getDonationBalanceEur()
+    {
+        return $this->getDonationBalance() / 100;
+    }
 
-	// DonationCount /////
+    // DonationCount /////
 
-	public function incrementDonationCount($by = 1) {
-		$this->donationCount += $by;
-		return $this;
-	}
+    public function incrementDonationCount($by = 1)
+    {
+        $this->donationCount += $by;
+        return $this;
+    }
 
-	public function getDonationCount() {
-		return $this->donationCount;
-	}
+    public function getDonationCount()
+    {
+        return $this->donationCount;
+    }
 
-	// Charges /////
+    // Charges /////
 
-	public function addCharge(\Ladb\CoreBundle\Entity\Funding\Charge $charge) {
-		if (!$this->charges->contains($charge)) {
-			$this->charges[] = $charge;
-			$charge->setFunding($this);
-		}
-		return $this;
-	}
+    public function addCharge(\Ladb\CoreBundle\Entity\Funding\Charge $charge)
+    {
+        if (!$this->charges->contains($charge)) {
+            $this->charges[] = $charge;
+            $charge->setFunding($this);
+        }
+        return $this;
+    }
 
-	public function removeCharge(\Ladb\CoreBundle\Entity\Funding\Charge $charge) {
-		if ($this->charges->removeElement($charge)) {
-			$charge->setFunding(null);
-		}
-	}
+    public function removeCharge(\Ladb\CoreBundle\Entity\Funding\Charge $charge)
+    {
+        if ($this->charges->removeElement($charge)) {
+            $charge->setFunding(null);
+        }
+    }
 
-	public function getCharges() {
-		return $this->charges;
-	}
+    public function getCharges()
+    {
+        return $this->charges;
+    }
 
-	/////
+    /////
 
-	// OutgoingsBalance /////
+    // OutgoingsBalance /////
 
-	public function getOutgoingsBalance() {
-		return $this->getChargeBalance() + $this->getDonationFeeBalance();
-	}
+    public function getOutgoingsBalance()
+    {
+        return $this->getChargeBalance() + $this->getDonationFeeBalance();
+    }
 
-	public function getOutgoingsBalanceEur() {
-		return $this->getOutgoingsBalance() / 100;
-	}
+    public function getOutgoingsBalanceEur()
+    {
+        return $this->getOutgoingsBalance() / 100;
+    }
 
-	// EarningsBalance /////
+    // EarningsBalance /////
 
-	public function getEarningsBalance() {
-		return $this->getCarriedForwardBalance() + $this->getDonationBalance();
-	}
+    public function getEarningsBalance()
+    {
+        return $this->getCarriedForwardBalance() + $this->getDonationBalance();
+    }
 
-	public function getEarningsBalanceEur() {
-		return $this->getEarningsBalance() / 100;
-	}
+    public function getEarningsBalanceEur()
+    {
+        return $this->getEarningsBalance() / 100;
+    }
 
-	// Visibility /////
+    // Visibility /////
 
-	public function getVisibility() {
-		return max(0, floor(($this->getEarningsBalance() - $this->getDonationFeeBalance()) / $this->getChargeBalance()));
-	}
+    public function getVisibility()
+    {
+        return max(0, floor(($this->getEarningsBalance() - $this->getDonationFeeBalance()) / $this->getChargeBalance()));
+    }
 
-	// PartialVisibility /////
+    // PartialVisibility /////
 
-	public function getPartialVisibility() {
-		return max(0, ceil(($this->getEarningsBalance() - $this->getDonationFeeBalance()) / $this->getChargeBalance()));
-	}
-
+    public function getPartialVisibility()
+    {
+        return max(0, ceil(($this->getEarningsBalance() - $this->getDonationFeeBalance()) / $this->getChargeBalance()));
+    }
 }

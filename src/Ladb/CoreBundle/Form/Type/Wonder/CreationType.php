@@ -21,83 +21,77 @@ use Ladb\CoreBundle\Form\DataTransformer\Knowledge\ProvidersToIdsTransformer;
 use Ladb\CoreBundle\Form\Type\LicenseType;
 use Ladb\CoreBundle\Form\Type\PolyCollectionType;
 
-class CreationType extends AbstractType {
+class CreationType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('title')
-			->add($builder
-				->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new PicturesToIdsTransformer($this->om))
-			)
-			->add('bodyBlocks', PolyCollectionType::class, array(
-				'types'        => array(
-					\Ladb\CoreBundle\Form\Type\Block\TextBlockType::class,
-					\Ladb\CoreBundle\Form\Type\Block\GalleryBlockType::class,
-					\Ladb\CoreBundle\Form\Type\Block\VideoBlockType::class,
-				),
-				'allow_add'    => true,
-				'allow_delete' => true,
-				'by_reference' => false,
-				'options'      => array(
-					'em' => $this->om,
-				),
-				'constraints'  => array(new \Symfony\Component\Validator\Constraints\Valid())
-			))
-			->add($builder
-				->create('woods', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new WoodsToLabelsTransformer($this->om))
-			)
-			->add($builder
-				->create('tools', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new ToolsToLabelsTransformer($this->om))
-			)
-			->add($builder
-				->create('finishes', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new FinishesToLabelsTransformer($this->om))
-			)
-			->add($builder
-				->create('tags', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new TagsToLabelsTransformer($this->om))
-			)
-			->add($builder
-				->create('plans', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new PlansToIdsTransformer($this->om))
-			)
-			->add($builder
-				->create('howtos', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new HowtosToIdsTransformer($this->om))
-			)
-			->add($builder
-				->create('workflows', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new WorkflowsToIdsTransformer($this->om))
-			)
-			->add($builder
-				->create('providers', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new ProvidersToIdsTransformer($this->om))
-			)
-			->add($builder
-				->create('inspirations', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new CreationsToIdsTransformer($this->om))
-			)
-			->add('license', LicenseType::class)
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title')
+            ->add($builder
+                ->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new PicturesToIdsTransformer($this->om)))
+            ->add('bodyBlocks', PolyCollectionType::class, array(
+                'types'        => array(
+                    \Ladb\CoreBundle\Form\Type\Block\TextBlockType::class,
+                    \Ladb\CoreBundle\Form\Type\Block\GalleryBlockType::class,
+                    \Ladb\CoreBundle\Form\Type\Block\VideoBlockType::class,
+                ),
+                'allow_add'    => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'options'      => array(
+                    'em' => $this->om,
+                ),
+                'constraints'  => array(new \Symfony\Component\Validator\Constraints\Valid())
+            ))
+            ->add($builder
+                ->create('woods', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new WoodsToLabelsTransformer($this->om)))
+            ->add($builder
+                ->create('tools', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new ToolsToLabelsTransformer($this->om)))
+            ->add($builder
+                ->create('finishes', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new FinishesToLabelsTransformer($this->om)))
+            ->add($builder
+                ->create('tags', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new TagsToLabelsTransformer($this->om)))
+            ->add($builder
+                ->create('plans', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new PlansToIdsTransformer($this->om)))
+            ->add($builder
+                ->create('howtos', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new HowtosToIdsTransformer($this->om)))
+            ->add($builder
+                ->create('workflows', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new WorkflowsToIdsTransformer($this->om)))
+            ->add($builder
+                ->create('providers', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new ProvidersToIdsTransformer($this->om)))
+            ->add($builder
+                ->create('inspirations', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new CreationsToIdsTransformer($this->om)))
+            ->add('license', LicenseType::class)
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Wonder\Creation',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Wonder\Creation',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_wonder_creation';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_wonder_creation';
+    }
 }

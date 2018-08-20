@@ -10,26 +10,29 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class LongtextValueType extends AbstractValueType {
+class LongtextValueType extends AbstractValueType
+{
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		parent::buildForm($builder, $options);
-		$builder
-			->add('data', TextareaType::class, array(
-				'constraints' => $options['dataConstraints'],
-			))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        parent::buildForm($builder, $options);
+        $builder
+            ->add('data', TextareaType::class, array(
+                'constraints' => $options['dataConstraints'],
+            ))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		parent::configureOptions($resolver);
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Knowledge\Value\Longtext',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        parent::configureOptions($resolver);
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Knowledge\Value\Longtext',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_knowledge_value_longtext';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_knowledge_value_longtext';
+    }
 }

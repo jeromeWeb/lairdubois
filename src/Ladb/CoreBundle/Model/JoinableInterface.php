@@ -2,18 +2,18 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface JoinableInterface extends IdentifiableInterface, TypableInterface {
+interface JoinableInterface extends IdentifiableInterface, TypableInterface
+{
 
-	// IsJoinable /////
+    // IsJoinable /////
 
-	public function getIsJoinable();
+    public function getIsJoinable();
 
-	// JoinCount /////
+    // JoinCount /////
 
-	public function incrementJoinCount($by = 1);
+    public function incrementJoinCount($by = 1);
 
-	public function setJoinCount($joinCount);
+    public function setJoinCount($joinCount);
 
-	public function getJoinCount();
-
+    public function getJoinCount();
 }

@@ -24,199 +24,214 @@ use Ladb\CoreBundle\Model\WatchableChildInterface;
  * @LadbAssert\ValueSource()
  * @UniqueEntity(fields={"dataHash", "parentEntityType", "parentEntityId", "parentEntityField"})
  */
-abstract class BaseValue implements AuthoredInterface, WatchableChildInterface, CommentableInterface, VotableInterface {
+abstract class BaseValue implements AuthoredInterface, WatchableChildInterface, CommentableInterface, VotableInterface
+{
 
-	use AuthoredTrait;
-	use CommentableTrait, VotableTrait;
+    use AuthoredTrait;
+    use CommentableTrait, VotableTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\BaseValue';
+    const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\BaseValue';
 
-	const SOURCE_TYPE_PERSONAL = 1;
-	const SOURCE_TYPE_WEBSITE = 2;
-	const SOURCE_TYPE_OTHER = 3;
+    const SOURCE_TYPE_PERSONAL = 1;
+    const SOURCE_TYPE_WEBSITE = 2;
+    const SOURCE_TYPE_OTHER = 3;
 
-	public static $SOURCE_TYPES = array(
-		self::SOURCE_TYPE_PERSONAL => 'Connaissances personnelles',
-		self::SOURCE_TYPE_WEBSITE => 'Site web',
-		self::SOURCE_TYPE_OTHER => 'Autre',
-	);
+    public static $SOURCE_TYPES = array(
+        self::SOURCE_TYPE_PERSONAL => 'Connaissances personnelles',
+        self::SOURCE_TYPE_WEBSITE => 'Site web',
+        self::SOURCE_TYPE_OTHER => 'Autre',
+    );
 
-	/**
-	 * @ORM\Column(name="parent_entity_type", type="smallint", nullable=false)
-	 */
-	protected $parentEntityType;
+    /**
+     * @ORM\Column(name="parent_entity_type", type="smallint", nullable=false)
+     */
+    protected $parentEntityType;
 
-	/**
-	 * @ORM\Column(name="parent_entity_id", type="integer", nullable=false)
-	 */
-	protected $parentEntityId;
+    /**
+     * @ORM\Column(name="parent_entity_id", type="integer", nullable=false)
+     */
+    protected $parentEntityId;
 
-	/**
-	 * @ORM\Column(name="parent_entity_field", type="string", length=20, nullable=false)
-	 */
-	protected $parentEntityField;
+    /**
+     * @ORM\Column(name="parent_entity_field", type="string", length=20, nullable=false)
+     */
+    protected $parentEntityField;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(name="user_id", nullable=false)
-	 */
-	protected $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(name="user_id", nullable=false)
+     */
+    protected $user;
 
-	protected $data;
+    protected $data;
 
-	/**
-	 * @ORM\Column(type="string", name="data_hash", length=32)
-	 */
-	protected $dataHash;
+    /**
+     * @ORM\Column(type="string", name="data_hash", length=32)
+     */
+    protected $dataHash;
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\Column(name="updated_at", type="datetime")
-	 * @Gedmo\Timestampable(on="update")
-	 */
-	private $updatedAt;
+    /**
+     * @ORM\Column(name="updated_at", type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     */
+    private $updatedAt;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=true)
-	 * @Assert\Length(max=255)
-	 */
-	private $legend;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
+     */
+    private $legend;
 
-	/**
-	 * @ORM\Column(type="smallint", name="source_type", nullable=true)
-	 */
-	private $sourceType;
+    /**
+     * @ORM\Column(type="smallint", name="source_type", nullable=true)
+     */
+    private $sourceType;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=true)
-	 * @Assert\NotBlank(groups={"website", "other"})
-	 * @Assert\Length(min=2, max=255, groups={"website", "other"})
-	 * @Assert\Url(groups={"website"})
-	 */
-	private $source;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank(groups={"website", "other"})
+     * @Assert\Length(min=2, max=255, groups={"website", "other"})
+     * @Assert\Url(groups={"website"})
+     */
+    private $source;
 
-	/**
-	 * @ORM\Column(type="integer", name="positive_vote_score")
-	 */
-	private $positiveVoteScore = 0;
+    /**
+     * @ORM\Column(type="integer", name="positive_vote_score")
+     */
+    private $positiveVoteScore = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="negative_vote_score")
-	 */
-	private $negativeVoteScore = 0;
+    /**
+     * @ORM\Column(type="integer", name="negative_vote_score")
+     */
+    private $negativeVoteScore = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="vote_score")
-	 */
-	private $voteScore = 0;
+    /**
+     * @ORM\Column(type="integer", name="vote_score")
+     */
+    private $voteScore = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="vote_count")
-	 */
-	private $voteCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="vote_count")
+     */
+    private $voteCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="comment_count")
-	 */
-	private $commentCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="comment_count")
+     */
+    private $commentCount = 0;
 
-	/////
+    /////
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		throw new \Exception("BaseValue->getType() need to be overrided to be used.");
-	}
+    public function getType()
+    {
+        throw new \Exception("BaseValue->getType() need to be overrided to be used.");
+    }
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function getAge() {
-		return $this->getCreatedAt()->diff(new \DateTime());
-	}
+    public function getAge()
+    {
+        return $this->getCreatedAt()->diff(new \DateTime());
+    }
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	// Age /////
+    // Age /////
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	// UpdatedAt /////
+    // UpdatedAt /////
 
-	public function getUpdatedAt() {
-		return $this->updatedAt;
-	}
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
 
-	public function setUpdatedAt($updatedAt) {
-		$this->updatedAt = $updatedAt;
-		return $this;
-	}
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 
-	// Legend /////
+    // Legend /////
 
-	public function getLegend() {
-		return $this->legend;
-	}
+    public function getLegend()
+    {
+        return $this->legend;
+    }
 
-	public function setLegend($legend) {
-		$this->legend = $legend;
-		return $this;
-	}
+    public function setLegend($legend)
+    {
+        $this->legend = $legend;
+        return $this;
+    }
 
-	// Source /////
+    // Source /////
 
-	public function getSource() {
-		return $this->source;
-	}
+    public function getSource()
+    {
+        return $this->source;
+    }
 
-	public function setSource($source) {
-		$this->source = $source;
-		return $this;
-	}
+    public function setSource($source)
+    {
+        $this->source = $source;
+        return $this;
+    }
 
-	// SourceType /////
+    // SourceType /////
 
-	public function getSourceType() {
-		return $this->sourceType;
-	}
+    public function getSourceType()
+    {
+        return $this->sourceType;
+    }
 
-	public function setSourceType($sourceType) {
-		$this->sourceType = $sourceType;
-		return $this;
-	}
+    public function setSourceType($sourceType)
+    {
+        $this->sourceType = $sourceType;
+        return $this;
+    }
 
-	// Data /////
+    // Data /////
 
-	public function getData() {
-		return $this->data;
-	}
+    public function getData()
+    {
+        return $this->data;
+    }
 
-	public function setData($data) {
-		$this->data = $data;
-		$this->dataHash = md5(serialize($data));
-		return $this;
-	}
-
+    public function setData($data)
+    {
+        $this->data = $data;
+        $this->dataHash = md5(serialize($data));
+        return $this;
+    }
 }

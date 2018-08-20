@@ -2,14 +2,14 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface CommentableInterface extends IdentifiableInterface, TypableInterface {
+interface CommentableInterface extends IdentifiableInterface, TypableInterface
+{
 
-	// CommentCount /////
+    // CommentCount /////
 
-	public function incrementCommentCount($by = 1);
+    public function incrementCommentCount($by = 1);
 
-	public function setCommentCount($commentCount);
+    public function setCommentCount($commentCount);
 
-	public function getCommentCount();
-
+    public function getCommentCount();
 }

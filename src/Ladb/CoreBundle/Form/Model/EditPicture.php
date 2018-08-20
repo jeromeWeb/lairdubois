@@ -4,67 +4,75 @@ namespace Ladb\CoreBundle\Form\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class EditPicture {
+class EditPicture
+{
 
-	/**
-	 * @Assert\Length(max=255)
-	 */
-	private $legend;
+    /**
+     * @Assert\Length(max=255)
+     */
+    private $legend;
 
-	private $rotation = 0;
+    private $rotation = 0;
 
-	/**
-	 * @Assert\Range(min=0, max=100)
-	 */
-	private $centerX100 = 50;
+    /**
+     * @Assert\Range(min=0, max=100)
+     */
+    private $centerX100 = 50;
 
-	/**
-	 * @Assert\Range(min=0, max=100)
-	 */
-	private $centerY100 = 50;
+    /**
+     * @Assert\Range(min=0, max=100)
+     */
+    private $centerY100 = 50;
 
-	// Legend /////
+    // Legend /////
 
-	public function setLegend($body) {
-		$this->legend = $body;
-		return $this;
-	}
+    public function setLegend($body)
+    {
+        $this->legend = $body;
+        return $this;
+    }
 
-	public function getLegend() {
-		return $this->legend;
-	}
+    public function getLegend()
+    {
+        return $this->legend;
+    }
 
-	// Rotation /////
+    // Rotation /////
 
-	public function setRotation($rotation) {
-		$this->rotation = $rotation;
-		return $this;
-	}
+    public function setRotation($rotation)
+    {
+        $this->rotation = $rotation;
+        return $this;
+    }
 
-	public function getRotation() {
-		return $this->rotation;
-	}
+    public function getRotation()
+    {
+        return $this->rotation;
+    }
 
-	// CenterX100 /////
+    // CenterX100 /////
 
-	public function setCenterX100($centerX100) {
-		$this->centerX100 = $centerX100;
-		return $this;
-	}
+    public function setCenterX100($centerX100)
+    {
+        $this->centerX100 = $centerX100;
+        return $this;
+    }
 
-	public function getCenterX100() {
-		return $this->centerX100;
-	}
+    public function getCenterX100()
+    {
+        return $this->centerX100;
+    }
 
-	// CenterY100 /////
+    // CenterY100 /////
 
-	public function setCenterY100($centerY100) {
-		$this->centerY100 = $centerY100;
-		return $this;
-	}
+    public function setCenterY100($centerY100)
+    {
+        $this->centerY100 = $centerY100;
+        return $this;
+    }
 
-	public function getCenterY100() {
-		return $this->centerY100;
-	}
-
+    public function getCenterY100()
+    {
+        return $this->centerY100;
+    }
 }

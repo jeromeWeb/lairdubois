@@ -2,14 +2,14 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface WatchableInterface extends IdentifiableInterface, TypableInterface, TitledInterface {
+interface WatchableInterface extends IdentifiableInterface, TypableInterface, TitledInterface
+{
 
-	// WatchCount /////
+    // WatchCount /////
 
-	public function incrementWatchCount($by = 1);
+    public function incrementWatchCount($by = 1);
 
-	public function setWatchCount($likeCount);
+    public function setWatchCount($likeCount);
 
-	public function getWatchCount();
-
+    public function getWatchCount();
 }

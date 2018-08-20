@@ -2,12 +2,12 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface PicturedInterface {
+interface PicturedInterface
+{
 
-	// MainPicture /////
+    // MainPicture /////
 
-	public function setMainPicture(\Ladb\CoreBundle\Entity\Core\Picture $mainPicture);
+    public function setMainPicture(\Ladb\CoreBundle\Entity\Core\Picture $mainPicture);
 
-	public function getMainPicture();
-
+    public function getMainPicture();
 }

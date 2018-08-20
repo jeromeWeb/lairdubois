@@ -13,37 +13,41 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use FOS\UserBundle\Form\Type\UsernameFormType;
 use Ladb\CoreBundle\Form\DataTransformer\PicturesToIdsTransformer;
 
-class NewThreadMessageType extends AbstractType {
+class NewThreadMessageType extends AbstractType
+{
 
-	private $om;
-	private $userManager;
+    private $om;
+    private $userManager;
 
-	public function __construct(ObjectManager $om, UserManagerInterface $userManager) {
-		$this->om = $om;
-		$this->userManager = $userManager;
-	}
+    public function __construct(ObjectManager $om, UserManagerInterface $userManager)
+    {
+        $this->om = $om;
+        $this->userManager = $userManager;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add($builder
-				->create('recipients', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden2' ) ))
-				->addModelTransformer(new UsersToUsernamesTransformer($this->userManager)))
-			->add('subject')
-			->add('body', TextareaType::class)
-			->add($builder
-				->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new PicturesToIdsTransformer($this->om)))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add($builder
+                ->create('recipients', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden2' ) ))
+                ->addModelTransformer(new UsersToUsernamesTransformer($this->userManager)))
+            ->add('subject')
+            ->add('body', TextareaType::class)
+            ->add($builder
+                ->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new PicturesToIdsTransformer($this->om)))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Form\Model\NewThreadMessage'
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Form\Model\NewThreadMessage'
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_message_newthread';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_message_newthread';
+    }
 }

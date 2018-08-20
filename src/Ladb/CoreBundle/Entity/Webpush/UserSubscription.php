@@ -10,73 +10,80 @@ use BenTools\WebPushBundle\Model\Subscription\UserSubscriptionInterface;
  * @ORM\Table("tbl_webpush_user_subscription")
  * @ORM\Entity()
  */
-class UserSubscription implements UserSubscriptionInterface {
+class UserSubscription implements UserSubscriptionInterface
+{
 
-	/**
-	 * @ORM\Column(type="integer")
-	 * @ORM\Id()
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
-	/**
-	 * @ORM\Column(type="string", name="subscription_hash")
-	 */
-	private $subscriptionHash;
+    /**
+     * @ORM\Column(type="string", name="subscription_hash")
+     */
+    private $subscriptionHash;
 
-	/**
-	 * @ORM\Column(type="json")
-	 */
-	private $subscription;
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $subscription;
 
-	/////
+    /////
 
-	public function __construct(UserInterface $user, string $subscriptionHash, array $subscription) {
-		$this->user = $user;
-		$this->subscriptionHash = $subscriptionHash;
-		$this->subscription = $subscription;
-	}
+    public function __construct(UserInterface $user, string $subscriptionHash, array $subscription)
+    {
+        $this->user = $user;
+        $this->subscriptionHash = $subscriptionHash;
+        $this->subscription = $subscription;
+    }
 
-	// Id /////
+    // Id /////
 
-	public function getId(): ?int {
-		return $this->id;
-	}
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-	// User /////
+    // User /////
 
-	public function getUser(): UserInterface {
-		return $this->user;
-	}
+    public function getUser(): UserInterface
+    {
+        return $this->user;
+    }
 
-	// SubscriptionHash /////
+    // SubscriptionHash /////
 
-	public function getSubscriptionHash(): string {
-		return $this->subscriptionHash;
-	}
+    public function getSubscriptionHash(): string
+    {
+        return $this->subscriptionHash;
+    }
 
-	// EndPoint /////
+    // EndPoint /////
 
-	public function getEndpoint(): string {
-		return $this->subscription['endpoint'] ?? null;
-	}
+    public function getEndpoint(): string
+    {
+        return $this->subscription['endpoint'] ?? null;
+    }
 
-	// PublicKey /////
+    // PublicKey /////
 
-	public function getPublicKey(): string {
-		return $this->subscription['keys']['p256dh'] ?? null;
-	}
+    public function getPublicKey(): string
+    {
+        return $this->subscription['keys']['p256dh'] ?? null;
+    }
 
-	// AuthToken /////
+    // AuthToken /////
 
-	public function getAuthToken(): string {
-		return $this->subscription['keys']['auth'] ?? null;
-	}
-
+    public function getAuthToken(): string
+    {
+        return $this->subscription['keys']['auth'] ?? null;
+    }
 }

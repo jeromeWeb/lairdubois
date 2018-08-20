@@ -2,19 +2,21 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait LicensedTrait {
+trait LicensedTrait
+{
 
-	// License /////
+    // License /////
 
-	public function setLicense($license) {
-		$this->license = $license;
-	}
+    public function setLicense($license)
+    {
+        $this->license = $license;
+    }
 
-	public function getLicense() {
-		if (is_null($this->license)) {
-			return new \Ladb\CoreBundle\Entity\Core\License();
-		}
-		return $this->license;
-	}
-
+    public function getLicense()
+    {
+        if (is_null($this->license)) {
+            return new \Ladb\CoreBundle\Entity\Core\License();
+        }
+        return $this->license;
+    }
 }

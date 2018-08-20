@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface IdentifiableInterface {
+interface IdentifiableInterface
+{
 
-	// Id /////
+    // Id /////
 
-	public function getId();
-
+    public function getId();
 }

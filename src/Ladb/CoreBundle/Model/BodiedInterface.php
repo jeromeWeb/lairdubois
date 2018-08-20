@@ -2,18 +2,18 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface BodiedInterface {
+interface BodiedInterface
+{
 
-	// Body /////
+    // Body /////
 
-	public function setBody($body);
+    public function setBody($body);
 
-	public function getBody();
+    public function getBody();
 
-	// HtmlBody /////
+    // HtmlBody /////
 
-	public function setHtmlBody($htmlBody);
+    public function setHtmlBody($htmlBody);
 
-	public function getHtmlBody();
-
+    public function getHtmlBody();
 }

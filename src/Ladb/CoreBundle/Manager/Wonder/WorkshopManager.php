@@ -16,189 +16,193 @@ use Ladb\CoreBundle\Utils\ReportableUtils;
 use Ladb\CoreBundle\Utils\ViewableUtils;
 use Ladb\CoreBundle\Utils\WatchableUtils;
 
-class WorkshopManager extends AbstractWonderManager {
+class WorkshopManager extends AbstractWonderManager
+{
 
-	const NAME = 'ladb_core.workshop_manager';
+    const NAME = 'ladb_core.workshop_manager';
 
-	/////
+    /////
 
-	public function publish(Workshop $workshop, $flush = true) {
+    public function publish(Workshop $workshop, $flush = true)
+    {
 
-		$workshop->getUser()->getMeta()->incrementPrivateWorkshopCount(-1);
-		$workshop->getUser()->getMeta()->incrementPublicWorkshopCount();
+        $workshop->getUser()->getMeta()->incrementPrivateWorkshopCount(-1);
+        $workshop->getUser()->getMeta()->incrementPublicWorkshopCount();
 
-		// Plan counter update
-		foreach ($workshop->getPlans() as $plan) {
-			$plan->incrementWorkshopCount(1);
-		}
+        // Plan counter update
+        foreach ($workshop->getPlans() as $plan) {
+            $plan->incrementWorkshopCount(1);
+        }
 
-		// Howtos counter update
-		foreach ($workshop->getHowtos() as $howto) {
-			$howto->incrementWorkshopCount(1);
-		}
+        // Howtos counter update
+        foreach ($workshop->getHowtos() as $howto) {
+            $howto->incrementWorkshopCount(1);
+        }
 
-		parent::publishPublication($workshop, $flush);
-	}
+        parent::publishPublication($workshop, $flush);
+    }
 
-	public function unpublish(Workshop $workshop, $flush = true) {
+    public function unpublish(Workshop $workshop, $flush = true)
+    {
 
-		$workshop->getUser()->getMeta()->incrementPrivateWorkshopCount(1);
-		$workshop->getUser()->getMeta()->incrementPublicWorkshopCount(-1);
+        $workshop->getUser()->getMeta()->incrementPrivateWorkshopCount(1);
+        $workshop->getUser()->getMeta()->incrementPublicWorkshopCount(-1);
 
-		// Plan counter update
-		foreach ($workshop->getPlans() as $plan) {
-			$plan->incrementWorkshopCount(-1);
-		}
+        // Plan counter update
+        foreach ($workshop->getPlans() as $plan) {
+            $plan->incrementWorkshopCount(-1);
+        }
 
-		// Howtos counter update
-		foreach ($workshop->getHowtos() as $howto) {
-			$howto->incrementWorkshopCount(-1);
-		}
+        // Howtos counter update
+        foreach ($workshop->getHowtos() as $howto) {
+            $howto->incrementWorkshopCount(-1);
+        }
 
-		parent::unpublishPublication($workshop, $flush);
-	}
+        parent::unpublishPublication($workshop, $flush);
+    }
 
-	public function convertToHowto(Workshop $workshop, $flush = true) {
-		$om = $this->getDoctrine()->getManager();
+    public function convertToHowto(Workshop $workshop, $flush = true)
+    {
+        $om = $this->getDoctrine()->getManager();
 
-		// Create a new howto and its article
+        // Create a new howto and its article
 
-		$article = new \Ladb\CoreBundle\Entity\Howto\Article();
-		$article->setTitle('Le projet');
-		$article->setIsDraft(false);
+        $article = new \Ladb\CoreBundle\Entity\Howto\Article();
+        $article->setTitle('Le projet');
+        $article->setIsDraft(false);
 
-		if ($workshop->getPictures()->count() > 1) {
+        if ($workshop->getPictures()->count() > 1) {
 
-			$textBlock = new \Ladb\CoreBundle\Entity\Core\Block\Text();
-			$textBlock->setBody('Images du projet');
-			$textBlock->setSortIndex(0);
-			$article->addBodyBlock($textBlock);
+            $textBlock = new \Ladb\CoreBundle\Entity\Core\Block\Text();
+            $textBlock->setBody('Images du projet');
+            $textBlock->setSortIndex(0);
+            $article->addBodyBlock($textBlock);
 
-			$galleryBlock = new \Ladb\CoreBundle\Entity\Core\Block\Gallery();
-			foreach ($workshop->getPictures() as $picture) {
-				$galleryBlock->addPicture($picture);
-			}
-			$galleryBlock->setSortIndex(1);
-			$article->addBodyBlock($galleryBlock);
+            $galleryBlock = new \Ladb\CoreBundle\Entity\Core\Block\Gallery();
+            foreach ($workshop->getPictures() as $picture) {
+                $galleryBlock->addPicture($picture);
+            }
+            $galleryBlock->setSortIndex(1);
+            $article->addBodyBlock($galleryBlock);
 
-		}
+        }
 
-		$blockBodiedUtils = $this->get(BlockBodiedUtils::NAME);
-		$blockBodiedUtils->copyBlocksTo($workshop, $article);
+        $blockBodiedUtils = $this->get(BlockBodiedUtils::NAME);
+        $blockBodiedUtils->copyBlocksTo($workshop, $article);
 
-		$howto = new \Ladb\CoreBundle\Entity\Howto\Howto();
-		$howto->setCreatedAt($workshop->getCreatedAt());
-		$howto->setUpdatedAt($workshop->getUpdatedAt());
-		$howto->setChangedAt($workshop->getChangedAt());
-		$howto->setVisibility($workshop->getVisibility());
-		$howto->setIsDraft($workshop->getIsDraft());
-		$howto->setTitle($workshop->getTitle());
-		$howto->setUser($workshop->getUser());
-		$howto->setMainPicture($workshop->getMainPicture());
-		$howto->setBody('Projet d\'atelier'.($workshop->getArea() ? ' de '.$workshop->getArea().'m²' : '').($workshop->getLocation() ? ' à '.$workshop->getLocation() : '').'.');
-		$howto->setLicense(new \Ladb\CoreBundle\Entity\Core\License($workshop->getLicense()->getAllowDerivs(), $workshop->getLicense()->getShareAlike(), $workshop->getLicense()->getAllowCommercial()));
+        $howto = new \Ladb\CoreBundle\Entity\Howto\Howto();
+        $howto->setCreatedAt($workshop->getCreatedAt());
+        $howto->setUpdatedAt($workshop->getUpdatedAt());
+        $howto->setChangedAt($workshop->getChangedAt());
+        $howto->setVisibility($workshop->getVisibility());
+        $howto->setIsDraft($workshop->getIsDraft());
+        $howto->setTitle($workshop->getTitle());
+        $howto->setUser($workshop->getUser());
+        $howto->setMainPicture($workshop->getMainPicture());
+        $howto->setBody('Projet d\'atelier' . ($workshop->getArea() ? ' de ' . $workshop->getArea() . 'm²' : '') . ($workshop->getLocation() ? ' à ' . $workshop->getLocation() : '') . '.');
+        $howto->setLicense(new \Ladb\CoreBundle\Entity\Core\License($workshop->getLicense()->getAllowDerivs(), $workshop->getLicense()->getShareAlike(), $workshop->getLicense()->getAllowCommercial()));
 
-		$article->setHowto($howto);		// Workaround to $howto->addArticle($article); because it generates a constraint violation on $this->delete($workshop, false, false);
-		if ($howto->getIsDraft()) {
-			$howto->incrementPublishedArticleCount();
-		} else {
-			$howto->incrementDraftArticleCount();
-		}
-		$article->setSortIndex(Article::MAX_SORT_INDEX);	// Default sort index is max value = new articles at the end of the list
+        $article->setHowto($howto);         // Workaround to $howto->addArticle($article); because it generates a constraint violation on $this->delete($workshop, false, false);
+        if ($howto->getIsDraft()) {
+            $howto->incrementPublishedArticleCount();
+        } else {
+            $howto->incrementDraftArticleCount();
+        }
+        $article->setSortIndex(Article::MAX_SORT_INDEX);    // Default sort index is max value = new articles at the end of the list
 
-		foreach ($workshop->getTags() as $tag) {
-			$howto->addTag($tag);
-		}
+        foreach ($workshop->getTags() as $tag) {
+            $howto->addTag($tag);
+        }
 
-		// Transfer plans
-		foreach ($workshop->getPlans() as $plan) {
-			$howto->addPlan($plan);
-		}
+        // Transfer plans
+        foreach ($workshop->getPlans() as $plan) {
+            $howto->addPlan($plan);
+        }
 
-		// Transfer workflows
-		foreach ($workshop->getWorkflows() as $workflow) {
-			$howto->addWorkflow($workflow);
-		}
+        // Transfer workflows
+        foreach ($workshop->getWorkflows() as $workflow) {
+            $howto->addWorkflow($workflow);
+        }
 
-		// Setup howto's and article's htmlBody
-		$fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
-		$fieldPreprocessorUtils->preprocessFields($howto);
-		$fieldPreprocessorUtils->preprocessFields($article);
+        // Setup howto's and article's htmlBody
+        $fieldPreprocessorUtils = $this->get(FieldPreprocessorUtils::NAME);
+        $fieldPreprocessorUtils->preprocessFields($howto);
+        $fieldPreprocessorUtils->preprocessFields($article);
 
-		// Persist howto to generate ID
-		$om->persist($howto);
-		$om->persist($article);
-		$om->flush();
+        // Persist howto to generate ID
+        $om->persist($howto);
+        $om->persist($article);
+        $om->flush();
 
-		// Dispatch publications event
-		$dispatcher = $this->get('event_dispatcher');
-		$dispatcher->dispatch(PublicationListener::PUBLICATION_CREATED_FROM_CONVERT, new PublicationEvent($howto));
+        // Dispatch publications event
+        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher->dispatch(PublicationListener::PUBLICATION_CREATED_FROM_CONVERT, new PublicationEvent($howto));
 
-		// User counter
-		if ($howto->getIsDraft()) {
-			$howto->getUser()->getMeta()->incrementPrivateHowtoCount(1);
-		} else {
-			$howto->getUser()->getMeta()->incrementPublicHowtoCount(1);
-		}
+        // User counter
+        if ($howto->getIsDraft()) {
+            $howto->getUser()->getMeta()->incrementPrivateHowtoCount(1);
+        } else {
+            $howto->getUser()->getMeta()->incrementPublicHowtoCount(1);
+        }
 
-		// Transfer views
-		$viewableUtils = $this->get(ViewableUtils::NAME);
-		$viewableUtils->transferViews($workshop, $howto, false);
+        // Transfer views
+        $viewableUtils = $this->get(ViewableUtils::NAME);
+        $viewableUtils->transferViews($workshop, $howto, false);
 
-		// Transfer likes
-		$likableUtils = $this->get(LikableUtils::NAME);
-		$likableUtils->transferLikes($workshop, $howto, false);
+        // Transfer likes
+        $likableUtils = $this->get(LikableUtils::NAME);
+        $likableUtils->transferLikes($workshop, $howto, false);
 
-		// Transfer comments
-		$commentableUtils = $this->get(CommentableUtils::NAME);
-		$commentableUtils->transferComments($workshop, $howto, false);
+        // Transfer comments
+        $commentableUtils = $this->get(CommentableUtils::NAME);
+        $commentableUtils->transferComments($workshop, $howto, false);
 
-		// Transfer watches
-		$watchableUtils = $this->get(WatchableUtils::NAME);
-		$watchableUtils->transferWatches($workshop, $howto, false);
+        // Transfer watches
+        $watchableUtils = $this->get(WatchableUtils::NAME);
+        $watchableUtils->transferWatches($workshop, $howto, false);
 
-		// transfer reports
-		$reportableUtils = $this->get(ReportableUtils::NAME);
-		$reportableUtils->transferReports($workshop, $howto, false);
+        // transfer reports
+        $reportableUtils = $this->get(ReportableUtils::NAME);
+        $reportableUtils->transferReports($workshop, $howto, false);
 
-		// Transfer publish activities
-		$activityUtils = $this->get(ActivityUtils::NAME);
-		$activityUtils->transferPublishActivities($workshop->getType(), $workshop->getId(), $howto->getType(), $howto->getId(), false);
+        // Transfer publish activities
+        $activityUtils = $this->get(ActivityUtils::NAME);
+        $activityUtils->transferPublishActivities($workshop->getType(), $workshop->getId(), $howto->getType(), $howto->getId(), false);
 
-		// Create the witness
-		$witnessManager = $this->get(WitnessManager::NAME);
-		$witnessManager->createConvertedByPublication($workshop, $howto, false);
+        // Create the witness
+        $witnessManager = $this->get(WitnessManager::NAME);
+        $witnessManager->createConvertedByPublication($workshop, $howto, false);
 
-		// Delete the workshop
-		$this->delete($workshop, false, false);
+        // Delete the workshop
+        $this->delete($workshop, false, false);
 
-		if ($flush) {
-			$om->flush();
-		}
+        if ($flush) {
+            $om->flush();
+        }
 
-		return $howto;
-	}
+        return $howto;
+    }
 
-	public function delete(Workshop $workshop, $withWitness = true, $flush = true) {
+    public function delete(Workshop $workshop, $withWitness = true, $flush = true)
+    {
 
-		// Decrement user workshop count
-		if ($workshop->getIsDraft()) {
-			$workshop->getUser()->getMeta()->incrementPrivateWorkshopCount(-1);
-		} else {
-			$workshop->getUser()->getMeta()->incrementPublicWorkshopCount(-1);
-		}
+        // Decrement user workshop count
+        if ($workshop->getIsDraft()) {
+            $workshop->getUser()->getMeta()->incrementPrivateWorkshopCount(-1);
+        } else {
+            $workshop->getUser()->getMeta()->incrementPublicWorkshopCount(-1);
+        }
 
-		// Unlink plans
-		foreach ($workshop->getPlans() as $plan) {
-			$workshop->removePlan($plan);
-		}
+        // Unlink plans
+        foreach ($workshop->getPlans() as $plan) {
+            $workshop->removePlan($plan);
+        }
 
-		// Unlink howtos
-		foreach ($workshop->getHowtos() as $howto) {
-			$workshop->removeHowto($howto);
-		}
+        // Unlink howtos
+        foreach ($workshop->getHowtos() as $howto) {
+            $workshop->removeHowto($howto);
+        }
 
-		parent::deleteWonder($workshop, $withWitness, $flush);
-	}
-
+        parent::deleteWonder($workshop, $withWitness, $flush);
+    }
 }

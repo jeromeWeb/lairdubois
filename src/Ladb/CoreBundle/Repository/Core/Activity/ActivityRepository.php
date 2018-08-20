@@ -8,94 +8,96 @@ use Ladb\CoreBundle\Entity\Core\Activity\Publish;
 use Ladb\CoreBundle\Entity\Core\Activity\Join;
 use Ladb\CoreBundle\Repository\AbstractEntityRepository;
 
-class ActivityRepository extends AbstractEntityRepository {
+class ActivityRepository extends AbstractEntityRepository
+{
 
-	/////
+    /////
 
-	public function findByPendingNotifications() {
-		$queryBuilder = $this->getEntityManager()->createQueryBuilder();
-		$queryBuilder
-			->select(array( 'a' ))
-			->from($this->getEntityName(), 'a')
-			->innerJoin('a.user', 'u')
-			->where('a.isPendingNotifications = 1')
-		;
+    public function findByPendingNotifications()
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 'a' ))
+            ->from($this->getEntityName(), 'a')
+            ->innerJoin('a.user', 'u')
+            ->where('a.isPendingNotifications = 1')
+        ;
 
-		try {
-			return $queryBuilder->getQuery()->getResult();
-		} catch (\Doctrine\ORM\NoResultException $e) {
-			return null;
-		}
-	}
+        try {
+            return $queryBuilder->getQuery()->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }
+    }
 
-	/////
+    /////
 
-	public function findByPublication(\Ladb\CoreBundle\Entity\AbstractPublication $publication) {
+    public function findByPublication(\Ladb\CoreBundle\Entity\AbstractPublication $publication)
+    {
 
-		$activities = array();
+        $activities = array();
 
-		if ($publication instanceof AbstractAuthoredPublication) {
+        if ($publication instanceof AbstractAuthoredPublication) {
 
-			// Publish activities /////
+            // Publish activities /////
 
-			$publishRepository = $this->getEntityManager()->getRepository(Publish::CLASS_NAME);
+            $publishRepository = $this->getEntityManager()->getRepository(Publish::CLASS_NAME);
 
-			$activities = array_merge($activities, $publishRepository->findByUserAndEntityTypeAndEntityId($publication->getUser(), $publication->getType(), $publication->getId()));
-			if (!is_null($publication->getSubPublications())) {
-				foreach ($publication->getSubPublications() as $subPublication) {
-					$activities = array_merge($activities, $publishRepository->findByUserAndEntityTypeAndEntityId($publication->getUser(), $subPublication->getType(), $subPublication->getId()));
-				}
+            $activities = array_merge($activities, $publishRepository->findByUserAndEntityTypeAndEntityId($publication->getUser(), $publication->getType(), $publication->getId()));
+            if (!is_null($publication->getSubPublications())) {
+                foreach ($publication->getSubPublications() as $subPublication) {
+                    $activities = array_merge($activities, $publishRepository->findByUserAndEntityTypeAndEntityId($publication->getUser(), $subPublication->getType(), $subPublication->getId()));
+                }
 
-				usort($activities, function($a, $b) {
-					if ($a->getCreatedAt() == $b->getCreatedAt()) {
-						return 0;
-					}
-					return ($a->getCreatedAt() < $b->getCreatedAt()) ? -1 : 1;
-				});
+                usort($activities, function ($a, $b) {
+                    if ($a->getCreatedAt() == $b->getCreatedAt()) {
+                        return 0;
+                    }
+                    return ($a->getCreatedAt() < $b->getCreatedAt()) ? -1 : 1;
+                });
 
-			}
+            }
 
-		}
+        }
 
-		// Join activities /////
+        // Join activities /////
 
-		$joinRepository = $this->getEntityManager()->getRepository(Join::CLASS_NAME);
+        $joinRepository = $this->getEntityManager()->getRepository(Join::CLASS_NAME);
 
-		$activities = array_merge($activities, $joinRepository->findByEntityTypeAndEntityId($publication->getType(), $publication->getId()));
-		if (!is_null($publication->getSubPublications())) {
-			foreach ($publication->getSubPublications() as $subPublication) {
-				$activities = array_merge($activities, $joinRepository->findByEntityTypeAndEntityId($subPublication->getType(), $subPublication->getId()));
-			}
+        $activities = array_merge($activities, $joinRepository->findByEntityTypeAndEntityId($publication->getType(), $publication->getId()));
+        if (!is_null($publication->getSubPublications())) {
+            foreach ($publication->getSubPublications() as $subPublication) {
+                $activities = array_merge($activities, $joinRepository->findByEntityTypeAndEntityId($subPublication->getType(), $subPublication->getId()));
+            }
 
-			usort($activities, function($a, $b) {
-				if ($a->getCreatedAt() == $b->getCreatedAt()) {
-					return 0;
-				}
-				return ($a->getCreatedAt() < $b->getCreatedAt()) ? -1 : 1;
-			});
+            usort($activities, function ($a, $b) {
+                if ($a->getCreatedAt() == $b->getCreatedAt()) {
+                    return 0;
+                }
+                return ($a->getCreatedAt() < $b->getCreatedAt()) ? -1 : 1;
+            });
 
-		}
+        }
 
-		// Contribute activities /////
+        // Contribute activities /////
 
-		$contributeRepository = $this->getEntityManager()->getRepository(Contribute::CLASS_NAME);
+        $contributeRepository = $this->getEntityManager()->getRepository(Contribute::CLASS_NAME);
 
-		$activities = array_merge($activities, $contributeRepository->findByEntityTypeAndEntityId($publication->getType(), $publication->getId()));
-		if (!is_null($publication->getSubPublications())) {
-			foreach ($publication->getSubPublications() as $subPublication) {
-				$activities = array_merge($activities, $contributeRepository->findByEntityTypeAndEntityId($subPublication->getType(), $subPublication->getId()));
-			}
+        $activities = array_merge($activities, $contributeRepository->findByEntityTypeAndEntityId($publication->getType(), $publication->getId()));
+        if (!is_null($publication->getSubPublications())) {
+            foreach ($publication->getSubPublications() as $subPublication) {
+                $activities = array_merge($activities, $contributeRepository->findByEntityTypeAndEntityId($subPublication->getType(), $subPublication->getId()));
+            }
 
-			usort($activities, function($a, $b) {
-				if ($a->getCreatedAt() == $b->getCreatedAt()) {
-					return 0;
-				}
-				return ($a->getCreatedAt() < $b->getCreatedAt()) ? -1 : 1;
-			});
+            usort($activities, function ($a, $b) {
+                if ($a->getCreatedAt() == $b->getCreatedAt()) {
+                    return 0;
+                }
+                return ($a->getCreatedAt() < $b->getCreatedAt()) ? -1 : 1;
+            });
 
-		}
+        }
 
-		return $activities;
-	}
-
+        return $activities;
+    }
 }

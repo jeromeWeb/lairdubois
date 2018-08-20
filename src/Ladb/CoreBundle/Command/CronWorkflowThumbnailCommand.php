@@ -18,75 +18,78 @@ use Ladb\CoreBundle\Utils\TypableUtils;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Router;
 
-class CronWorkflowThumbnailCommand extends ContainerAwareCommand {
+class CronWorkflowThumbnailCommand extends ContainerAwareCommand
+{
 
-	protected function configure() {
-		$this
-			->setName('ladb:cron:workflow:thumbnails')
-			->addOption('force', null, InputOption::VALUE_NONE, 'Force updating')
-			->setDescription('Update workflow thumbnails')
-			->setHelp(<<<EOT
+    protected function configure()
+    {
+        $this
+            ->setName('ladb:cron:workflow:thumbnails')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force updating')
+            ->setDescription('Update workflow thumbnails')
+            ->setHelp(<<<EOT
 The <info>ladb:cron:workflow:thumbnails</info> update workflow thumbnails
 EOT
-			);
-	}
+            );
+    }
 
-	/////
+    /////
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
 
-		$forced = $input->getOption('force');
-		$verbose = $input->getOption('verbose');
+        $forced = $input->getOption('force');
+        $verbose = $input->getOption('verbose');
 
-		$om = $this->getContainer()->get('doctrine')->getManager();
-		$webScreenshotUtils = $this->getContainer()->get(WebScreenshotUtils::NAME);
-		$router = $this->getContainer()->get('router');
+        $om = $this->getContainer()->get('doctrine')->getManager();
+        $webScreenshotUtils = $this->getContainer()->get(WebScreenshotUtils::NAME);
+        $router = $this->getContainer()->get('router');
 
-		// Retrieve workflows
+        // Retrieve workflows
 
-		if ($verbose) {
-			$output->write('<info>Retriving workflows...</info>');
-		}
+        if ($verbose) {
+            $output->write('<info>Retriving workflows...</info>');
+        }
 
-		$queryBuilder = $om->createQueryBuilder();
-		$queryBuilder
-			->select(array( 'w', 'mp' ))
-			->from('LadbCoreBundle:Workflow\Workflow', 'w')
-			->leftJoin('w.mainPicture', 'mp')
-			->where('w.mainPicture IS NULL')
-			->orWhere('w.updatedAt > mp.createdAt')
-		;
+        $queryBuilder = $om->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 'w', 'mp' ))
+            ->from('LadbCoreBundle:Workflow\Workflow', 'w')
+            ->leftJoin('w.mainPicture', 'mp')
+            ->where('w.mainPicture IS NULL')
+            ->orWhere('w.updatedAt > mp.createdAt')
+        ;
 
-		try {
-			$workflows = $queryBuilder->getQuery()->getResult();
-		} catch (\Doctrine\ORM\NoResultException $e) {
-			$workflows = array();
-		}
+        try {
+            $workflows = $queryBuilder->getQuery()->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $workflows = array();
+        }
 
-		if ($verbose) {
-			$output->writeln('<comment> ['.count($workflows).' workflows]</comment>');
-		}
+        if ($verbose) {
+            $output->writeln('<comment> [' . count($workflows) . ' workflows]</comment>');
+        }
 
-		foreach ($workflows as $workflow) {
+        foreach ($workflows as $workflow) {
 
-			$url = $router->generate('core_workflow_internal_diagram', array( 'id' => $workflow->getId() ), UrlGeneratorInterface::ABSOLUTE_URL);
+            $url = $router->generate('core_workflow_internal_diagram', array( 'id' => $workflow->getId() ), UrlGeneratorInterface::ABSOLUTE_URL);
 
-			if ($verbose) {
-				$output->write('<info> Capturing ['.$url.'] ...</info>');
-			}
+            if ($verbose) {
+                $output->write('<info> Capturing [' . $url . '] ...</info>');
+            }
 
-			$mainPicture = $webScreenshotUtils->captureToPicture($url, 600, 600, 600, 600);
-			$workflow->setMainPicture($mainPicture);
+            $mainPicture = $webScreenshotUtils->captureToPicture($url, 600, 600, 600, 600);
+            $workflow->setMainPicture($mainPicture);
 
-			if ($verbose) {
-				$output->writeln('<fg=cyan> [OK]</fg=cyan>');
-			}
+            if ($verbose) {
+                $output->writeln('<fg=cyan> [OK]</fg=cyan>');
+            }
 
-		}
+        }
 
-		if ($forced) {
-			$om->flush();
-		}
+        if ($forced) {
+            $om->flush();
+        }
 
-	}
+    }
 }

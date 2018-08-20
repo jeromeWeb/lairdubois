@@ -40,151 +40,161 @@ use Ladb\CoreBundle\Entity\AbstractDraftableAuthoredPublication;
 /**
  * @ORM\MappedSuperclass
  */
-abstract class AbstractWonder extends AbstractDraftableAuthoredPublication implements TitledInterface, PicturedInterface, MultiPicturedInterface, LicensedInterface, IndexableInterface, SitemapableInterface, TaggableInterface, ViewableInterface, ScrapableInterface, LikableInterface, WatchableInterface, CommentableInterface, ReportableInterface, ExplorableInterface, EmbeddableInterface, StripableInterface {
+abstract class AbstractWonder extends AbstractDraftableAuthoredPublication implements TitledInterface, PicturedInterface, MultiPicturedInterface, LicensedInterface, IndexableInterface, SitemapableInterface, TaggableInterface, ViewableInterface, ScrapableInterface, LikableInterface, WatchableInterface, CommentableInterface, ReportableInterface, ExplorableInterface, EmbeddableInterface, StripableInterface
+{
 
-	use TitledTrait, PicturedTrait, MultiPicturedTrait, LicensedTrait;
-	use IndexableTrait, SitemapableTrait, TaggableTrait, ViewableTrait, ScrapableTrait, LikableTrait, WatchableTrait, CommentableTrait, EmbeddableTrait;
+    use TitledTrait, PicturedTrait, MultiPicturedTrait, LicensedTrait;
+    use IndexableTrait, SitemapableTrait, TaggableTrait, ViewableTrait, ScrapableTrait, LikableTrait, WatchableTrait, CommentableTrait, EmbeddableTrait;
 
-	/**
-	 * @ORM\Column(type="string", length=100)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min=4)
-	 * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
-	 * @ladbAssert\UpperCaseRatio()
-	 */
-	private $title;
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=4)
+     * @Assert\Regex("/^[ a-zA-Z0-9ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ'’ʼ#,.:%?!-]+$/", message="default.title.regex")
+     * @ladbAssert\UpperCaseRatio()
+     */
+    private $title;
 
-	/**
-	 * @Gedmo\Slug(fields={"title"}, separator="-")
-	 * @ORM\Column(type="string", length=100, unique=true)
-	 */
-	private $slug;
+    /**
+     * @Gedmo\Slug(fields={"title"}, separator="-")
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $slug;
 
-	/**
-	 * @ORM\Column(type="text", nullable=false)
-	 */
-	protected $body;
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    protected $body;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false, name="main_picture_id")
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
-	 */
-	private $mainPicture;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false, name="main_picture_id")
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\Picture")
+     */
+    private $mainPicture;
 
-	/**
-	 */
-	protected $pictures;
+    /**
+     */
+    protected $pictures;
 
-	/**
-	 */
-	protected $tags;
+    /**
+     */
+    protected $tags;
 
-	/**
-	 * @ORM\OneToOne(targetEntity="Ladb\CoreBundle\Entity\Core\License", cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(nullable=true, name="license_id")
-	 * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\License")
-	 */
-	private $license;
+    /**
+     * @ORM\OneToOne(targetEntity="Ladb\CoreBundle\Entity\Core\License", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, name="license_id")
+     * @Assert\Type(type="Ladb\CoreBundle\Entity\Core\License")
+     */
+    private $license;
 
-	/**
-	 * @ORM\Column(type="integer", name="like_count")
-	 */
-	private $likeCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="like_count")
+     */
+    private $likeCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="watch_count")
-	 */
-	private $watchCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="watch_count")
+     */
+    private $watchCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="comment_count")
-	 */
-	private $commentCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="comment_count")
+     */
+    private $commentCount = 0;
 
-	/**
-	 * @ORM\Column(type="integer", name="view_count")
-	 */
-	private $viewCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="view_count")
+     */
+    private $viewCount = 0;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(name="sticker_id", nullable=true)
-	 */
-	private $sticker;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(name="sticker_id", nullable=true)
+     */
+    private $sticker;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
-	 * @ORM\JoinColumn(name="strip_id", nullable=true)
-	 */
-	private $strip;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"})
+     * @ORM\JoinColumn(name="strip_id", nullable=true)
+     */
+    private $strip;
 
-	/**
-	 */
-	protected $referrals;
+    /**
+     */
+    protected $referrals;
 
-	/**
-	 * @ORM\Column(type="integer", name="referral_count")
-	 */
-	private $referralCount = 0;
+    /**
+     * @ORM\Column(type="integer", name="referral_count")
+     */
+    private $referralCount = 0;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->pictures = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->tags = new \Doctrine\Common\Collections\ArrayCollection();
-		$this->referrals = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->pictures = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->referrals = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	/////
+    /////
 
-	// NotificationStrategy /////
+    // NotificationStrategy /////
 
-	public function getNotificationStrategy() {
-		return self::NOTIFICATION_STRATEGY_FOLLOWER;
-	}
+    public function getNotificationStrategy()
+    {
+        return self::NOTIFICATION_STRATEGY_FOLLOWER;
+    }
 
-	// Slug /////
+    // Slug /////
 
-	public function setSlug($slug) {
-		$this->slug = $slug;
-		return $this;
-	}
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
+    }
 
-	public function getSlug() {
-		return $this->slug;
-	}
+    public function getSlug()
+    {
+        return $this->slug;
+    }
 
-	public function getSluggedId() {
-		return $this->id.'-'.$this->slug;
-	}
+    public function getSluggedId()
+    {
+        return $this->id . '-' . $this->slug;
+    }
 
-	// Body /////
+    // Body /////
 
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
-	}
+    public function setBody($body)
+    {
+        $this->body = $body;
+        return $this;
+    }
 
-	public function getBody() {
-		return $this->body;
-	}
+    public function getBody()
+    {
+        return $this->body;
+    }
 
-	// Pictures /////
+    // Pictures /////
 
-	public function getMaxPictureCount() {
-		return 5;
-	}
+    public function getMaxPictureCount()
+    {
+        return 5;
+    }
 
-	// Strip /////
+    // Strip /////
 
-	public function setStrip(\Ladb\CoreBundle\Entity\Core\Picture $strip = null) {
-		$this->strip = $strip;
-		return $this;
-	}
+    public function setStrip(\Ladb\CoreBundle\Entity\Core\Picture $strip = null)
+    {
+        $this->strip = $strip;
+        return $this;
+    }
 
-	public function getStrip() {
-		return $this->strip;
-	}
-
+    public function getStrip()
+    {
+        return $this->strip;
+    }
 }

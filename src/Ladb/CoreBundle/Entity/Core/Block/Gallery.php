@@ -11,28 +11,30 @@ use Ladb\CoreBundle\Model\MultiPicturedInterface;
  * @ORM\Table("tbl_core_block_gallery")
  * @ORM\Entity
  */
-class Gallery extends AbstractBlock implements MultiPicturedInterface {
+class Gallery extends AbstractBlock implements MultiPicturedInterface
+{
 
-	use MultiPicturedTrait;
+    use MultiPicturedTrait;
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"}, fetch="EAGER")
-	 * @ORM\JoinTable(name="tbl_core_block_gallery_picture")
-	 * @ORM\OrderBy({"sortIndex" = "ASC"})
-	 * @Assert\Count(min=1, max=20)
-	 */
-	private $pictures;
+    /**
+     * @ORM\ManyToMany(targetEntity="Ladb\CoreBundle\Entity\Core\Picture", cascade={"persist"}, fetch="EAGER")
+     * @ORM\JoinTable(name="tbl_core_block_gallery_picture")
+     * @ORM\OrderBy({"sortIndex" = "ASC"})
+     * @Assert\Count(min=1, max=20)
+     */
+    private $pictures;
 
-	/////
+    /////
 
-	public function __construct() {
-		$this->pictures = new \Doctrine\Common\Collections\ArrayCollection();
-	}
+    public function __construct()
+    {
+        $this->pictures = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
-	// StrippedName /////
+    // StrippedName /////
 
-	public function getStrippedName() {
-		return 'gallery';
-	}
-
+    public function getStrippedName()
+    {
+        return 'gallery';
+    }
 }

@@ -10,37 +10,41 @@ use Ladb\CoreBundle\Validator\Constraints\OneThing;
 use Ladb\CoreBundle\Form\Type\Knowledge\Value\PictureValueType;
 use Ladb\CoreBundle\Form\Type\Knowledge\Value\TextValueType;
 
-class NewWoodType extends AbstractType {
+class NewWoodType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('nameValue', TextValueType::class, array(
-				'choices' => null,
-				'dataConstraints' => array( new OneThing(array('message' => 'N\'indiquez qu\'un seul Nom français' )) ),
-				'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid(), new \Ladb\CoreBundle\Validator\Constraints\UniqueWood() )
-			))
-			->add('grainValue', PictureValueType::class, array(
-				'choices' => null,
-				'dataConstraints' => null,
-				'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid() )
-			))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('nameValue', TextValueType::class, array(
+                'choices' => null,
+                'dataConstraints' => array( new OneThing(array('message' => 'N\'indiquez qu\'un seul Nom français' )) ),
+                'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid(), new \Ladb\CoreBundle\Validator\Constraints\UniqueWood() )
+            ))
+            ->add('grainValue', PictureValueType::class, array(
+                'choices' => null,
+                'dataConstraints' => null,
+                'constraints' => array( new \Symfony\Component\Validator\Constraints\Valid() )
+            ))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Form\Model\NewWood',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Form\Model\NewWood',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_knowledge_newwood';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_knowledge_newwood';
+    }
 }

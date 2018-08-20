@@ -8,39 +8,42 @@ use Ladb\CoreBundle\Entity\Core\Picture;
 use Ladb\CoreBundle\Model\BlockBodiedInterface;
 use Ladb\CoreBundle\Model\MultiPicturedInterface;
 
-class PicturedUtils {
+class PicturedUtils
+{
 
-	const NAME = 'ladb_core.pictured_utils';
+    const NAME = 'ladb_core.pictured_utils';
 
-	private $imagineCacheManager ;
+    private $imagineCacheManager ;
 
-	public function __construct(CacheManager $imagineCacheManager) {
-		$this->imagineCacheManager = $imagineCacheManager;
-	}
+    public function __construct(CacheManager $imagineCacheManager)
+    {
+        $this->imagineCacheManager = $imagineCacheManager;
+    }
 
-	/////
+    /////
 
-	public function resetPictures($entity) {
-		if ($entity instanceof MultiPicturedInterface) {
-			$entity->resetPictures();
-		}
-		if ($entity instanceof BlockBodiedInterface) {
-			foreach ($entity->getBodyBlocks() as $block) {
-				if ($block instanceof Gallery) {
-					$block->resetPictures();
-				}
-			}
-		}
-	}
+    public function resetPictures($entity)
+    {
+        if ($entity instanceof MultiPicturedInterface) {
+            $entity->resetPictures();
+        }
+        if ($entity instanceof BlockBodiedInterface) {
+            foreach ($entity->getBodyBlocks() as $block) {
+                if ($block instanceof Gallery) {
+                    $block->resetPictures();
+                }
+            }
+        }
+    }
 
-	public function getPictureSitemapData(Picture $picture = null) {
-		if (is_null($picture)) {
-			return null;
-		}
-		return array(
-			'loc'     => $this->imagineCacheManager->getBrowserPath($picture->getWebPath(), '1024x1024i'),
-			'caption' => $picture->getLegend(),
-		);
-	}
-
+    public function getPictureSitemapData(Picture $picture = null)
+    {
+        if (is_null($picture)) {
+            return null;
+        }
+        return array(
+            'loc'     => $this->imagineCacheManager->getBrowserPath($picture->getWebPath(), '1024x1024i'),
+            'caption' => $picture->getLegend(),
+        );
+    }
 }

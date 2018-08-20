@@ -8,8 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table("tbl_input_wood")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Input\WoodRepository")
  */
-class Wood extends AbstractInput {
+class Wood extends AbstractInput
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Input\Wood';
-
+    const CLASS_NAME = 'LadbCoreBundle:Input\Wood';
 }

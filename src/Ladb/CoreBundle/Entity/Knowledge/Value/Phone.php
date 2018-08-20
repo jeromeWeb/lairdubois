@@ -12,59 +12,64 @@ use Ladb\CoreBundle\Validator\Constraints as LadbAssert;
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Knowledge\Value\PhoneRepository")
  * @ladbAssert\ValidPhoneValue()
  */
-class Phone extends BaseValue {
+class Phone extends BaseValue
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Phone';
-	const TYPE = 15;
+    const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Phone';
+    const TYPE = 15;
 
-	const TYPE_STRIPPED_NAME = 'phone';
+    const TYPE_STRIPPED_NAME = 'phone';
 
-	/**
-	 * @ORM\Column(type="string", length=20)
-	 */
-	protected $data;
+    /**
+     * @ORM\Column(type="string", length=20)
+     */
+    protected $data;
 
-	/**
-	 * @ORM\Column(type="string", length=20)
-	 * @Assert\NotBlank
-	 * @Assert\Length(max=20)
-	 */
-	protected $rawPhoneNumber;
+    /**
+     * @ORM\Column(type="string", length=20)
+     * @Assert\NotBlank
+     * @Assert\Length(max=20)
+     */
+    protected $rawPhoneNumber;
 
-	/**
-	 * @ORM\Column(type="string", length=2)
-	 * @Assert\NotBlank
-	 */
-	protected $country = 'FR';
+    /**
+     * @ORM\Column(type="string", length=2)
+     * @Assert\NotBlank
+     */
+    protected $country = 'FR';
 
-	/////
+    /////
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return self::TYPE;
-	}
+    public function getType()
+    {
+        return self::TYPE;
+    }
 
-	// RawPhoneNumber /////
+    // RawPhoneNumber /////
 
-	public function setRawPhoneNumber($rawPhoneNumber) {
-		$this->rawPhoneNumber = $rawPhoneNumber;
-		return $this;
-	}
+    public function setRawPhoneNumber($rawPhoneNumber)
+    {
+        $this->rawPhoneNumber = $rawPhoneNumber;
+        return $this;
+    }
 
-	public function getRawPhoneNumber() {
-		return $this->rawPhoneNumber;
-	}
+    public function getRawPhoneNumber()
+    {
+        return $this->rawPhoneNumber;
+    }
 
-	// Country /////
+    // Country /////
 
-	public function setCountry($country) {
-		$this->country = $country;
-		return $this;
-	}
+    public function setCountry($country)
+    {
+        $this->country = $country;
+        return $this;
+    }
 
-	public function getCountry() {
-		return $this->country;
-	}
-
+    public function getCountry()
+    {
+        return $this->country;
+    }
 }

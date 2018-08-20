@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface AuthoredInterface {
+interface AuthoredInterface
+{
 
-	// User /////
+    // User /////
 
-	public function getUser();
-
+    public function getUser();
 }

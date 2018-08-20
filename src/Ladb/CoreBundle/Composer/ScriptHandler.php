@@ -5,17 +5,18 @@ namespace Ladb\CoreBundle\Composer;
 use Composer\Script\Event;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ScriptHandler {
+class ScriptHandler
+{
 
-	public static function updateDirectoryStructure(Event $event) {
+    public static function updateDirectoryStructure(Event $event)
+    {
 
-		$uploadsDir = 'uploads';
-		$downloadsDir = 'downloads';
-		$keysDir = 'keys';
+        $uploadsDir = 'uploads';
+        $downloadsDir = 'downloads';
+        $keysDir = 'keys';
 
-		$fs = new Filesystem();
-		$fs->mkdir(array( $uploadsDir, $downloadsDir, $keysDir ));
+        $fs = new Filesystem();
+        $fs->mkdir(array( $uploadsDir, $downloadsDir, $keysDir ));
 
-	}
-
+    }
 }

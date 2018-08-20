@@ -11,106 +11,117 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * })
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Core\ViewRepository")
  */
-class View {
+class View
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Core\View';
+    const CLASS_NAME = 'LadbCoreBundle:Core\View';
 
-	const KIND_NONE = 0;
-	const KIND_LISTED = 1;
-	const KIND_SHOWN = 2;
+    const KIND_NONE = 0;
+    const KIND_LISTED = 1;
+    const KIND_SHOWN = 2;
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(name="entity_type", type="smallint", nullable=false)
-	 */
-	private $entityType;
+    /**
+     * @ORM\Column(name="entity_type", type="smallint", nullable=false)
+     */
+    private $entityType;
 
-	/**
-	 * @ORM\Column(name="entity_id", type="integer", nullable=false)
-	 */
-	private $entityId;
+    /**
+     * @ORM\Column(name="entity_id", type="integer", nullable=false)
+     */
+    private $entityId;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
-	/**
-	 * @ORM\Column(name="kind", type="smallint")
-	 */
-	private $kind = View::KIND_NONE;
+    /**
+     * @ORM\Column(name="kind", type="smallint")
+     */
+    private $kind = View::KIND_NONE;
 
-	/////
+    /////
 
-	// Id /////
+    // Id /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// EntityType /////
+    // EntityType /////
 
-	public function getEntityType() {
-		return $this->entityType;
-	}
+    public function getEntityType()
+    {
+        return $this->entityType;
+    }
 
-	public function setEntityType($entityType) {
-		$this->entityType = $entityType;
-	}
+    public function setEntityType($entityType)
+    {
+        $this->entityType = $entityType;
+    }
 
-	// EntityId /////
+    // EntityId /////
 
-	public function getEntityId() {
-		return $this->entityId;
-	}
+    public function getEntityId()
+    {
+        return $this->entityId;
+    }
 
-	public function setEntityId($entityId) {
-		$this->entityId = $entityId;
-	}
+    public function setEntityId($entityId)
+    {
+        $this->entityId = $entityId;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	// User /////
+    // User /////
 
-	public function getUser() {
-		return $this->user;
-	}
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	public function setUser(\Ladb\CoreBundle\Entity\Core\User $user) {
-		$this->user = $user;
-	}
+    public function setUser(\Ladb\CoreBundle\Entity\Core\User $user)
+    {
+        $this->user = $user;
+    }
 
-	// Kind /////
+    // Kind /////
 
-	public function getKind() {
-		return $this->kind;
-	}
+    public function getKind()
+    {
+        return $this->kind;
+    }
 
-	public function setKind($kind) {
-		$this->kind = $kind;
-		return $this;
-	}
-
+    public function setKind($kind)
+    {
+        $this->kind = $kind;
+        return $this;
+    }
 }

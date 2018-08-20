@@ -14,117 +14,128 @@ use Ladb\CoreBundle\Model\LocalisableExtendedInterface;
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Knowledge\Value\LocationRepository")
  * @ladbAssert\ValidLocationValue()
  */
-class Location extends BaseValue implements LocalisableExtendedInterface {
+class Location extends BaseValue implements LocalisableExtendedInterface
+{
 
-	use LocalisableTrait;
+    use LocalisableTrait;
 
-	const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Location';
-	const TYPE = 14;
+    const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Location';
+    const TYPE = 14;
 
-	const TYPE_STRIPPED_NAME = 'location';
+    const TYPE_STRIPPED_NAME = 'location';
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 */
-	protected $data;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    protected $data;
 
-	/**
-	 * @ORM\Column(type="string", length=255, nullable=false)
-	 * @Assert\NotBlank
-	 * @Assert\Length(max=255)
-	 */
-	private $location;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Assert\NotBlank
+     * @Assert\Length(max=255)
+     */
+    private $location;
 
-	/**
-	 * @ORM\Column(type="float", nullable=true)
-	 */
-	private $latitude;
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $latitude;
 
-	/**
-	 * @ORM\Column(type="float", nullable=true)
-	 */
-	private $longitude;
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $longitude;
 
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	private $postalCode;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $postalCode;
 
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	private $locality;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $locality;
 
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	private $country;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $country;
 
-	/**
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	private $geographicalAreas;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $geographicalAreas;
 
-	/////
+    /////
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return self::TYPE;
-	}
+    public function getType()
+    {
+        return self::TYPE;
+    }
 
-	// PostalCode /////
+    // PostalCode /////
 
-	public function setPostalCode($postalCode = null) {
-		$this->postalCode = $postalCode;
-		return $this;
-	}
+    public function setPostalCode($postalCode = null)
+    {
+        $this->postalCode = $postalCode;
+        return $this;
+    }
 
-	public function getPostalCode() {
-		return $this->postalCode;
-	}
+    public function getPostalCode()
+    {
+        return $this->postalCode;
+    }
 
-	// Locality /////
+    // Locality /////
 
-	public function setLocality($locality = null) {
-		$this->locality = $locality;
-		return $this;
-	}
+    public function setLocality($locality = null)
+    {
+        $this->locality = $locality;
+        return $this;
+    }
 
-	public function getLocality() {
-		return $this->locality;
-	}
+    public function getLocality()
+    {
+        return $this->locality;
+    }
 
-	// Country /////
+    // Country /////
 
-	public function setCountry($country = null) {
-		$this->country = $country;
-		return $this;
-	}
+    public function setCountry($country = null)
+    {
+        $this->country = $country;
+        return $this;
+    }
 
-	public function getCountry() {
-		return $this->country;
-	}
+    public function getCountry()
+    {
+        return $this->country;
+    }
 
-	// GeographicalAreas /////
+    // GeographicalAreas /////
 
-	public function setGeographicalAreas($geographicalAreas = null) {
-		$this->geographicalAreas = $geographicalAreas;
-		return $this;
-	}
+    public function setGeographicalAreas($geographicalAreas = null)
+    {
+        $this->geographicalAreas = $geographicalAreas;
+        return $this;
+    }
 
-	public function getGeographicalAreas() {
-		return $this->geographicalAreas;
-	}
+    public function getGeographicalAreas()
+    {
+        return $this->geographicalAreas;
+    }
 
-	// FormattedAddress /////
+    // FormattedAddress /////
 
-	public function setFormattedAddress($formattedAddress = null) {
-		return $this->setData($formattedAddress);
-	}
+    public function setFormattedAddress($formattedAddress = null)
+    {
+        return $this->setData($formattedAddress);
+    }
 
-	public function getFormattedAddress() {
-		return $this->getData();
-	}
-
+    public function getFormattedAddress()
+    {
+        return $this->getData();
+    }
 }

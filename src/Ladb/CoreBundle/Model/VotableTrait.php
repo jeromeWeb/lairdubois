@@ -2,103 +2,122 @@
 
 namespace Ladb\CoreBundle\Model;
 
-trait VotableTrait {
+trait VotableTrait
+{
 
-	// ParentEntity /////
+    // ParentEntity /////
 
-	public function setParentEntity(VotableParentInterface $parentEntity) {
-		$this->parentEntityType = $parentEntity->getType();
-		$this->parentEntityId = $parentEntity->getId();
-		return $this;
-	}
+    public function setParentEntity(VotableParentInterface $parentEntity)
+    {
+        $this->parentEntityType = $parentEntity->getType();
+        $this->parentEntityId = $parentEntity->getId();
+        return $this;
+    }
 
-	// ParentEntityType /////
+    // ParentEntityType /////
 
-	public function setParentEntityType($parentEntityType) {
-		$this->parentEntityType = $parentEntityType;
-		return $this;
-	}
+    public function setParentEntityType($parentEntityType)
+    {
+        $this->parentEntityType = $parentEntityType;
+        return $this;
+    }
 
-	public function getParentEntityType() {
-		return $this->parentEntityType;
-	}
+    public function getParentEntityType()
+    {
+        return $this->parentEntityType;
+    }
 
-	// ParentEntityId /////
+    // ParentEntityId /////
 
-	public function setParentEntityId($parentEntityId) {
-		$this->parentEntityId = $parentEntityId;
-		return $this;
-	}
+    public function setParentEntityId($parentEntityId)
+    {
+        $this->parentEntityId = $parentEntityId;
+        return $this;
+    }
 
-	public function getParentEntityId() {
-		return $this->parentEntityId;
-	}
+    public function getParentEntityId()
+    {
+        return $this->parentEntityId;
+    }
 
-	// ParentEntityField /////
+    // ParentEntityField /////
 
-	public function setParentEntityField($parentEntityField) {
-		$this->parentEntityField = $parentEntityField;
-		return $this;
-	}
+    public function setParentEntityField($parentEntityField)
+    {
+        $this->parentEntityField = $parentEntityField;
+        return $this;
+    }
 
-	public function getParentEntityField() {
-		return $this->parentEntityField;
-	}
+    public function getParentEntityField()
+    {
+        return $this->parentEntityField;
+    }
 
-	// PositiveVoteScore /////
+    // PositiveVoteScore /////
 
-	public function incrementPositiveVoteScore($by = 1) {
-		return $this->positiveVoteScore += intval($by);
-	}
+    public function incrementPositiveVoteScore($by = 1)
+    {
+        return $this->positiveVoteScore += intval($by);
+    }
 
-	public function setPositiveVoteScore($positiveVoteScore) {
-		return $this->positiveVoteScore = $positiveVoteScore;
-	}
+    public function setPositiveVoteScore($positiveVoteScore)
+    {
+        return $this->positiveVoteScore = $positiveVoteScore;
+    }
 
-	public function getPositiveVoteScore() {
-		return $this->positiveVoteScore;
-	}
+    public function getPositiveVoteScore()
+    {
+        return $this->positiveVoteScore;
+    }
 
-	// NegativeVoteScore /////
+    // NegativeVoteScore /////
 
-	public function incrementNegativeVoteScore($by = 1) {
-		return $this->negativeVoteScore += intval($by);
-	}
+    public function incrementNegativeVoteScore($by = 1)
+    {
+        return $this->negativeVoteScore += intval($by);
+    }
 
-	public function setNegativeVoteScore($negativeVoteScore) {
-		return $this->negativeVoteScore = $negativeVoteScore;
-	}
+    public function setNegativeVoteScore($negativeVoteScore)
+    {
+        return $this->negativeVoteScore = $negativeVoteScore;
+    }
 
-	public function getNegativeVoteScore() {
-		return $this->negativeVoteScore;
-	}
+    public function getNegativeVoteScore()
+    {
+        return $this->negativeVoteScore;
+    }
 
-	// voteScore /////
+    // voteScore /////
 
-	public function incrementVoteScore($by = 1) {
-		return $this->voteScore += intval($by);
-	}
+    public function incrementVoteScore($by = 1)
+    {
+        return $this->voteScore += intval($by);
+    }
 
-	public function setVoteScore($voteScore) {
-		return $this->voteScore = $voteScore;
-	}
+    public function setVoteScore($voteScore)
+    {
+        return $this->voteScore = $voteScore;
+    }
 
-	public function getVoteScore() {
-		return $this->voteScore;
-	}
+    public function getVoteScore()
+    {
+        return $this->voteScore;
+    }
 
-	// voteCount /////
+    // voteCount /////
 
-	public function incrementVoteCount($by = 1) {
-		return $this->voteCount += intval($by);
-	}
+    public function incrementVoteCount($by = 1)
+    {
+        return $this->voteCount += intval($by);
+    }
 
-	public function setVoteCount($voteCount) {
-		return $this->voteCount = $voteCount;
-	}
+    public function setVoteCount($voteCount)
+    {
+        return $this->voteCount = $voteCount;
+    }
 
-	public function getVoteCount() {
-		return $this->voteCount;
-	}
-
+    public function getVoteCount()
+    {
+        return $this->voteCount;
+    }
 }

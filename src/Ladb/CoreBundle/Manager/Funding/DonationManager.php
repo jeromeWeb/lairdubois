@@ -7,10 +7,10 @@ use Ladb\CoreBundle\Manager\AbstractManager;
 use Ladb\CoreBundle\Manager\AbstractPublicationManager;
 use Ladb\CoreBundle\Utils\JoinableUtils;
 
-class DonationManager extends AbstractManager {
+class DonationManager extends AbstractManager
+{
 
-	const NAME = 'ladb_core.donation_manager';
+    const NAME = 'ladb_core.donation_manager';
 
-	/////
-
+    /////
 }

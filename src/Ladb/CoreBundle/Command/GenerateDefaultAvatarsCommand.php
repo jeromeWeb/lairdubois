@@ -11,85 +11,87 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Ladb\CoreBundle\Utils\UserUtils;
 
-class GenerateDefaultAvatarsCommand extends ContainerAwareCommand {
+class GenerateDefaultAvatarsCommand extends ContainerAwareCommand
+{
 
-	protected function configure() {
-		$this
-			->setName('ladb:generate:defaultavatars')
-			->addOption('force', null, InputOption::VALUE_NONE, 'Force updating')
-			->setDescription('Generate defaultavatars')
-			->setHelp(<<<EOT
+    protected function configure()
+    {
+        $this
+            ->setName('ladb:generate:defaultavatars')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force updating')
+            ->setDescription('Generate defaultavatars')
+            ->setHelp(<<<EOT
 The <info>ladb:generate:defaultavatars</info> command generate default avatars
 EOT
-			);
-	}
+            );
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
 
-		$forced = $input->getOption('force');
+        $forced = $input->getOption('force');
 
-		$om = $this->getContainer()->get('doctrine')->getManager();
-		$userUtils = $this->getContainer()->get(UserUtils::NAME);
+        $om = $this->getContainer()->get('doctrine')->getManager();
+        $userUtils = $this->getContainer()->get(UserUtils::NAME);
 
-		// Count users /////
+        // Count users /////
 
-		$queryBuilder = $om->createQueryBuilder();
-		$queryBuilder
-			->select(array( 'count(u.id)' ))
-			->from('LadbCoreBundle:Core\User', 'u')
-			->where('u.avatar is NULL')
-		;
+        $queryBuilder = $om->createQueryBuilder();
+        $queryBuilder
+            ->select(array( 'count(u.id)' ))
+            ->from('LadbCoreBundle:Core\User', 'u')
+            ->where('u.avatar is NULL')
+        ;
 
-		try {
-			$userCount = $queryBuilder->getQuery()->getSingleScalarResult();
-		} catch (\Doctrine\ORM\NoResultException $e) {
-			$userCount = 0;
-		}
+        try {
+            $userCount = $queryBuilder->getQuery()->getSingleScalarResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $userCount = 0;
+        }
 
-		$output->writeln('<comment> ['.$userCount.' users]</comment>');
+        $output->writeln('<comment> [' . $userCount . ' users]</comment>');
 
-		$progress = new ProgressBar($output, $userCount);
-		$progress->start();
+        $progress = new ProgressBar($output, $userCount);
+        $progress->start();
 
-		$batchSize = 200;
-		$batchCount = $userCount / $batchSize;
+        $batchSize = 200;
+        $batchCount = $userCount / $batchSize;
 
-		for ($batchIndex = 0; $batchIndex <= $batchCount; $batchIndex++) {
+        for ($batchIndex = 0; $batchIndex <= $batchCount; $batchIndex++) {
 
-			// Extract users /////
+            // Extract users /////
 
-			$queryBuilder = $om->createQueryBuilder();
-			$queryBuilder
-				->select(array( 'u' ))
-				->from('LadbCoreBundle:Core\User', 'u')
-				->where('u.avatar is NULL')
-				->setFirstResult($batchIndex * $batchSize)
-				->setMaxResults($batchSize)
-			;
+            $queryBuilder = $om->createQueryBuilder();
+            $queryBuilder
+                ->select(array( 'u' ))
+                ->from('LadbCoreBundle:Core\User', 'u')
+                ->where('u.avatar is NULL')
+                ->setFirstResult($batchIndex * $batchSize)
+                ->setMaxResults($batchSize)
+            ;
 
 
-			try {
-				$users = $queryBuilder->getQuery()->getResult();
-			} catch (\Doctrine\ORM\NoResultException $e) {
-				$users = array();
-			}
+            try {
+                $users = $queryBuilder->getQuery()->getResult();
+            } catch (\Doctrine\ORM\NoResultException $e) {
+                $users = array();
+            }
 
-			foreach ($users as $user) {
-				$userUtils->createDefaultAvatar($user);
-				$progress->advance();
-			}
+            foreach ($users as $user) {
+                $userUtils->createDefaultAvatar($user);
+                $progress->advance();
+            }
 
-			if ($forced) {
-				$om->flush();
-			}
+            if ($forced) {
+                $om->flush();
+            }
 
-			unset($users);
+            unset($users);
 
-		}
+        }
 
-		$progress->finish();
+        $progress->finish();
 
-		$output->writeln('<comment>[Finished]</comment>');
-	}
-
+        $output->writeln('<comment>[Finished]</comment>');
+    }
 }

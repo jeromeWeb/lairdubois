@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface ScrapableInterface {
+interface ScrapableInterface
+{
 
-	// IsScrapable /////
+    // IsScrapable /////
 
-	public function getIsScrapable();
-
+    public function getIsScrapable();
 }

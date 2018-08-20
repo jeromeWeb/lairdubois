@@ -13,152 +13,154 @@ use Ivory\GoogleMap\Services\Geocoding\GeocoderRequest;
 use Ladb\CoreBundle\Model\LocalisableExtendedInterface;
 use Ladb\CoreBundle\Model\LocalisableInterface;
 
-class LocalisableUtils extends AbstractContainerAwareUtils {
+class LocalisableUtils extends AbstractContainerAwareUtils
+{
 
-	const NAME = 'ladb_core.localisable_utils';
+    const NAME = 'ladb_core.localisable_utils';
 
-	/////
+    /////
 
-	public function geocodeLocation(LocalisableInterface $localisable) {
-		if (!is_null($localisable->getLocation())) {
+    public function geocodeLocation(LocalisableInterface $localisable)
+    {
+        if (!is_null($localisable->getLocation())) {
 
-			$googleApiKey = $this->getParameter('google_api_key');
-			$adapter  = new \Ivory\HttpAdapter\CurlHttpAdapter();
-			$geocoder = new \Geocoder\Provider\GoogleMaps($adapter, null, null, true, $googleApiKey);
-			$geocoder->setLocale('fr_FR');
+            $googleApiKey = $this->getParameter('google_api_key');
+            $adapter  = new \Ivory\HttpAdapter\CurlHttpAdapter();
+            $geocoder = new \Geocoder\Provider\GoogleMaps($adapter, null, null, true, $googleApiKey);
+            $geocoder->setLocale('fr_FR');
 
-			try {
-				$response = $geocoder->geocode($localisable->getLocation());
-			} catch (\Exception $e) {
-				return false;
-			}
+            try {
+                $response = $geocoder->geocode($localisable->getLocation());
+            } catch (\Exception $e) {
+                return false;
+            }
 
-			if ($response->count() > 0) {
+            if ($response->count() > 0) {
 
-				$address = $response->first();
+                $address = $response->first();
 
-				// Location
-				$localisable->setLatitude($address->getLatitude());
-				$localisable->setLongitude($address->getLongitude());
+                // Location
+                $localisable->setLatitude($address->getLatitude());
+                $localisable->setLongitude($address->getLongitude());
 
-				if ($localisable instanceof LocalisableExtendedInterface) {
+                if ($localisable instanceof LocalisableExtendedInterface) {
 
-					// PostalCode /////
+                    // PostalCode /////
 
-					$postalCode = $address->getPostalCode();
-					if ($postalCode) {
-						$localisable->setPostalCode($postalCode);
-					}
+                    $postalCode = $address->getPostalCode();
+                    if ($postalCode) {
+                        $localisable->setPostalCode($postalCode);
+                    }
 
-					// Locality /////
+                    // Locality /////
 
-					$locality = $address->getLocality();
-					if ($locality) {
-						$localisable->setLocality($locality);
-					}
+                    $locality = $address->getLocality();
+                    if ($locality) {
+                        $localisable->setLocality($locality);
+                    }
 
-					// Country /////
+                    // Country /////
 
-					$country = $address->getCountry();
-					if ($country) {
-						$localisable->setCountry($country->getName());
-					}
+                    $country = $address->getCountry();
+                    if ($country) {
+                        $localisable->setCountry($country->getName());
+                    }
 
-					// GeographicalAreas /////
+                    // GeographicalAreas /////
 
-					$geographicalAreaParts = array();
+                    $geographicalAreaParts = array();
 
-					if ($locality) {
-						$geographicalAreaParts[] = $locality;
-					}
-					$adminLevels = $address->getAdminLevels();
-					for ($i = $adminLevels->count(); $i > 0; $i--) {
-						$adminLevel = $adminLevels->get($i);
-						$geographicalAreaParts[] = $adminLevel->getName();
-					}
-					if ($country) {
-						$geographicalAreaParts[] = $country->getName();
-					}
+                    if ($locality) {
+                        $geographicalAreaParts[] = $locality;
+                    }
+                    $adminLevels = $address->getAdminLevels();
+                    for ($i = $adminLevels->count(); $i > 0; $i--) {
+                        $adminLevel = $adminLevels->get($i);
+                        $geographicalAreaParts[] = $adminLevel->getName();
+                    }
+                    if ($country) {
+                        $geographicalAreaParts[] = $country->getName();
+                    }
 
-					if (!empty($geographicalAreaParts)) {
-						$localisable->setGeographicalAreas(implode(',', $geographicalAreaParts));
-					} else {
-						$localisable->setGeographicalAreas(null);
-					}
+                    if (!empty($geographicalAreaParts)) {
+                        $localisable->setGeographicalAreas(implode(',', $geographicalAreaParts));
+                    } else {
+                        $localisable->setGeographicalAreas(null);
+                    }
 
-					// FormattedAddress /////
+                    // FormattedAddress /////
 
-					$addressFormatRepository = new AddressFormatRepository();
-					$countryRepository = new CountryRepository();
-					$subdivisionRepository = new SubdivisionRepository();
-					$formatter = new DefaultFormatter($addressFormatRepository, $countryRepository, $subdivisionRepository, 'fr_FR', array('html' => false));
+                    $addressFormatRepository = new AddressFormatRepository();
+                    $countryRepository = new CountryRepository();
+                    $subdivisionRepository = new SubdivisionRepository();
+                    $formatter = new DefaultFormatter($addressFormatRepository, $countryRepository, $subdivisionRepository, 'fr_FR', array('html' => false));
 
-					$a = new Address();
+                    $a = new Address();
 
-					$a = $a->withCountryCode($address->getCountryCode());
-					if ($address->getStreetNumber() && $address->getStreetName()) {
-						$a = $a->withAddressLine1($address->getStreetNumber().' '.$address->getStreetName());
-					} else if ($address->getStreetName()) {
-						$a = $a->withAddressLine1($address->getStreetName());
-					}
-					if ($postalCode) {
-						$a = $a->withPostalCode($postalCode);
-					}
-					if ($locality) {
-						$a = $a->withLocality($locality);
-					}
-					if ($address->getSubLocality()) {
-						$a = $a->withDependentLocality($address->getSubLocality());
-					}
-					if ($address->getAdminLevels()->first()) {
-						$a = $a->withAdministrativeArea($address->getAdminLevels()->first()->getName());
-					}
+                    $a = $a->withCountryCode($address->getCountryCode());
+                    if ($address->getStreetNumber() && $address->getStreetName()) {
+                        $a = $a->withAddressLine1($address->getStreetNumber() . ' ' . $address->getStreetName());
+                    } elseif ($address->getStreetName()) {
+                        $a = $a->withAddressLine1($address->getStreetName());
+                    }
+                    if ($postalCode) {
+                        $a = $a->withPostalCode($postalCode);
+                    }
+                    if ($locality) {
+                        $a = $a->withLocality($locality);
+                    }
+                    if ($address->getSubLocality()) {
+                        $a = $a->withDependentLocality($address->getSubLocality());
+                    }
+                    if ($address->getAdminLevels()->first()) {
+                        $a = $a->withAdministrativeArea($address->getAdminLevels()->first()->getName());
+                    }
 
-					$localisable->setFormattedAddress($formatter->format($a));
+                    $localisable->setFormattedAddress($formatter->format($a));
 
-				}
+                }
 
-				return true;
-			}
+                return true;
+            }
 
-		} else {
-			$localisable->setLatitude(null);
-			$localisable->setLongitude(null);
-			if ($localisable instanceof LocalisableExtendedInterface) {
-				$localisable->setGeographicalAreas(null);
-				$localisable->setPostalCode(null);
-				$localisable->setLocality(null);
-				$localisable->setFormattedAddress($localisable->getLocation());
-			}
-		}
+        } else {
+            $localisable->setLatitude(null);
+            $localisable->setLongitude(null);
+            if ($localisable instanceof LocalisableExtendedInterface) {
+                $localisable->setGeographicalAreas(null);
+                $localisable->setPostalCode(null);
+                $localisable->setLocality(null);
+                $localisable->setFormattedAddress($localisable->getLocation());
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/////
+    /////
 
-	public function getTopLeftBottomRightBounds($address) {
+    public function getTopLeftBottomRightBounds($address)
+    {
 
-		$googleApiKey = $this->getParameter('google_api_key');
-		try {
+        $googleApiKey = $this->getParameter('google_api_key');
+        try {
 
-			$url = 'https://maps.googleapis.com/maps/api/geocode/json?address='.urlencode($address).'&key='.$googleApiKey;
-			$hash = json_decode(file_get_contents($url), true);
+            $url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode($address) . '&key=' . $googleApiKey;
+            $hash = json_decode(file_get_contents($url), true);
 
-			if ($hash && isset($hash['results']) && isset($hash['results'][0]) && isset($hash['results'][0]['geometry']) && isset($hash['results'][0]['geometry']['bounds'])) {
-				$bounds = $hash['results'][0]['geometry']['bounds'];
+            if ($hash && isset($hash['results']) && isset($hash['results'][0]) && isset($hash['results'][0]['geometry']) && isset($hash['results'][0]['geometry']['bounds'])) {
+                $bounds = $hash['results'][0]['geometry']['bounds'];
 
-				// Returns an Elasticsearch ready bounds array [ top_left, bottom_right ]
-				return array(
-					$bounds['northeast']['lat'].','.$bounds['southwest']['lng'],
-					$bounds['southwest']['lat'].','.$bounds['northeast']['lng'],
-				);
-			}
+                // Returns an Elasticsearch ready bounds array [ top_left, bottom_right ]
+                return array(
+                    $bounds['northeast']['lat'] . ',' . $bounds['southwest']['lng'],
+                    $bounds['southwest']['lat'] . ',' . $bounds['northeast']['lng'],
+                );
+            }
 
-		} catch (\Exception $e) {
-		}
+        } catch (\Exception $e) {
+        }
 
-		return null;
-	}
-
+        return null;
+    }
 }

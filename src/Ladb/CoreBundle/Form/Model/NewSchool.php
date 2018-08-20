@@ -2,36 +2,40 @@
 
 namespace Ladb\CoreBundle\Form\Model;
 
-class NewSchool {
+class NewSchool
+{
 
-	/**
-	 */
-	private $nameValue;
+    /**
+     */
+    private $nameValue;
 
-	/**
-	 */
-	private $logoValue;
+    /**
+     */
+    private $logoValue;
 
-	// NameValue /////
+    // NameValue /////
 
-	public function setNameValue($nameValue) {
-		$this->nameValue = $nameValue;
-		return $this;
-	}
+    public function setNameValue($nameValue)
+    {
+        $this->nameValue = $nameValue;
+        return $this;
+    }
 
-	public function getNameValue() {
-		return $this->nameValue;
-	}
+    public function getNameValue()
+    {
+        return $this->nameValue;
+    }
 
-	// LogoValue /////
+    // LogoValue /////
 
-	public function setLogoValue($logoValue) {
-		$this->logoValue = $logoValue;
-		return $this;
-	}
+    public function setLogoValue($logoValue)
+    {
+        $this->logoValue = $logoValue;
+        return $this;
+    }
 
-	public function getLogoValue() {
-		return $this->logoValue;
-	}
-
+    public function getLogoValue()
+    {
+        return $this->logoValue;
+    }
 }

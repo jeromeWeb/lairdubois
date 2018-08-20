@@ -9,32 +9,35 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\Common\Persistence\ObjectManager;
 use Ladb\CoreBundle\Form\DataTransformer\PicturesToIdsTransformer;
 
-class GalleryType extends AbstractType {
+class GalleryType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add($builder
-					->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-					->addModelTransformer(new PicturesToIdsTransformer($this->om))
-			)
-			->add('location')
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add($builder
+                    ->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                    ->addModelTransformer(new PicturesToIdsTransformer($this->om)))
+            ->add('location')
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Find\Content\Gallery',
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Find\Content\Gallery',
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_find_content_gallery';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_find_content_gallery';
+    }
 }

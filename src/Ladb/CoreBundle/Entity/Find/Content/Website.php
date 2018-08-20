@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table("tbl_find_content_website")
  * @ORM\Entity
  */
-class Website extends Link {
+class Website extends Link
+{
 
 }

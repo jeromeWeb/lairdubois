@@ -14,45 +14,47 @@ use Ladb\CoreBundle\Form\DataTransformer\TagsToLabelsTransformer;
 use Ladb\CoreBundle\Form\DataTransformer\Wonder\PlansToIdsTransformer;
 use Ladb\CoreBundle\Form\Type\LicenseType;
 
-class WorkflowType extends AbstractType {
+class WorkflowType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('title')
-			->add('body', TextareaType::class)
-			->add($builder
-				->create('tags', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new TagsToLabelsTransformer($this->om))
-			)
-			->add($builder
-				->create('plans', HiddenType::class, array( 'required' => false ))
-				->addModelTransformer(new PlansToIdsTransformer($this->om))
-			)
-			->add('license', LicenseType::class)
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title')
+            ->add('body', TextareaType::class)
+            ->add($builder
+                ->create('tags', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new TagsToLabelsTransformer($this->om)))
+            ->add($builder
+                ->create('plans', HiddenType::class, array( 'required' => false ))
+                ->addModelTransformer(new PlansToIdsTransformer($this->om)))
+            ->add('license', LicenseType::class)
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Entity\Workflow\Workflow',
-			'validation_groups' => function (FormInterface $form) {
-				$workflow = $form->getData();
-				if ($workflow->getIsPublic()) {
-					return array('Default', 'public');
-				}
-				return array('Default');
-			},
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Entity\Workflow\Workflow',
+            'validation_groups' => function (FormInterface $form) {
+                $workflow = $form->getData();
+                if ($workflow->getIsPublic()) {
+                    return array('Default', 'public');
+                }
+                return array('Default');
+            },
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_workflow_workflow';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_workflow_workflow';
+    }
 }

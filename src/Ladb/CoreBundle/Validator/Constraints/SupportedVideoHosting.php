@@ -7,14 +7,16 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class SupportedVideoHosting extends Constraint {
+class SupportedVideoHosting extends Constraint
+{
 
-	public function validatedBy() {
-		return 'ladb_core.supported_video_hosting_validator';
-	}
+    public function validatedBy()
+    {
+        return 'ladb_core.supported_video_hosting_validator';
+    }
 
-	public function getTargets() {
-		return self::CLASS_CONSTRAINT;
-	}
-
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

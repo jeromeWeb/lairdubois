@@ -9,133 +9,149 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table("tbl_funding_donation")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Funding\DonationRepository")
  */
-class Donation {
+class Donation
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Funding\Donation';
+    const CLASS_NAME = 'LadbCoreBundle:Funding\Donation';
 
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @ORM\Column(type="string", length=20, nullable=true)
-	 */
-	private $hashid;
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $hashid;
 
-	/**
-	 * @ORM\Column(name="created_at", type="datetime")
-	 * @Gedmo\Timestampable(on="create")
-	 */
-	private $createdAt;
+    /**
+     * @ORM\Column(name="created_at", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    private $createdAt;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $user;
+    /**
+     * @ORM\ManyToOne(targetEntity="Ladb\CoreBundle\Entity\Core\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
-	/**
-	 * @ORM\Column(type="integer")
-	 */
-	private $amount = 0;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $amount = 0;
 
-	/**
-	 * @ORM\Column(type="integer")
-	 */
-	private $fee = 0;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $fee = 0;
 
-	/**
-	 * @ORM\Column(name="stripe_charge_id", type="string", length=30, unique=true)
-	 */
-	private $stripeChargeId;
+    /**
+     * @ORM\Column(name="stripe_charge_id", type="string", length=30, unique=true)
+     */
+    private $stripeChargeId;
 
-	/////
+    /////
 
-	public function getId() {
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	// Hashid /////
+    // Hashid /////
 
-	public function getHashid() {
-		return $this->hashid;
-	}
+    public function getHashid()
+    {
+        return $this->hashid;
+    }
 
-	public function setHashid($hashid) {
-		$this->hashid = $hashid;
-		return $this;
-	}
+    public function setHashid($hashid)
+    {
+        $this->hashid = $hashid;
+        return $this;
+    }
 
-	// CreatedAt /////
+    // CreatedAt /////
 
-	public function getAge() {
-		return $this->getCreatedAt()->diff(new \DateTime());
-	}
+    public function getAge()
+    {
+        return $this->getCreatedAt()->diff(new \DateTime());
+    }
 
-	public function getCreatedAt() {
-		return $this->createdAt;
-	}
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
 
-	// Age /////
+    // Age /////
 
-	public function setCreatedAt($createdAt) {
-		$this->createdAt = $createdAt;
-		return $this;
-	}
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
-	// User /////
+    // User /////
 
-	public function getUser() {
-		return $this->user;
-	}
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	public function setUser(\Ladb\CoreBundle\Entity\Core\User $user) {
-		$this->user = $user;
-		return $this;
-	}
+    public function setUser(\Ladb\CoreBundle\Entity\Core\User $user)
+    {
+        $this->user = $user;
+        return $this;
+    }
 
-	// Amount /////
+    // Amount /////
 
-	public function getAmountEur() {
-		return $this->getAmount() / 100;
-	}
+    public function getAmountEur()
+    {
+        return $this->getAmount() / 100;
+    }
 
-	public function getAmount() {
-		return $this->amount;
-	}
+    public function getAmount()
+    {
+        return $this->amount;
+    }
 
-	public function setAmount($amount) {
-		$this->amount = $amount;
-		return $this;
-	}
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+        return $this;
+    }
 
-	// Fee /////
+    // Fee /////
 
-	public function getFeeEur() {
-		return $this->getFee() / 100;
-	}
+    public function getFeeEur()
+    {
+        return $this->getFee() / 100;
+    }
 
-	public function getFee() {
-		return $this->fee;
-	}
+    public function getFee()
+    {
+        return $this->fee;
+    }
 
-	public function setFee($fee) {
-		$this->fee = $fee;
-		return $this;
-	}
+    public function setFee($fee)
+    {
+        $this->fee = $fee;
+        return $this;
+    }
 
-	// StripeChargeId /////
+    // StripeChargeId /////
 
-	public function getStripeChargeId() {
-		return $this->stripeChargeId;
-	}
+    public function getStripeChargeId()
+    {
+        return $this->stripeChargeId;
+    }
 
-	public function setStripeChargeId($stripeChargeId) {
-		$this->stripeChargeId = $stripeChargeId;
-		return $this;
-	}
-
+    public function setStripeChargeId($stripeChargeId)
+    {
+        $this->stripeChargeId = $stripeChargeId;
+        return $this;
+    }
 }

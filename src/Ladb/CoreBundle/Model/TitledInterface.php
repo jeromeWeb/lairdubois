@@ -2,12 +2,12 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface TitledInterface {
+interface TitledInterface
+{
 
-	// Title /////
+    // Title /////
 
-	public function setTitle($title);
+    public function setTitle($title);
 
-	public function getTitle();
-
+    public function getTitle();
 }

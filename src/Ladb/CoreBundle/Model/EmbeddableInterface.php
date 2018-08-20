@@ -2,20 +2,20 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface EmbeddableInterface extends BasicEmbeddableInterface, LicensedInterface {
+interface EmbeddableInterface extends BasicEmbeddableInterface, LicensedInterface
+{
 
-	// Referrals /////
+    // Referrals /////
 
-	public function addReferral(\Ladb\CoreBundle\Entity\Core\Referer\Referral $referral);
+    public function addReferral(\Ladb\CoreBundle\Entity\Core\Referer\Referral $referral);
 
-	public function removeReferral(\Ladb\CoreBundle\Entity\Core\Referer\Referral $referral);
+    public function removeReferral(\Ladb\CoreBundle\Entity\Core\Referer\Referral $referral);
 
-	public function getReferrals();
+    public function getReferrals();
 
-	// ReferralCount /////
+    // ReferralCount /////
 
-	public function incrementReferralCount($by = 1);
+    public function incrementReferralCount($by = 1);
 
-	public function getReferralCount();
-
+    public function getReferralCount();
 }

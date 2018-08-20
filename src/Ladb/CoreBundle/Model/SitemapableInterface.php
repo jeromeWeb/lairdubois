@@ -2,10 +2,10 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface SitemapableInterface {
+interface SitemapableInterface
+{
 
-	// IsSitemapable /////
+    // IsSitemapable /////
 
-	public function getIsSitemapable();
-
+    public function getIsSitemapable();
 }

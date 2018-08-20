@@ -10,24 +10,26 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ladb\CoreBundle\Entity\Knowledge\Value\BaseValue;
 
-abstract class AbstractValueType extends AbstractType {
+abstract class AbstractValueType extends AbstractType
+{
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('legend', TextareaType::class)
-			->add('sourceType', ChoiceType::class, array(
-				'placeholder' => 'Choisissez un type de source',
-				'choices'     => array_flip(BaseValue::$SOURCE_TYPES),
-			))
-			->add('source', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('legend', TextareaType::class)
+            ->add('sourceType', ChoiceType::class, array(
+                'placeholder' => 'Choisissez un type de source',
+                'choices'     => array_flip(BaseValue::$SOURCE_TYPES),
+            ))
+            ->add('source', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setRequired(array(
-			'choices',
-			'dataConstraints',
-		));
-	}
-
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setRequired(array(
+            'choices',
+            'dataConstraints',
+        ));
+    }
 }

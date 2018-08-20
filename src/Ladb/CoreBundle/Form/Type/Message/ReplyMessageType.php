@@ -10,32 +10,36 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ladb\CoreBundle\Form\DataTransformer\PicturesToIdsTransformer;
 
-class ReplyMessageType extends AbstractType {
+class ReplyMessageType extends AbstractType
+{
 
-	private $om;
+    private $om;
 
-	public function __construct(ObjectManager $om) {
-		$this->om = $om;
-	}
+    public function __construct(ObjectManager $om)
+    {
+        $this->om = $om;
+    }
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$builder
-			->add('body', TextareaType::class)
-			->add('body', TextareaType::class)
-			->add($builder
-				->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
-				->addModelTransformer(new PicturesToIdsTransformer($this->om)))
-		;
-	}
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('body', TextareaType::class)
+            ->add('body', TextareaType::class)
+            ->add($builder
+                ->create('pictures', TextType::class, array( 'attr' => array( 'class' => 'ladb-pseudo-hidden' ) ))
+                ->addModelTransformer(new PicturesToIdsTransformer($this->om)))
+        ;
+    }
 
-	public function configureOptions(OptionsResolver $resolver) {
-		$resolver->setDefaults(array(
-			'data_class' => 'Ladb\CoreBundle\Form\Model\ReplyMessage'
-		));
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'Ladb\CoreBundle\Form\Model\ReplyMessage'
+        ));
+    }
 
-	public function getBlockPrefix() {
-		return 'ladb_message_replymessage';
-	}
-
+    public function getBlockPrefix()
+    {
+        return 'ladb_message_replymessage';
+    }
 }

@@ -11,43 +11,46 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table("tbl_knowledge2_value_isbn")
  * @ORM\Entity(repositoryClass="Ladb\CoreBundle\Repository\Knowledge\Value\IsbnRepository")
  */
-class Isbn extends BaseValue {
+class Isbn extends BaseValue
+{
 
-	const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Isbn';
-	const TYPE = 19;
+    const CLASS_NAME = 'LadbCoreBundle:Knowledge\Value\Isbn';
+    const TYPE = 19;
 
-	const TYPE_STRIPPED_NAME = 'isbn';
+    const TYPE_STRIPPED_NAME = 'isbn';
 
-	/**
-	 * @ORM\Column(type="string")
-	 */
-	protected $data;
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $data;
 
-	/**
-	 * @ORM\Column(type="string", length=20)
-	 * @Assert\NotBlank
-	 * @Assert\Isbn
-	 * @Assert\Length(max=20)
-	 */
-	protected $rawIsbn;
+    /**
+     * @ORM\Column(type="string", length=20)
+     * @Assert\NotBlank
+     * @Assert\Isbn
+     * @Assert\Length(max=20)
+     */
+    protected $rawIsbn;
 
-	/////
+    /////
 
-	// Type /////
+    // Type /////
 
-	public function getType() {
-		return self::TYPE;
-	}
+    public function getType()
+    {
+        return self::TYPE;
+    }
 
-	// RawIsbn /////
+    // RawIsbn /////
 
-	public function getRawIsbn() {
-		return $this->rawIsbn;
-	}
+    public function getRawIsbn()
+    {
+        return $this->rawIsbn;
+    }
 
-	public function setRawIsbn($rawIsbn) {
-		$this->rawIsbn = $rawIsbn;
-		return $this;
-	}
-
+    public function setRawIsbn($rawIsbn)
+    {
+        $this->rawIsbn = $rawIsbn;
+        return $this;
+    }
 }

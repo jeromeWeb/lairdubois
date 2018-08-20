@@ -2,16 +2,16 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface MultiPicturedInterface {
+interface MultiPicturedInterface
+{
 
-	// Pictures /////
+    // Pictures /////
 
-	public function addPicture(\Ladb\CoreBundle\Entity\Core\Picture $picture);
+    public function addPicture(\Ladb\CoreBundle\Entity\Core\Picture $picture);
 
-	public function removePicture(\Ladb\CoreBundle\Entity\Core\Picture $picture);
+    public function removePicture(\Ladb\CoreBundle\Entity\Core\Picture $picture);
 
-	public function getPictures();
+    public function getPictures();
 
-	public function resetPictures();
-
+    public function resetPictures();
 }

@@ -7,16 +7,18 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class ValidAnswer extends Constraint {
+class ValidAnswer extends Constraint
+{
 
-	public $message = 'Vidéo introuvable.';
+    public $message = 'Vidéo introuvable.';
 
-	public function validatedBy() {
-		return 'ladb_core.valid_answer_validator';
-	}
+    public function validatedBy()
+    {
+        return 'ladb_core.valid_answer_validator';
+    }
 
-	public function getTargets() {
-		return self::CLASS_CONSTRAINT;
-	}
-
+    public function getTargets()
+    {
+        return self::CLASS_CONSTRAINT;
+    }
 }

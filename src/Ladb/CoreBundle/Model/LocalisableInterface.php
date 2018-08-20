@@ -2,28 +2,28 @@
 
 namespace Ladb\CoreBundle\Model;
 
-interface LocalisableInterface {
+interface LocalisableInterface
+{
 
-	// Location /////
+    // Location /////
 
-	public function setLocation($location);
+    public function setLocation($location);
 
-	public function getLocation();
+    public function getLocation();
 
-	// Latitude /////
+    // Latitude /////
 
-	public function setLatitude($latitude = null);
+    public function setLatitude($latitude = null);
 
-	public function getLatitude();
+    public function getLatitude();
 
-	// Longitude /////
+    // Longitude /////
 
-	public function setLongitude($longitude = null);
+    public function setLongitude($longitude = null);
 
-	public function getLongitude();
+    public function getLongitude();
 
-	// GeoPoint /////
+    // GeoPoint /////
 
-	public function getGeoPoint();
-
+    public function getGeoPoint();
 }
