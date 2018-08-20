@@ -22,7 +22,7 @@ class Version20170731091019 extends AbstractMigration
         $this->addSql('ALTER TABLE tbl_find_body_block ADD CONSTRAINT FK_BCCF64F651B74D69 FOREIGN KEY (find_id) REFERENCES tbl_find (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE tbl_find_body_block ADD CONSTRAINT FK_BCCF64F6E9ED820C FOREIGN KEY (block_id) REFERENCES tbl_core_block (id)');
         $this->addSql('ALTER TABLE tbl_find ADD body_block_picture_count INT NOT NULL, ADD body_block_video_count INT NOT NULL');
-		$this->addSql('ALTER TABLE tbl_find DROP htmlBody');
+        $this->addSql('ALTER TABLE tbl_find DROP htmlBody');
     }
 
     /**
@@ -35,6 +35,6 @@ class Version20170731091019 extends AbstractMigration
 
         $this->addSql('DROP TABLE tbl_find_body_block');
         $this->addSql('ALTER TABLE tbl_find DROP body_block_picture_count, DROP body_block_video_count');
-		$this->addSql('ALTER TABLE tbl_find ADD htmlBody LONGTEXT NOT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE tbl_find ADD htmlBody LONGTEXT NOT NULL COLLATE utf8_unicode_ci');
     }
 }
