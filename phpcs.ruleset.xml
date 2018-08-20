@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Project custom standard">
+    <description>L'Air du bois coding standard</description>
+
+    <file>src</file>
+
+    <exclude-pattern>./vendor</exclude-pattern>
+    <exclude-pattern>./public</exclude-pattern>
+    <exclude-pattern>./var</exclude-pattern>
+
+    <rule ref="PSR2"/>
+
+    <rule ref="Squiz.Strings.ConcatenationSpacing">
+        <properties>
+            <property name="spacing" value="1" />
+        </properties>
+        <exclude-pattern>./src/Kernel.php</exclude-pattern>
+    </rule>
+</ruleset>
